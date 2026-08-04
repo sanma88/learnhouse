@@ -20,4 +20,5 @@ Copyright © LearnHouse et ses contributeurs.
 ## Code source (AGPL art. 13)
 
 Toute personne utilisant ce logiciel via le réseau peut obtenir le code source
-de la version exécutée, y compris ces modifications, depuis ce dépôt.
+de la version exécutée, y compris ces modifications, depuis le miroir public :
+**https://github.com/sanma88/learnhouse** (branche `hiha`).

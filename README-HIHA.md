@@ -7,7 +7,10 @@ upstream (actuellement le tag `1.3.4`) et ne porte que nos ajouts propres.
 
 ## Remotes
 
-- `origin` : le fork GitLab (`git@git.sanfilippo.be:mino/learnhouse.git`) — lecture/écriture.
+- `origin` : le fork GitLab (`git@git.sanfilippo.be:mino/learnhouse.git`) — lecture/écriture,
+  source du déploiement (GitLab intranet).
+- `github` : le **miroir public** `git@github.com:sanma88/learnhouse.git` — publication AGPL
+  art. 13 : la branche `hiha` doit y être poussée après chaque changement déployé.
 - `upstream` : le dépôt GitHub d'origine — **lecture seule**. Le push y est désactivé
   (`git remote set-url --push upstream DISABLED`) : **ne jamais pousser vers upstream**.
 
@@ -41,6 +44,7 @@ Quand une nouvelle release stable `X.Y.Z` est publiée :
 git checkout hiha
 git merge X.Y.Z
 git push origin hiha
+git push github hiha   # miroir public (AGPL art. 13)
 ```
 
 En cas de conflit : il ne peut normalement toucher que nos fichiers `-HIHA`
