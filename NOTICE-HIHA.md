@@ -16,6 +16,7 @@ Copyright © LearnHouse et ses contributeurs.
 | Date | Modification |
 |------|--------------|
 | 2026-08-04 | Ajout de `NOTICE-HIHA.md` (ce fichier) et `README-HIHA.md` (procédure de synchronisation upstream). Aucune modification du code ni des mentions légales. |
+| 2026-08-06 | Ajout de l'infrastructure de déploiement, sans aucune modification du code applicatif : `.gitlab-ci.yml` (build de l'image et déploiement), `docker-compose.hiha.local.yml` et `.env.hiha.local.example` (environnement de test local). |
 
 ## Code source (AGPL art. 13)
 

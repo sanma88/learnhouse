@@ -1,0 +1,76 @@
+# LOCAL TEST ONLY — compose de test pour l'image buildée depuis le fork HI-HA.
+# Aligné sur le template CLI upstream apps/cli/src/templates/docker-compose.ts
+# (app + db pgvector + redis, healthchecks IPv4, volume contenu /app/api/content).
+# Port 80 local libre (vérifié via lsof) => publication directe 80:80, pas de sidecar socat.
+name: learnhouse-hiha-local
+
+services:
+  app:
+    image: learnhouse-hiha:1.3.4-local
+    container_name: learnhouse-hiha-app
+    restart: unless-stopped
+    env_file:
+      - .env.hiha.local
+    environment:
+      # HOSTNAME needs to be set explicitly for the container (cf. template CLI)
+      - HOSTNAME=0.0.0.0
+      # URL interne API pour le serveur collab (défaut code = :8000, incorrect)
+      - LEARNHOUSE_API_URL=http://localhost:9000
+    ports:
+      - "80:80"
+    volumes:
+      - learnhouse_hiha_content:/app/api/content
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - learnhouse-hiha-net
+    healthcheck:
+      # 127.0.0.1 : le nginx interne écoute en v4 (et v6) — on force l'IPv4 (piège recon §11)
+      test: ["CMD", "curl", "-f", "http://127.0.0.1/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  db:
+    image: pgvector/pgvector:pg16
+    container_name: learnhouse-hiha-db
+    restart: unless-stopped
+    env_file:
+      - .env.hiha.local
+    volumes:
+      - learnhouse_hiha_db_data:/var/lib/postgresql/data
+    networks:
+      - learnhouse-hiha-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U learnhouse"]
+      interval: 5s
+      timeout: 4s
+      retries: 5
+
+  redis:
+    image: redis:7.2.3-alpine
+    container_name: learnhouse-hiha-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - learnhouse_hiha_redis_data:/data
+    networks:
+      - learnhouse-hiha-net
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 4s
+      retries: 5
+
+networks:
+  learnhouse-hiha-net:
+    driver: bridge
+
+volumes:
+  learnhouse_hiha_db_data:
+  learnhouse_hiha_redis_data:
+  learnhouse_hiha_content:

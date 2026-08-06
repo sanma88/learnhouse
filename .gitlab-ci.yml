@@ -1,0 +1,56 @@
+# .gitlab-ci.yml — mino/learnhouse — Mode B (CI build+push registry → webhook Coolify)
+# Dérivé du template vault `11-references/templates/gitlab-ci-docker-image.md`
+# (Pattern A/C, 1 image) — monorepo, Dockerfile racine, image unique.
+# Branche d'exploitation : `hiha` (au lieu de `main` du template).
+
+variables:
+  REGISTRY_HOST: "registry.hi-ha.be"
+  REGISTRY_NS: "mino/learnhouse"
+  IMAGE_NAME: "${REGISTRY_NS}"
+  IMAGE_TAG: "latest"
+
+stages:
+  - build
+  - deploy
+
+build:
+  stage: build
+  # IMPORTANT — image: docker:27 (CLI seul), PAS docker:27-dind (daemon).
+  # Le runner Sanfilippo monte /var/run/docker.sock dans le container (DR31) —
+  # le CLI parle directement au daemon Docker du host. Pas de services: dind.
+  image: docker:27
+  variables:
+    DOCKER_DRIVER: overlay2
+  before_script:
+    - echo "$REGISTRY_PASSWORD" | docker login "$REGISTRY_HOST" -u "$REGISTRY_USER" --password-stdin
+  script:
+    # --driver docker-container : BuildKit dédié ; garde un cache local entre
+    # builds sur le même runner — pas de --cache-to=type=registry (limite CF
+    # 100 MB, DR32).
+    - docker buildx create --use --name ci --driver docker-container || docker buildx use ci
+    # --provenance=false --sbom=false : obligatoires derrière Cloudflare
+    # (attestation manifest re-encodé → failed size validation).
+    # --platform linux/amd64 : cible VPS amd64, pas de multi-arch.
+    # LEARNHOUSE_PUBLIC=true : build communautaire (retire /app/api/ee),
+    # même build-arg que le workflow GitHub officiel build-community.yaml.
+    - >
+      docker buildx build --push
+      --provenance=false --sbom=false
+      --platform linux/amd64
+      --build-arg LEARNHOUSE_PUBLIC=true
+      -t ${REGISTRY_HOST}/${IMAGE_NAME}:${IMAGE_TAG}
+      -t ${REGISTRY_HOST}/${IMAGE_NAME}:${CI_COMMIT_SHORT_SHA}
+      .
+  rules:
+    - if: $CI_COMMIT_BRANCH == "hiha"
+
+deploy:
+  stage: deploy
+  image: alpine:3.20
+  before_script:
+    - apk add --no-cache curl
+  script:
+    - curl -fsSL -X POST -H "Authorization: Bearer $COOLIFY_API_TOKEN" "$COOLIFY_WEBHOOK_URL"
+  rules:
+    - if: $CI_COMMIT_BRANCH == "hiha"
+  needs: ["build"]
