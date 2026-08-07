@@ -36,7 +36,6 @@ build:
     - >
       docker buildx build --push
       --provenance=false --sbom=false
-      --platform linux/amd64
       --build-arg LEARNHOUSE_PUBLIC=true
       -t ${REGISTRY_HOST}/${IMAGE_NAME}:${IMAGE_TAG}
       -t ${REGISTRY_HOST}/${IMAGE_NAME}:${CI_COMMIT_SHORT_SHA}
