@@ -113,6 +113,14 @@ RUN chmod +x /app/api/docker-entrypoint.sh /app/start.sh
 
 ENV PORT=8000 LEARNHOUSE_PORT=9000 COLLAB_PORT=4000 HOSTNAME=0.0.0.0 LEARNHOUSE_OSS=true NEXT_PUBLIC_LEARNHOUSE_OSS=true
 
+# HI-HA: `image.source` is what links a ghcr.io package back to its repository —
+# without it the published package stands alone, with no route to the source it
+# was built from. Since this image is published publicly, that link is also how
+# AGPL art. 13 is honoured for whoever holds the image rather than the site.
+LABEL org.opencontainers.image.source="https://github.com/sanma88/learnhouse" \
+      org.opencontainers.image.licenses="AGPL-3.0-only" \
+      org.opencontainers.image.description="HI-HA Campus — fork AGPL-3.0 de LearnHouse"
+
 EXPOSE 80 9000 4000
 
 CMD ["sh", "/app/start.sh"]

@@ -1,11 +1,31 @@
-# .gitlab-ci.yml — mino/learnhouse — Mode B (CI build+push registry → webhook Coolify)
+# .gitlab-ci.yml — mino/learnhouse — Mode B (CI build+push → webhook Coolify)
 # Dérivé du template vault `11-references/templates/gitlab-ci-docker-image.md`
 # (Pattern A/C, 1 image) — monorepo, Dockerfile racine, image unique.
 # Branche d'exploitation : `hiha` (au lieu de `main` du template).
+#
+# ÉCART ASSUMÉ VS LE PARC — le registre est ghcr.io, pas registry.hi-ha.be.
+# `registry.hi-ha.be` est derrière un CF Tunnel : Cloudflare Free/Pro plafonne
+# à 100 Mo par couche et le mode DNS-only est impossible (piège vault DR32).
+# Quatre couches de cette image dépassent la limite (663 / 486 / 168 / 108 Mo,
+# mesuré par `docker history`) : apt (nginx+node+pm2+bun+build-essential),
+# `uv sync`, la copie du build Next.js standalone, et la base Debian amont.
+# Les leviers de DR32 (élagage des devDependencies, pas de cache registry) ont
+# été taillés pour une image Node ; ici même −200 Mo par couche en laisserait
+# trois au-dessus du plafond. ghcr.io n'est pas derrière Cloudflare : la limite
+# disparaît, et publier l'image au même endroit que la source renforce l'AGPL
+# art. 13. GitLab reste la source du déploiement et le déclencheur.
+#
+# Variables CI à créer (Settings → CI/CD → Variables, Masked + Protected) :
+#   GHCR_USER            — `sanma88` (le compte propriétaire du paquet)
+#   GHCR_TOKEN           — PAT GitHub *classic*, scope `write:packages` seul.
+#                          GitHub Packages n'accepte PAS les PAT fine-grained.
+#   COOLIFY_API_TOKEN    — token mutualisé `coolify-ci-deploy`
+#   COOLIFY_WEBHOOK_URL  — URL de déploiement de la ressource Coolify
 
 variables:
-  REGISTRY_HOST: "registry.hi-ha.be"
-  REGISTRY_NS: "mino/learnhouse"
+  # ghcr.io exige un chemin entièrement en minuscules.
+  REGISTRY_HOST: "ghcr.io"
+  REGISTRY_NS: "sanma88/learnhouse"
   IMAGE_NAME: "${REGISTRY_NS}"
   IMAGE_TAG: "latest"
 
@@ -22,15 +42,17 @@ build:
   variables:
     DOCKER_DRIVER: overlay2
   before_script:
-    - echo "$REGISTRY_PASSWORD" | docker login "$REGISTRY_HOST" -u "$REGISTRY_USER" --password-stdin
+    - echo "$GHCR_TOKEN" | docker login "$REGISTRY_HOST" -u "$GHCR_USER" --password-stdin
   script:
     # --driver docker-container : BuildKit dédié ; garde un cache local entre
-    # builds sur le même runner — pas de --cache-to=type=registry (limite CF
-    # 100 MB, DR32).
+    # builds sur le même runner. Pas de --cache-to=type=registry : ghcr.io
+    # l'accepterait désormais (la contrainte DR32 tombe avec Cloudflare), mais
+    # on ne change qu'une variable à la fois — à envisager après la preuve.
     - docker buildx create --use --name ci --driver docker-container || docker buildx use ci
-    # --provenance=false --sbom=false : obligatoires derrière Cloudflare
-    # (attestation manifest re-encodé → failed size validation).
-    # : cible VPS amd64, pas de multi-arch.
+    # --provenance=false --sbom=false : c'était une obligation Cloudflare
+    # (manifeste d'attestation ré-encodé → failed size validation). Conservés
+    # ici par choix : un manifeste mono-plateforme, c'est exactement ce que
+    # Coolify tire, sans index OCI intermédiaire.
     # LEARNHOUSE_PUBLIC=true : build communautaire (retire /app/api/ee),
     # même build-arg que le workflow GitHub officiel build-community.yaml.
     - >
