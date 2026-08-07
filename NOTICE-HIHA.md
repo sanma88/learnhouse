@@ -17,6 +17,7 @@ Copyright © LearnHouse et ses contributeurs.
 |------|--------------|
 | 2026-08-04 | Ajout de `NOTICE-HIHA.md` (ce fichier) et `README-HIHA.md` (procédure de synchronisation upstream). Aucune modification du code ni des mentions légales. |
 | 2026-08-06 | Ajout de l'infrastructure de déploiement, sans aucune modification du code applicatif : `.gitlab-ci.yml` (build de l'image et déploiement), `docker-compose.hiha.local.yml` et `.env.hiha.local.example` (environnement de test local). |
+| 2026-08-07 | **Première modification de code** — `docker/nginx.conf` : le nginx interne de l'image écrasait l'en-tête `X-Forwarded-Proto` par sa propre variable `$scheme` (8 occurrences). Derrière un proxy de bordure qui termine le TLS (Traefik), l'API recevait donc toujours `http` et émettait les cookies de session **sans l'attribut `Secure`** (`apps/api/src/routers/auth.py`, `is_request_secure`), tandis que les URL canoniques sortaient en `http://`. Correctif : une directive `map` propage l'en-tête entrant lorsqu'il vaut `https` ou `http`, et retombe sur `$scheme` en son absence (exécution locale ou accès direct). Aucun changement de comportement hors reverse-proxy. |
 
 ## Code source (AGPL art. 13)
 
