@@ -50,7 +50,10 @@ deploy:
   before_script:
     - apk add --no-cache curl
   script:
-    - curl -fsSL -X POST -H "Authorization: Bearer $COOLIFY_API_TOKEN" "$COOLIFY_WEBHOOK_URL"
+    # Quoted: the "Authorization: Bearer" header contains a colon-space, which YAML
+    # reads as a mapping in an unquoted sequence item. GitLab then rejects the whole
+    # file ("script config should be a string"), producing a 0-job pipeline.
+    - 'curl -fsSL -X POST -H "Authorization: Bearer $COOLIFY_API_TOKEN" "$COOLIFY_WEBHOOK_URL"'
   rules:
     - if: $CI_COMMIT_BRANCH == "hiha"
   needs: ["build"]
