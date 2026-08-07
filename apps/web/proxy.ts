@@ -307,6 +307,15 @@ export default async function proxy(req: NextRequest) {
   //    layout additionally enforces SaaS gating. We set instance cookies so the
   //    hub's client components can read tenancy/mode/top-domain.
   // -------------------------------------------------------------------------
+  // HI-HA: /home is the org PICKER — it only makes sense when a user can belong
+  // to several orgs. In `single` tenancy there is exactly one, so the picker is a
+  // dead click on every login (login.tsx and the logged-in /login bounce both
+  // send users here). Redirect it to the course list instead. Placed before the
+  // hub block so it wins, and scoped to `single` so multi-tenant is untouched.
+  if (instance.tenancy === 'single' && pathname === '/home') {
+    return NextResponse.redirect(new URL('/courses', req.url))
+  }
+
   const HUB_ROOT_PATHS = ['/home', '/organizations', '/account', '/billing', '/subscriptions', '/new']
   const isHubRoot = HUB_ROOT_PATHS.some(
     (p) => pathname === p || pathname.startsWith(`${p}/`),
