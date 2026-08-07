@@ -20,7 +20,7 @@ from src.services.search.normalization import (
     escape_like_wildcards,
 )
 from src.security.auth import resolve_acting_user_id
-from src.security.org_auth import is_org_member
+from src.security.org_auth import is_org_admin, is_org_member
 
 
 class SearchDiscussionRead(DiscussionRead):
@@ -135,6 +135,8 @@ async def search_across_org(
     SECURITY:
     - Anonymous users see public content only; they cannot search users.
     - Authenticated non-members see public content only; they cannot search users.
+    - HI-HA: plain org MEMBERS cannot search users either — only org
+      admins/maintainers (and superadmins) get a non-empty `users` bucket.
     - Org members additionally see org-scoped non-public content where the
       resource itself doesn't restrict it further (e.g. unpublished items and
       usergroup-restricted playgrounds are always excluded from search).
@@ -200,8 +202,24 @@ async def search_across_org(
         db_session, folders_q, page, limit
     )
 
-    # ── Users (org members only; anonymous and non-member traffic is denied) ─
-    if only_public:
+    # ── Users (org ADMINS only; every other caller gets an empty list) ───────
+    # HI-HA: this org hosts training courses for ~25 *different* clients, kept
+    # apart by usergroup, so "member of the same org" is NOT a trust boundary
+    # here — it is merely "customer of the same operator". The user projection
+    # below is `UserRead`, which inherits `UserBase` and therefore carries
+    # `email` (plus `extra_metadata`, `signup_method`, ...). Scoping it on
+    # `org_id` alone handed any authenticated learner the full name + EMAIL of
+    # every other client's trainees: a cross-client personal-data disclosure
+    # (GDPR art. 5.1.f / 32). Directory search over people is an administration
+    # feature, so gate it on the org admin/maintainer role — the same seam the
+    # rest of the codebase uses (`src.security.org_auth`). Non-admins keep the
+    # whole rest of the search (courses, folders, communities, ...) untouched;
+    # only the `users` bucket collapses to empty.
+    caller_is_org_admin = (
+        not is_anon
+        and await is_org_admin(resolve_acting_user_id(current_user), org.id, db_session)
+    )
+    if only_public or not caller_is_org_admin:
         users: list = []
         total_users = 0
     else:

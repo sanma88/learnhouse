@@ -15,7 +15,11 @@ from src.security.rbac.rbac import (
     authorization_verify_based_on_roles_and_authorship_or_api_token,
     authorization_verify_if_user_is_anon,
 )
-from src.security.org_auth import require_org_role_permission, require_org_membership
+from src.security.org_auth import (
+    is_org_admin,
+    require_org_role_permission,
+    require_org_membership,
+)
 from src.security.rbac.config import get_resource_config
 from src.db.usergroup_resources import UserGroupResource
 from src.db.usergroup_user import UserGroupUser
@@ -25,6 +29,66 @@ from src.db.usergroups import UserGroup, UserGroupCreate, UserGroupRead, UserGro
 from src.db.users import AnonymousUser, APITokenUser, InternalUser, PublicUser, User, UserRead
 from src.services.webhooks.dispatch import dispatch_webhooks
 from src.services.security.rate_limiting import enforce_batch_size_limit
+
+
+# HI-HA: ─── cross-tenant scoping helpers ──────────────────────────────────────
+#
+# This deployment packs the trainings of ~25 *different* clients into ONE
+# organization (multi-org is a paid Enterprise feature), each client isolated by
+# its own usergroup. Content access is already correctly gated by
+# `check_resource_access`, but the usergroup *metadata* endpoints only checked
+# "is a member of the org" / "role has usergroups.action_read", which every
+# Read-Only Learner satisfies. That let any trainee enumerate the client list
+# (group names), the roster of other clients' groups, and the course↔group
+# mapping. The two helpers below let each read scope itself to what the caller
+# legitimately owns, while org admins/maintainers keep full visibility because
+# they are the ones who administer the groups.
+
+
+async def _caller_is_org_admin(
+    current_user: "PublicUser | AnonymousUser | APITokenUser | InternalUser",
+    org_id: int,
+    db_session: AsyncSession,
+) -> bool:
+    """HI-HA: True when the caller may see the whole org's usergroups.
+
+    Delegates to `src.security.org_auth.is_org_admin`, the project's existing
+    admin seam (it already folds in the superadmin bypass), rather than
+    re-deriving roles here. InternalUser is the server-side service principal
+    and is unconditionally trusted; API tokens resolve to their creator via
+    `resolve_acting_user_id`, as everywhere else in this module.
+    """
+    from src.security.auth import resolve_acting_user_id
+
+    if isinstance(current_user, InternalUser):
+        return True
+
+    user_id = resolve_acting_user_id(current_user)
+    if not user_id:
+        return False
+
+    return await is_org_admin(user_id, org_id, db_session)
+
+
+async def _usergroup_ids_of_caller(
+    current_user: "PublicUser | AnonymousUser | APITokenUser | InternalUser",
+    db_session: AsyncSession,
+) -> set[int]:
+    """HI-HA: the ids of the usergroups the caller actually belongs to.
+
+    Used to filter list endpoints down to the caller's own group(s) instead of
+    returning the whole organization.
+    """
+    from src.security.auth import resolve_acting_user_id
+
+    user_id = resolve_acting_user_id(current_user)
+    if not user_id:
+        return set()
+
+    statement = select(UserGroupUser.usergroup_id).where(
+        UserGroupUser.user_id == user_id
+    )
+    return set((await db_session.execute(statement)).scalars().all())
 
 
 async def _validate_resource_exists_and_belongs_to_org(
@@ -139,12 +203,22 @@ async def create_usergroup(
     )
 
     # RBAC check
+    # HI-HA: pass the target org so `rbac_check` takes the
+    # `require_org_role_permission("usergroups", "action_create")` branch
+    # instead of the placeholder path. The placeholder path routes through
+    # `authorization_verify_if_user_is_author`, which returns True for *any*
+    # authenticated caller when action == "create" (see rbac.py), so the role's
+    # `usergroups.action_create: false` was never consulted and a Read-Only
+    # Learner could create groups. The org-scoped branch honours the rights
+    # dict, so Admin/Maintainer (create=true) still pass and User/Instructor
+    # (create=false) are refused — least privilege, no new mechanism.
     await rbac_check(
         request,
         usergroup_uuid="usergroup_X",
         current_user=current_user,
         action="create",
         db_session=db_session,
+        org_id=usergroup_create.org_id,
     )
 
     # Check if Organization exists
@@ -214,6 +288,18 @@ async def read_usergroup_by_id(
         org_id=usergroup.org_id,
     )
 
+    # HI-HA: the RBAC check above only asserts "usergroups.action_read in this
+    # org", which the default Read-Only Learner role grants. On a single-org,
+    # multi-client install that let any trainee read back another client's
+    # group by walking the numeric id (group name == client name). Non-admins
+    # may only read a group they belong to.
+    if not await _caller_is_org_admin(current_user, usergroup.org_id, db_session):
+        if usergroup.id not in await _usergroup_ids_of_caller(current_user, db_session):
+            raise HTTPException(
+                status_code=403,
+                detail="You don't have access to this usergroup",
+            )
+
     usergroup = UserGroupRead.model_validate(usergroup)
 
     return usergroup
@@ -244,6 +330,19 @@ async def get_users_linked_to_usergroup(
         db_session=db_session,
         org_id=usergroup.org_id,
     )
+
+    # HI-HA: listing the members of a group is an ADMINISTRATION action, not a
+    # learner one — the frontend only calls it from the Dashboard. The RBAC
+    # check above passes for the Read-Only Learner role (usergroups.action_read
+    # is true for it), so any trainee could dump the roster of every other
+    # client's group. Restrict to org admins/maintainers; a learner has no
+    # legitimate need for the member list of *any* group, including their own,
+    # so there is deliberately no "own group" exception here.
+    if not await _caller_is_org_admin(current_user, usergroup.org_id, db_session):
+        raise HTTPException(
+            status_code=403,
+            detail="Only organization administrators can list usergroup members",
+        )
 
     # Batch fetch users linked to this usergroup in a single query
     statement = (
@@ -280,6 +379,17 @@ async def read_usergroups_by_org_id(
         action="read",
         db_session=db_session,
     )
+
+    # HI-HA: org membership + `usergroups.action_read` are both satisfied by the
+    # default Read-Only Learner role, so this endpoint used to return EVERY
+    # group of the org. With one group per client, that is the operator's whole
+    # customer list handed to any trainee. Narrow non-admins to their own
+    # group(s) — the query result is filtered rather than refused so the
+    # endpoint keeps working for any UI that legitimately asks "which groups am
+    # I in". Admins/maintainers (who administer the groups) see all of them.
+    if not await _caller_is_org_admin(current_user, org_id, db_session):
+        caller_group_ids = await _usergroup_ids_of_caller(current_user, db_session)
+        usergroups = [ug for ug in usergroups if ug.id in caller_group_ids]
 
     usergroups = [UserGroupRead.model_validate(usergroup) for usergroup in usergroups]
 
@@ -340,6 +450,17 @@ async def get_usergroups_by_resource(
     statement = select(UserGroup).where(UserGroup.id.in_(usergroup_ids))  # type: ignore
     usergroups = (await db_session.execute(statement)).scalars().all()
 
+    # HI-HA: this endpoint reveals the resource↔group mapping. Given a course
+    # UUID, any trainee could learn which client group owns it (and its name),
+    # which also turns a guessed UUID into an existence + ownership oracle.
+    # Non-admins only get back the groups they are themselves in, so the answer
+    # can never describe another client. An empty list is the correct response
+    # for a course that isn't theirs — it leaks nothing the caller didn't
+    # already know.
+    if not await _caller_is_org_admin(current_user, target_org_id, db_session):
+        caller_group_ids = await _usergroup_ids_of_caller(current_user, db_session)
+        usergroups = [ug for ug in usergroups if ug.id in caller_group_ids]
+
     return [UserGroupRead.model_validate(ug) for ug in usergroups]
 
 
@@ -368,6 +489,17 @@ async def get_resources_by_usergroup(
         db_session=db_session,
         org_id=usergroup.org_id,
     )
+
+    # HI-HA: the mirror image of `get_usergroups_by_resource` — given a group id
+    # it returns that group's course UUIDs. Observed leaking another client's
+    # course UUID to a Read-Only Learner, so it is closed with the same rule:
+    # non-admins may only inspect a group they belong to.
+    if not await _caller_is_org_admin(current_user, usergroup.org_id, db_session):
+        if usergroup.id not in await _usergroup_ids_of_caller(current_user, db_session):
+            raise HTTPException(
+                status_code=403,
+                detail="You don't have access to this usergroup",
+            )
 
     statement = select(UserGroupResource).where(
         UserGroupResource.usergroup_id == usergroup_id
