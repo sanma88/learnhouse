@@ -267,7 +267,7 @@ async def analyze_import_package(
         if manifest.get("format") != "learnhouse-course-export":
             raise HTTPException(
                 status_code=400,
-                detail="Invalid package: Not a LearnHouse course export"
+                detail="Invalid package: not a recognised course export"
             )
 
         version = manifest.get("version", "1.0.0")

@@ -44,11 +44,11 @@
     "help": "Hulp",
     "help_menu": {
       "documentation": "Documentatie",
-      "website": "LearnHouse Website",
+      "website": "HI-HA Website",
       "discord": "Discord",
       "report_feedback": "Probleem of feedback melden",
       "feedback_title": "Feedback Verzenden",
-      "feedback_description": "Help ons LearnHouse te verbeteren door je gedachten te delen, bugs te melden of nieuwe functies voor te stellen.",
+      "feedback_description": "Help ons HI-HA te verbeteren door je gedachten te delen, bugs te melden of nieuwe functies voor te stellen.",
       "feedback_placeholder": "Vertel ons wat je denkt...",
       "feedback_success": "Bedankt voor je feedback!",
       "send_feedback": "Feedback Verzenden",
@@ -215,7 +215,7 @@
     "organizations": "Organisaties",
     "billing": "Facturering",
     "create_organization": "Organisatie aanmaken",
-    "copyright": "© {{year}} HI-HA",
+    "copyright": "© {{year}} HI-HA — gebaseerd op LearnHouse, © LearnHouse, Inc. — AGPL-3.0",
     "source_code": "Broncode",
     "delete_organization_error": "Kan deze organisatie niet verwijderen. Probeer het opnieuw.",
     "org_actions": "Organisatieacties",
@@ -1435,7 +1435,7 @@
           "description": "Uw persoonlijke instellingen, wachtwoorden en e-mail configureren"
         }
       },
-      "learnhouse_university": "LearnHouse Universiteit",
+      "learnhouse_university": "HI-HA Universiteit",
       "welcome_back": "Welkom terug",
       "plan": "abonnement",
       "create_course": "Cursus aanmaken",
@@ -2344,9 +2344,9 @@
         "footer_text_desc": "Aangepaste tekst die onderaan je organisatiepagina's wordt weergegeven",
         "default_language": "Standaardtaal",
         "default_language_desc": "De taal die nieuwe bezoekers standaard zien en die wordt gebruikt voor e-mails namens deze organisatie. Leden kunnen hun eigen interfacetaal nog steeds wijzigen.",
-        "watermark_desc": "LearnHouse-watermerk tonen op organisatiepagina's",
+        "watermark_desc": "HI-HA-watermerk tonen op organisatiepagina's",
         "watermark_free_plan": "Watermerk wordt altijd getoond bij het gratis plan",
-        "watermark_label": "\"Made with LearnHouse\"-watermerk",
+        "watermark_label": "\"Made with HI-HA\"-watermerk",
         "watermark_ee": "Verborgen door je Enterprise Edition-licentie"
       },
       "images": {
@@ -4803,10 +4803,10 @@
       },
       "teach_the_world": {
         "title": "Leer & groei",
-        "description": "Bronnen om je te helpen het meeste uit LearnHouse te halen.",
+        "description": "Bronnen om je te helpen het meeste uit HI-HA te halen.",
         "classroom": "Het klaslokaal",
         "classroom_desc": "Leer hoe je je cursussen kunt laten groeien en beheren",
-        "university": "LearnHouse Universiteit",
+        "university": "HI-HA Universiteit",
         "university_desc": "Handleidingen, tips en best practices"
       },
       "add_content": {
@@ -4836,7 +4836,7 @@
       }
     },
     "welcome": {
-      "title": "Welkom bij LearnHouse",
+      "title": "Welkom bij HI-HA",
       "subtitle": "Maak cursussen, nodig leerlingen uit en deel kennis met de wereld.",
       "get_started": "Aan de slag",
       "features_title": "Alles wat je nodig hebt",
@@ -5136,7 +5136,7 @@
   "embed": {
     "not_supported_description": "Dit type activiteit vereist authenticatie en kan niet worden ingebed.",
     "not_supported_title": "Deze activiteit wordt niet ondersteund",
-    "powered_by": "Mogelijk gemaakt door LearnHouse",
+    "powered_by": "Mogelijk gemaakt door HI-HA",
     "visit_activity": "Activiteitpagina bezoeken"
   },
   "migration": {
@@ -5641,7 +5641,7 @@
         "title": "Wil je testen?",
         "body": "Ga naar de",
         "link": "Ontwikkelaarspagina",
-        "suffix": "om LearnHouse in plaats daarvan uit te proberen."
+        "suffix": "om HI-HA in plaats daarvan uit te proberen."
       },
       "validation": {
         "required": "Verplicht",

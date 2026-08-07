@@ -44,11 +44,11 @@
     "help": "ความช่วยเหลือ",
     "help_menu": {
       "documentation": "เอกสาร",
-      "website": "เว็บไซต์ LearnHouse",
+      "website": "เว็บไซต์ HI-HA",
       "discord": "Discord",
       "report_feedback": "รายงานปัญหาหรือความคิดเห็น",
       "feedback_title": "ส่งความคิดเห็น",
-      "feedback_description": "ช่วยเราปรับปรุง LearnHouse โดยแบ่งปันความคิด รายงานข้อบกพร่อง หรือแนะนำฟีเจอร์ใหม่",
+      "feedback_description": "ช่วยเราปรับปรุง HI-HA โดยแบ่งปันความคิด รายงานข้อบกพร่อง หรือแนะนำฟีเจอร์ใหม่",
       "feedback_placeholder": "บอกเราว่าคุณคิดอย่างไร...",
       "feedback_success": "ขอบคุณสำหรับความคิดเห็นของคุณ!",
       "send_feedback": "ส่งความคิดเห็น",
@@ -215,7 +215,7 @@
     "organizations": "องค์กร",
     "billing": "การเรียกเก็บเงิน",
     "create_organization": "สร้างองค์กร",
-    "copyright": "© {{year}} HI-HA",
+    "copyright": "© {{year}} HI-HA — อ้างอิงจาก LearnHouse, © LearnHouse, Inc. — AGPL-3.0",
     "source_code": "ซอร์สโค้ด",
     "delete_organization_error": "ไม่สามารถลบองค์กรนี้ได้ กรุณาลองอีกครั้ง",
     "org_actions": "การจัดการองค์กร",
@@ -1457,7 +1457,7 @@
           "description": "กำหนดค่าการตั้งค่าส่วนตัว รหัสผ่าน อีเมล"
         }
       },
-      "learnhouse_university": "มหาวิทยาลัย LearnHouse",
+      "learnhouse_university": "มหาวิทยาลัย HI-HA",
       "welcome_back": "ยินดีต้อนรับกลับ",
       "plan": "แผน",
       "create_course": "สร้างคอร์สเรียน",
@@ -2366,9 +2366,9 @@
         "footer_text_desc": "ข้อความที่กำหนดเองที่แสดงที่ด้านล่างของหน้าองค์กรของคุณ",
         "default_language": "ภาษาเริ่มต้น",
         "default_language_desc": "ภาษาที่ผู้เยี่ยมชมใหม่เห็นโดยค่าเริ่มต้นและภาษาที่ใช้สำหรับอีเมลที่ส่งในนามขององค์กรนี้ สมาชิกยังคงสามารถเปลี่ยนภาษาของอินเทอร์เฟซของตนได้",
-        "watermark_desc": "แสดงลายน้ำแบรนด์ LearnHouse บนหน้าองค์กรของคุณ",
+        "watermark_desc": "แสดงลายน้ำแบรนด์ HI-HA บนหน้าองค์กรของคุณ",
         "watermark_free_plan": "ลายน้ำจะแสดงตลอดเวลาบนแผนฟรี",
-        "watermark_label": "ลายน้ำ \"Made with LearnHouse\"",
+        "watermark_label": "ลายน้ำ \"Made with HI-HA\"",
         "watermark_ee": "ซ่อนโดยใบอนุญาต Enterprise Edition ของคุณ"
       },
       "images": {
@@ -4825,10 +4825,10 @@
       },
       "teach_the_world": {
         "title": "เรียนรู้และเติบโต",
-        "description": "แหล่งข้อมูลเพื่อช่วยให้คุณใช้ LearnHouse ได้อย่างเต็มที่",
+        "description": "แหล่งข้อมูลเพื่อช่วยให้คุณใช้ HI-HA ได้อย่างเต็มที่",
         "classroom": "ห้องเรียน",
         "classroom_desc": "เรียนรู้วิธีเติบโตและจัดการคอร์สของคุณ",
-        "university": "มหาวิทยาลัย LearnHouse",
+        "university": "มหาวิทยาลัย HI-HA",
         "university_desc": "คู่มือ เคล็ดลับ และแนวปฏิบัติที่ดี"
       },
       "add_content": {
@@ -4858,7 +4858,7 @@
       }
     },
     "welcome": {
-      "title": "ยินดีต้อนรับสู่ LearnHouse",
+      "title": "ยินดีต้อนรับสู่ HI-HA",
       "subtitle": "สร้างคอร์ส เชิญผู้เรียน และแบ่งปันความรู้กับโลก",
       "get_started": "เริ่มต้น",
       "features_title": "ทุกอย่างที่คุณต้องการ",
@@ -5158,7 +5158,7 @@
   "embed": {
     "not_supported_description": "กิจกรรมประเภทนี้ต้องการการยืนยันตัวตนและไม่สามารถฝังได้",
     "not_supported_title": "กิจกรรมนี้ไม่รองรับ",
-    "powered_by": "ขับเคลื่อนโดย LearnHouse",
+    "powered_by": "ขับเคลื่อนโดย HI-HA",
     "visit_activity": "ไปที่หน้ากิจกรรม"
   },
   "migration": {
@@ -5663,7 +5663,7 @@
         "title": "ต้องการทดลองใช้?",
         "body": "ไปที่",
         "link": "หน้านักพัฒนา",
-        "suffix": "เพื่อทดลองใช้ LearnHouse แทน"
+        "suffix": "เพื่อทดลองใช้ HI-HA แทน"
       },
       "validation": {
         "required": "จำเป็นต้องกรอก",

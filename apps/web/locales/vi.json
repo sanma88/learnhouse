@@ -44,11 +44,11 @@
     "help": "Trợ giúp",
     "help_menu": {
       "documentation": "Tài liệu",
-      "website": "Trang web LearnHouse",
+      "website": "Trang web HI-HA",
       "discord": "Discord",
       "report_feedback": "Báo cáo vấn đề hoặc phản hồi",
       "feedback_title": "Gửi Phản hồi",
-      "feedback_description": "Giúp chúng tôi cải thiện LearnHouse bằng cách chia sẻ suy nghĩ, báo cáo lỗi hoặc đề xuất tính năng mới.",
+      "feedback_description": "Giúp chúng tôi cải thiện HI-HA bằng cách chia sẻ suy nghĩ, báo cáo lỗi hoặc đề xuất tính năng mới.",
       "feedback_placeholder": "Cho chúng tôi biết bạn đang nghĩ gì...",
       "feedback_success": "Cảm ơn phản hồi của bạn!",
       "send_feedback": "Gửi Phản hồi",
@@ -215,7 +215,7 @@
     "organizations": "Tổ chức",
     "billing": "Thanh toán",
     "create_organization": "Tạo tổ chức",
-    "copyright": "© {{year}} HI-HA",
+    "copyright": "© {{year}} HI-HA — dựa trên LearnHouse, © LearnHouse, Inc. — AGPL-3.0",
     "source_code": "Mã nguồn",
     "delete_organization_error": "Không thể xóa tổ chức này. Vui lòng thử lại.",
     "org_actions": "Thao tác tổ chức",
@@ -1457,7 +1457,7 @@
           "description": "Cấu hình cài đặt cá nhân, mật khẩu, email"
         }
       },
-      "learnhouse_university": "Đại học LearnHouse",
+      "learnhouse_university": "Đại học HI-HA",
       "welcome_back": "Chào mừng trở lại",
       "plan": "gói",
       "create_course": "Tạo khóa học",
@@ -2366,9 +2366,9 @@
         "footer_text_desc": "Văn bản tùy chỉnh hiển thị ở cuối các trang của tổ chức",
         "default_language": "Ngôn ngữ mặc định",
         "default_language_desc": "Ngôn ngữ mà khách truy cập mới sẽ thấy theo mặc định và được dùng cho các email gửi thay mặt tổ chức này. Thành viên vẫn có thể thay đổi ngôn ngữ giao diện của mình.",
-        "watermark_desc": "Hiển thị watermark thương hiệu LearnHouse trên các trang tổ chức của bạn",
+        "watermark_desc": "Hiển thị watermark thương hiệu HI-HA trên các trang tổ chức của bạn",
         "watermark_free_plan": "Watermark luôn được hiển thị trên gói miễn phí",
-        "watermark_label": "Watermark \"Made with LearnHouse\"",
+        "watermark_label": "Watermark \"Made with HI-HA\"",
         "watermark_ee": "Bị ẩn bởi giấy phép Enterprise Edition của bạn"
       },
       "images": {
@@ -4825,10 +4825,10 @@
       },
       "teach_the_world": {
         "title": "Học hỏi & phát triển",
-        "description": "Tài nguyên giúp bạn tận dụng tối đa LearnHouse.",
+        "description": "Tài nguyên giúp bạn tận dụng tối đa HI-HA.",
         "classroom": "Lớp học",
         "classroom_desc": "Tìm hiểu cách phát triển và quản lý khóa học",
-        "university": "Đại học LearnHouse",
+        "university": "Đại học HI-HA",
         "university_desc": "Hướng dẫn, mẹo và thực hành tốt nhất"
       },
       "add_content": {
@@ -4858,7 +4858,7 @@
       }
     },
     "welcome": {
-      "title": "Chào mừng đến với LearnHouse",
+      "title": "Chào mừng đến với HI-HA",
       "subtitle": "Tạo khóa học, mời học viên và chia sẻ kiến thức với thế giới.",
       "get_started": "Bắt đầu",
       "features_title": "Mọi thứ bạn cần",
@@ -5158,7 +5158,7 @@
   "embed": {
     "not_supported_description": "Loại hoạt động này yêu cầu xác thực và không thể được nhúng.",
     "not_supported_title": "Hoạt động này không được hỗ trợ",
-    "powered_by": "Cung cấp bởi LearnHouse",
+    "powered_by": "Cung cấp bởi HI-HA",
     "visit_activity": "Truy cập trang hoạt động"
   },
   "migration": {
@@ -5663,7 +5663,7 @@
         "title": "Muốn dùng thử?",
         "body": "Hãy đến",
         "link": "trang Nhà phát triển",
-        "suffix": "để trải nghiệm LearnHouse."
+        "suffix": "để trải nghiệm HI-HA."
       },
       "validation": {
         "required": "Bắt buộc",

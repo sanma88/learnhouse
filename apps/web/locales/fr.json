@@ -46,11 +46,11 @@
     "help": "Aide",
     "help_menu": {
       "documentation": "Documentation",
-      "website": "Site LearnHouse",
+      "website": "Site HI-HA",
       "discord": "Discord",
       "report_feedback": "Signaler un problème",
       "feedback_title": "Envoyer un commentaire",
-      "feedback_description": "Aidez-nous à améliorer LearnHouse en partageant vos impressions, signalant des bugs ou suggérant de nouvelles fonctionnalités.",
+      "feedback_description": "Aidez-nous à améliorer HI-HA en partageant vos impressions, signalant des bugs ou suggérant de nouvelles fonctionnalités.",
       "feedback_placeholder": "Dites-nous ce que vous en pensez...",
       "feedback_success": "Merci pour votre retour !",
       "send_feedback": "Envoyer",
@@ -215,7 +215,7 @@
     "organizations": "Organisations",
     "billing": "Facturation",
     "create_organization": "Créer une organisation",
-    "copyright": "© {{year}} HI-HA",
+    "copyright": "© {{year}} HI-HA — basé sur LearnHouse, © LearnHouse, Inc. — AGPL-3.0",
     "source_code": "Code source",
     "delete_organization_error": "Impossible de supprimer cette organisation. Veuillez réessayer.",
     "org_actions": "Actions de l’organisation",
@@ -1435,7 +1435,7 @@
           "description": "Configurer vos paramètres personnels, mots de passe et e-mail"
         }
       },
-      "learnhouse_university": "Université LearnHouse",
+      "learnhouse_university": "Université HI-HA",
       "admin_seats": "Places administrateur",
       "ai_credits": "Crédits IA",
       "analytics": "Analytiques",
@@ -2342,9 +2342,9 @@
         "footer_text_desc": "Texte personnalisé affiché en bas des pages de votre organisation",
         "default_language": "Langue par défaut",
         "default_language_desc": "La langue affichée par défaut aux nouveaux visiteurs et utilisée pour les e-mails envoyés au nom de cette organisation. Les membres peuvent toujours changer leur propre langue d'interface.",
-        "watermark_desc": "Afficher le filigrane LearnHouse sur les pages de votre organisation",
+        "watermark_desc": "Afficher le filigrane HI-HA sur les pages de votre organisation",
         "watermark_free_plan": "Le filigrane est toujours affiché sur le plan gratuit",
-        "watermark_label": "Filigrane \"Made with LearnHouse\"",
+        "watermark_label": "Filigrane \"Made with HI-HA\"",
         "watermark_ee": "Masqué par votre licence Enterprise Edition"
       },
       "images": {
@@ -5057,10 +5057,10 @@
       },
       "teach_the_world": {
         "title": "Apprenez et progressez",
-        "description": "Des ressources pour vous aider à tirer le meilleur parti de LearnHouse.",
+        "description": "Des ressources pour vous aider à tirer le meilleur parti de HI-HA.",
         "classroom": "La salle de classe",
         "classroom_desc": "Apprenez à développer et gérer vos cours",
-        "university": "Université LearnHouse",
+        "university": "Université HI-HA",
         "university_desc": "Guides, astuces et bonnes pratiques"
       },
       "add_content": {
@@ -5090,7 +5090,7 @@
       }
     },
     "welcome": {
-      "title": "Bienvenue sur LearnHouse",
+      "title": "Bienvenue sur HI-HA",
       "subtitle": "Créez des cours, invitez des apprenants et partagez le savoir avec le monde.",
       "get_started": "Commencer",
       "features_title": "Tout ce dont vous avez besoin",
@@ -5170,7 +5170,7 @@
   "embed": {
     "not_supported_description": "Ce type d'activité nécessite une authentification et ne peut pas être intégré.",
     "not_supported_title": "Cette activité n'est pas prise en charge",
-    "powered_by": "Propulsé par LearnHouse",
+    "powered_by": "Propulsé par HI-HA",
     "visit_activity": "Visiter la page de l'activité"
   },
   "upgrade_modal": {
@@ -5639,7 +5639,7 @@
         "title": "Envie de tester ?",
         "body": "Rendez-vous sur la",
         "link": "page Développeurs",
-        "suffix": "pour essayer LearnHouse à la place."
+        "suffix": "pour essayer HI-HA à la place."
       },
       "validation": {
         "required": "Obligatoire",

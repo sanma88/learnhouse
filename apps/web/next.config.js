@@ -137,8 +137,11 @@ const nextConfig = {
     ],
   },
   // Ensure consistent build IDs across multiple pods in Kubernetes
+  // HI-HA: do not advertise the framework in every response header.
+  poweredByHeader: false,
+
   generateBuildId: async () => {
-    return process.env.BUILD_ID || 'learnhouse-production'
+    return process.env.BUILD_ID || 'hi-ha-production'
   },
 }
 

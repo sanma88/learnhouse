@@ -44,11 +44,11 @@
     "help": "Помощь",
     "help_menu": {
       "documentation": "Документация",
-      "website": "Сайт LearnHouse",
+      "website": "Сайт HI-HA",
       "discord": "Discord",
       "report_feedback": "Сообщить о проблеме или оставить отзыв",
       "feedback_title": "Отправить отзыв",
-      "feedback_description": "Помогите нам улучшить LearnHouse, поделившись своими мыслями, сообщив об ошибках или предложив новые функции.",
+      "feedback_description": "Помогите нам улучшить HI-HA, поделившись своими мыслями, сообщив об ошибках или предложив новые функции.",
       "feedback_placeholder": "Расскажите, что вы думаете...",
       "feedback_success": "Спасибо за ваш отзыв!",
       "send_feedback": "Отправить отзыв",
@@ -215,7 +215,7 @@
     "organizations": "Организации",
     "billing": "Оплата",
     "create_organization": "Создать организацию",
-    "copyright": "© {{year}} HI-HA",
+    "copyright": "© {{year}} HI-HA — на основе LearnHouse, © LearnHouse, Inc. — AGPL-3.0",
     "source_code": "Исходный код",
     "delete_organization_error": "Не удалось удалить эту организацию. Попробуйте ещё раз.",
     "org_actions": "Действия с организацией",
@@ -1457,7 +1457,7 @@
           "description": "Настройка персональных параметров, паролей и электронной почты"
         }
       },
-      "learnhouse_university": "Университет LearnHouse",
+      "learnhouse_university": "Университет HI-HA",
       "welcome_back": "С возвращением",
       "plan": "тариф",
       "create_course": "Создать курс",
@@ -2366,9 +2366,9 @@
         "footer_text_desc": "Пользовательский текст, отображаемый внизу страниц вашей организации",
         "default_language": "Язык по умолчанию",
         "default_language_desc": "Язык, который новые посетители видят по умолчанию и который используется в письмах, отправляемых от имени этой организации. Участники по-прежнему могут менять язык своего интерфейса.",
-        "watermark_desc": "Показывать водяной знак LearnHouse на страницах организации",
+        "watermark_desc": "Показывать водяной знак HI-HA на страницах организации",
         "watermark_free_plan": "Водяной знак всегда отображается на бесплатном плане",
-        "watermark_label": "Водяной знак \"Made with LearnHouse\"",
+        "watermark_label": "Водяной знак \"Made with HI-HA\"",
         "watermark_ee": "Скрыто лицензией Enterprise Edition"
       },
       "images": {
@@ -4825,10 +4825,10 @@
       },
       "teach_the_world": {
         "title": "Учитесь и развивайтесь",
-        "description": "Ресурсы, которые помогут вам максимально использовать LearnHouse.",
+        "description": "Ресурсы, которые помогут вам максимально использовать HI-HA.",
         "classroom": "Классная комната",
         "classroom_desc": "Узнайте, как развивать и управлять курсами",
-        "university": "Университет LearnHouse",
+        "university": "Университет HI-HA",
         "university_desc": "Руководства, советы и лучшие практики"
       },
       "add_content": {
@@ -4858,7 +4858,7 @@
       }
     },
     "welcome": {
-      "title": "Добро пожаловать в LearnHouse",
+      "title": "Добро пожаловать в HI-HA",
       "subtitle": "Создавайте курсы, приглашайте учеников и делитесь знаниями со всем миром.",
       "get_started": "Начать",
       "features_title": "Всё, что вам нужно",
@@ -5158,7 +5158,7 @@
   "embed": {
     "not_supported_description": "Этот тип активности требует аутентификации и не может быть встроен.",
     "not_supported_title": "Эта активность не поддерживается",
-    "powered_by": "Работает на LearnHouse",
+    "powered_by": "Работает на HI-HA",
     "visit_activity": "Перейти на страницу активности"
   },
   "migration": {
@@ -5663,7 +5663,7 @@
         "title": "Хотите попробовать?",
         "body": "Перейдите на",
         "link": "страницу для разработчиков",
-        "suffix": "чтобы протестировать LearnHouse."
+        "suffix": "чтобы протестировать HI-HA."
       },
       "validation": {
         "required": "Обязательное поле",

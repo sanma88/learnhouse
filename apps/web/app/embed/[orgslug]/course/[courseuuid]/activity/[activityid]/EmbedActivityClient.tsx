@@ -168,7 +168,7 @@ function EmbedActivityClient({ activityId, courseuuid, orgslug, bgcolor }: Embed
         <div className="bg-white rounded-2xl nice-shadow p-8 max-w-md w-full text-center">
           <div className="mb-6">
             <Image
-              src="/learnhouse_bigicon.png"
+              src="/hiha-mark.png"
               alt="HI-HA"
               width={64}
               height={64}

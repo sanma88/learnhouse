@@ -46,11 +46,11 @@
     "help": "সহায়তা",
     "help_menu": {
       "documentation": "ডকুমেন্টেশন",
-      "website": "LearnHouse ওয়েবসাইট",
+      "website": "HI-HA ওয়েবসাইট",
       "discord": "Discord",
       "report_feedback": "সমস্যা বা মতামত জানান",
       "feedback_title": "মতামত পাঠান",
-      "feedback_description": "আপনার মতামত শেয়ার করে, বাগ রিপোর্ট করে, অথবা নতুন ফিচার সাজেস্ট করে LearnHouse উন্নত করতে সাহায্য করুন।",
+      "feedback_description": "আপনার মতামত শেয়ার করে, বাগ রিপোর্ট করে, অথবা নতুন ফিচার সাজেস্ট করে HI-HA উন্নত করতে সাহায্য করুন।",
       "feedback_placeholder": "আপনার মনে কী আছে বলুন...",
       "feedback_success": "আপনার মতামতের জন্য ধন্যবাদ!",
       "send_feedback": "মতামত পাঠান",
@@ -215,7 +215,7 @@
     "organizations": "প্রতিষ্ঠান",
     "billing": "বিলিং",
     "create_organization": "প্রতিষ্ঠান তৈরি করুন",
-    "copyright": "© {{year}} HI-HA",
+    "copyright": "© {{year}} HI-HA — ভিত্তিক LearnHouse, © LearnHouse, Inc. — AGPL-3.0",
     "source_code": "সোর্স কোড",
     "delete_organization_error": "এই প্রতিষ্ঠানটি মুছে ফেলা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।",
     "org_actions": "প্রতিষ্ঠানের কার্যক্রম",
@@ -2364,9 +2364,9 @@
         "footer_text_desc": "আপনার সংস্থার পৃষ্ঠাগুলির নীচে প্রদর্শিত কাস্টম টেক্সট",
         "default_language": "ডিফল্ট ভাষা",
         "default_language_desc": "নতুন ভিজিটররা ডিফল্টভাবে যে ভাষায় সাইটটি দেখেন এবং এই সংস্থার পক্ষ থেকে পাঠানো ইমেইলে যে ভাষা ব্যবহৃত হয়। সদস্যরা এখনও নিজেদের UI ভাষা পরিবর্তন করতে পারেন।",
-        "watermark_desc": "আপনার সংস্থা পেজে LearnHouse ব্র্যান্ডিং ওয়াটারমার্ক দেখান",
+        "watermark_desc": "আপনার সংস্থা পেজে HI-HA ব্র্যান্ডিং ওয়াটারমার্ক দেখান",
         "watermark_free_plan": "ফ্রি প্ল্যানে ওয়াটারমার্ক সর্বদা প্রদর্শিত হয়",
-        "watermark_label": "\"Made with LearnHouse\" ওয়াটারমার্ক",
+        "watermark_label": "\"Made with HI-HA\" ওয়াটারমার্ক",
         "watermark_ee": "আপনার এন্টারপ্রাইজ এডিশন লাইসেন্স দ্বারা লুকানো"
       },
       "images": {
@@ -5079,10 +5079,10 @@
       },
       "teach_the_world": {
         "title": "শিখুন ও বেড়ে উঠুন",
-        "description": "LearnHouse থেকে সর্বাধিক সুবিধা পেতে সহায়ক রিসোর্স।",
+        "description": "HI-HA থেকে সর্বাধিক সুবিধা পেতে সহায়ক রিসোর্স।",
         "classroom": "ক্লাসরুম",
         "classroom_desc": "আপনার কোর্স বৃদ্ধি ও পরিচালনা করতে শিখুন",
-        "university": "LearnHouse বিশ্ববিদ্যালয়",
+        "university": "HI-HA বিশ্ববিদ্যালয়",
         "university_desc": "গাইড, টিপস এবং সেরা অনুশীলন"
       },
       "add_content": {
@@ -5112,7 +5112,7 @@
       }
     },
     "welcome": {
-      "title": "LearnHouse-এ স্বাগতম",
+      "title": "HI-HA-এ স্বাগতম",
       "subtitle": "কোর্স তৈরি করুন, শিক্ষার্থীদের আমন্ত্রণ জানান এবং বিশ্বের সাথে জ্ঞান ভাগ করুন।",
       "get_started": "শুরু করুন",
       "features_title": "আপনার যা দরকার সব আছে",
@@ -5156,7 +5156,7 @@
   "embed": {
     "not_supported_description": "এই ধরনের কার্যক্রমের জন্য অথেন্টিকেশন প্রয়োজন এবং এটি এমবেড করা যায় না।",
     "not_supported_title": "এই কার্যক্রম সমর্থিত নয়",
-    "powered_by": "Powered by LearnHouse",
+    "powered_by": "Powered by HI-HA",
     "visit_activity": "কার্যক্রম পেজে যান"
   },
   "migration": {
@@ -5661,7 +5661,7 @@
         "title": "পরীক্ষা করে দেখতে চান?",
         "body": "চলে যান",
         "link": "ডেভেলপারস পেজে",
-        "suffix": "এবং বরং LearnHouse পরখ করে দেখুন।"
+        "suffix": "এবং বরং HI-HA পরখ করে দেখুন।"
       },
       "validation": {
         "required": "আবশ্যক",

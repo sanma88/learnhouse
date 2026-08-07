@@ -159,7 +159,7 @@ export const OrgMenu = (props: any) => {
                   {org?.logo_image ? (
                     <img
                       src={`${getOrgLogoMediaDirectory(org.org_uuid, org?.logo_image)}`}
-                      alt="HI-HA"
+                      alt={org?.name || ''}
                       style={{ width: 'auto', height: '100%' }}
                       className="rounded-md"
                     />

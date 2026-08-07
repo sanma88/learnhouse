@@ -42,7 +42,9 @@ from src.security.security import SECRET_KEY
 
 logger = logging.getLogger(__name__)
 
-TOTP_ISSUER = "LearnHouse"
+# HI-HA: the issuer is written into every user's authenticator app at enrolment
+# and is NOT updated for existing entries if changed later — set before go-live.
+TOTP_ISSUER = os.environ.get("LEARNHOUSE_TOTP_ISSUER", "HI-HA")
 TOTP_PERIOD_SECONDS = 30
 # Accept the immediately preceding and following timestep. Phone clock drift is
 # the single most common cause of "my code doesn't work" support tickets; one

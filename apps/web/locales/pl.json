@@ -44,11 +44,11 @@
     "help": "Pomoc",
     "help_menu": {
       "documentation": "Dokumentacja",
-      "website": "Strona LearnHouse",
+      "website": "Strona HI-HA",
       "discord": "Discord",
       "report_feedback": "Zgłoś problem lub opinię",
       "feedback_title": "Wyślij Opinię",
-      "feedback_description": "Pomóż nam ulepszyć LearnHouse, dzieląc się swoimi przemyśleniami, zgłaszając błędy lub sugerując nowe funkcje.",
+      "feedback_description": "Pomóż nam ulepszyć HI-HA, dzieląc się swoimi przemyśleniami, zgłaszając błędy lub sugerując nowe funkcje.",
       "feedback_placeholder": "Powiedz nam, co myślisz...",
       "feedback_success": "Dziękujemy za opinię!",
       "send_feedback": "Wyślij Opinię",
@@ -215,7 +215,7 @@
     "organizations": "Organizacje",
     "billing": "Płatności",
     "create_organization": "Utwórz organizację",
-    "copyright": "© {{year}} HI-HA",
+    "copyright": "© {{year}} HI-HA — oparte na LearnHouse, © LearnHouse, Inc. — AGPL-3.0",
     "source_code": "Kod źródłowy",
     "delete_organization_error": "Nie udało się usunąć tej organizacji. Spróbuj ponownie.",
     "org_actions": "Działania organizacji",
@@ -1457,7 +1457,7 @@
           "description": "Skonfiguruj swoje ustawienia osobiste, hasła i e-mail"
         }
       },
-      "learnhouse_university": "Uniwersytet LearnHouse",
+      "learnhouse_university": "Uniwersytet HI-HA",
       "welcome_back": "Witaj ponownie",
       "plan": "plan",
       "create_course": "Utwórz kurs",
@@ -2366,9 +2366,9 @@
         "footer_text_desc": "Niestandardowy tekst wyświetlany na dole stron Twojej organizacji",
         "default_language": "Język domyślny",
         "default_language_desc": "Język, który nowi odwiedzający widzą domyślnie i którego używają e-maile wysyłane w imieniu tej organizacji. Członkowie nadal mogą zmienić własny język interfejsu.",
-        "watermark_desc": "Pokaż znak wodny LearnHouse na stronach organizacji",
+        "watermark_desc": "Pokaż znak wodny HI-HA na stronach organizacji",
         "watermark_free_plan": "Znak wodny jest zawsze widoczny w planie darmowym",
-        "watermark_label": "Znak wodny \"Made with LearnHouse\"",
+        "watermark_label": "Znak wodny \"Made with HI-HA\"",
         "watermark_ee": "Ukryte przez licencję Enterprise Edition"
       },
       "images": {
@@ -4825,10 +4825,10 @@
       },
       "teach_the_world": {
         "title": "Ucz się i rozwijaj",
-        "description": "Zasoby, które pomogą Ci w pełni wykorzystać LearnHouse.",
+        "description": "Zasoby, które pomogą Ci w pełni wykorzystać HI-HA.",
         "classroom": "Klasa",
         "classroom_desc": "Naucz się rozwijać i zarządzać swoimi kursami",
-        "university": "Uniwersytet LearnHouse",
+        "university": "Uniwersytet HI-HA",
         "university_desc": "Przewodniki, wskazówki i najlepsze praktyki"
       },
       "add_content": {
@@ -4858,7 +4858,7 @@
       }
     },
     "welcome": {
-      "title": "Witaj w LearnHouse",
+      "title": "Witaj w HI-HA",
       "subtitle": "Twórz kursy, zapraszaj uczniów i dziel się wiedzą ze światem.",
       "get_started": "Rozpocznij",
       "features_title": "Wszystko, czego potrzebujesz",
@@ -5158,7 +5158,7 @@
   "embed": {
     "not_supported_description": "Ten typ aktywności wymaga uwierzytelniania i nie może być osadzony.",
     "not_supported_title": "Ta aktywność nie jest obsługiwana",
-    "powered_by": "Powered by LearnHouse",
+    "powered_by": "Powered by HI-HA",
     "visit_activity": "Odwiedź stronę aktywności"
   },
   "migration": {
@@ -5663,7 +5663,7 @@
         "title": "Chcesz przetestować?",
         "body": "Przejdź na",
         "link": "stronę dla deweloperów",
-        "suffix": "aby wypróbować LearnHouse."
+        "suffix": "aby wypróbować HI-HA."
       },
       "validation": {
         "required": "Wymagane",

@@ -19,7 +19,8 @@ export async function GET(request: NextRequest) {
   const baseUrl = getBaseUrlFromRequest(request)
 
   const robotsTxt = `User-agent: *
-Allow: /
+# HI-HA: private, invitation-only campus — not for public indexing.
+Disallow: /
 Disallow: /dash/
 Disallow: /api/
 Disallow: /auth/

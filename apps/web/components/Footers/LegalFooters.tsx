@@ -32,6 +32,26 @@ const HAS_LEGAL_PAGES = Boolean(TERMS_URL && PRIVACY_URL)
 const SOURCE_URL =
   getConfig('NEXT_PUBLIC_LEARNHOUSE_SOURCE_URL') || 'https://github.com/sanma88/learnhouse'
 
+// HI-HA: the AGPL-3.0 art. 13 source offer, in its most compact form, for surfaces
+// where a signed-in user actually spends time (the org/learning layout). Carries the
+// attribution alongside it so the notice states who wrote what.
+export function SourceNotice({ className = '' }: { className?: string }) {
+  const { t } = useTranslation()
+  return (
+    <p className={`text-[11px] text-gray-400 ${className}`}>
+      {t('common.copyright', { year: new Date().getFullYear() })}{' · '}
+      <Link
+        href={SOURCE_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="underline hover:text-gray-600 transition-colors"
+      >
+        {t('common.source_code', { defaultValue: 'Source code' })}
+      </Link>
+    </p>
+  )
+}
+
 export function AuthFooter({ className = '' }: { className?: string }) {
   const { t } = useTranslation()
   return (

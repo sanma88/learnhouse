@@ -929,13 +929,28 @@ def _support_url() -> str:
 
     The old `{platform}/dashboard/support` path 404s (the platform dashboard is
     gone on .io), so use a support mailto that can never break.
+
+    HI-HA: upstream hardcoded hello@learnhouse.app here — this page is public
+    (anyone whose magic link expired lands on it), so it pointed our users at a
+    third party's support. Follow the configured contact address instead.
     """
-    return "mailto:hello@learnhouse.app"
+    try:
+        from config.config import get_learnhouse_config
+
+        contact = (get_learnhouse_config().contact_email or "").strip()
+    except Exception:
+        contact = ""
+    return f"mailto:{contact}" if contact else ""
 
 
 def _render_magic_link_error(title: str, message: str) -> HTMLResponse:
     """Render a friendly HTML error page when a magic link fails."""
     support = _support_url()
+    # No contact configured -> omit the button rather than render a dead href="".
+    support_html = (
+        f'<a class="support" href="{support}">Something not working as expected?</a>'
+        if support else ""
+    )
     # Plain HTML — no templating dependency. Values are hardcoded/escaped.
     # title/message come from our own HTTPExceptions, not user input.
     safe_title = title.replace("<", "&lt;").replace(">", "&gt;")
@@ -945,7 +960,7 @@ def _render_magic_link_error(title: str, message: str) -> HTMLResponse:
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Sign-in link — LearnHouse</title>
+<title>Sign-in link</title>
 <style>
   body {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
          background: #f6f7f9; color: #111827; margin: 0;
@@ -965,7 +980,7 @@ def _render_magic_link_error(title: str, message: str) -> HTMLResponse:
   <div class="card">
     <h1>{safe_title}</h1>
     <p>{safe_message}</p>
-    <a class="support" href="{support}">Something not working as expected?</a>
+    {support_html}
     <p class="hint">Our team can re-issue your sign-in link or help you access your account.</p>
   </div>
 </body>

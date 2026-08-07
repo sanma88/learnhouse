@@ -130,3 +130,14 @@ media/
 README.md
 docs/
 *.md 
+
+# HI-HA: a bare `node_modules` only matches the root. A stray install under
+# apps/web/ (e.g. left by tooling) would then be copied over the one built in
+# the deps stage and break `COPY apps/web .` — match every level instead.
+**/node_modules
+**/.next
+
+# HI-HA: this repo has a PUBLIC mirror (AGPL art. 13). Never let an env file
+# reach it or the build context — the previous rules missed .env.<name>.local.
+.env*
+!.env*.example

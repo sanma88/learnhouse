@@ -47,7 +47,7 @@ def _get_webhook_client() -> httpx.AsyncClient:
         _webhook_client = httpx.AsyncClient(
             timeout=10.0,
             follow_redirects=False,
-            headers={"User-Agent": "LearnHouse-Webhooks/1.0"},
+            headers={"User-Agent": "HI-HA-Webhooks/1.0"},
         )
     return _webhook_client
 

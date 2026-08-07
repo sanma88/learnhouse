@@ -46,11 +46,11 @@
     "help": "Hilfe",
     "help_menu": {
       "documentation": "Dokumentation",
-      "website": "LearnHouse Webseite",
+      "website": "HI-HA Webseite",
       "discord": "Discord",
       "report_feedback": "Problem melden oder Feedback geben",
       "feedback_title": "Feedback senden",
-      "feedback_description": "Helfen Sie uns, LearnHouse zu verbessern, indem Sie Ihre Gedanken teilen, Fehler melden oder neue Funktionen vorschlagen.",
+      "feedback_description": "Helfen Sie uns, HI-HA zu verbessern, indem Sie Ihre Gedanken teilen, Fehler melden oder neue Funktionen vorschlagen.",
       "feedback_placeholder": "Teilen Sie uns mit, was Sie denken...",
       "feedback_success": "Vielen Dank für Ihr Feedback!",
       "send_feedback": "Feedback senden",
@@ -215,7 +215,7 @@
     "organizations": "Organisationen",
     "billing": "Abrechnung",
     "create_organization": "Organisation erstellen",
-    "copyright": "© {{year}} HI-HA",
+    "copyright": "© {{year}} HI-HA — basiert auf LearnHouse, © LearnHouse, Inc. — AGPL-3.0",
     "source_code": "Quellcode",
     "delete_organization_error": "Diese Organisation konnte nicht gelöscht werden. Bitte versuche es erneut.",
     "org_actions": "Organisationsaktionen",
@@ -1435,7 +1435,7 @@
           "description": "Persönliche Einstellungen, Passwörter und E-Mail konfigurieren"
         }
       },
-      "learnhouse_university": "LearnHouse Universität",
+      "learnhouse_university": "HI-HA Universität",
       "welcome_back": "Willkommen zurück",
       "plan": "Tarif",
       "create_course": "Kurs erstellen",
@@ -2342,9 +2342,9 @@
         "footer_text_desc": "Benutzerdefinierter Text, der unten auf Ihren Organisationsseiten angezeigt wird",
         "default_language": "Standardsprache",
         "default_language_desc": "Die Sprache, die neue Besucher standardmäßig sehen und die für E-Mails im Namen dieser Organisation verwendet wird. Mitglieder können ihre eigene Oberflächensprache weiterhin ändern.",
-        "watermark_desc": "LearnHouse-Wasserzeichen auf Ihren Organisationsseiten anzeigen",
+        "watermark_desc": "HI-HA-Wasserzeichen auf Ihren Organisationsseiten anzeigen",
         "watermark_free_plan": "Das Wasserzeichen wird im kostenlosen Plan immer angezeigt",
-        "watermark_label": "\"Made with LearnHouse\"-Wasserzeichen",
+        "watermark_label": "\"Made with HI-HA\"-Wasserzeichen",
         "watermark_ee": "Durch Ihre Enterprise Edition-Lizenz ausgeblendet"
       },
       "images": {
@@ -4359,7 +4359,7 @@
   "embed": {
     "not_supported_description": "Diese Art von Aktivität erfordert eine Authentifizierung und kann nicht eingebettet werden.",
     "not_supported_title": "Diese Aktivität wird nicht unterstützt",
-    "powered_by": "Betrieben von LearnHouse",
+    "powered_by": "Betrieben von HI-HA",
     "visit_activity": "Aktivitätsseite besuchen"
   },
   "analytics": {
@@ -5063,10 +5063,10 @@
       },
       "teach_the_world": {
         "title": "Lerne & wachse",
-        "description": "Ressourcen, die dir helfen, das Beste aus LearnHouse herauszuholen.",
+        "description": "Ressourcen, die dir helfen, das Beste aus HI-HA herauszuholen.",
         "classroom": "Das Klassenzimmer",
         "classroom_desc": "Lerne, wie du deine Kurse ausbaust und verwaltest",
-        "university": "LearnHouse Universität",
+        "university": "HI-HA Universität",
         "university_desc": "Anleitungen, Tipps und Best Practices"
       },
       "add_content": {
@@ -5096,7 +5096,7 @@
       }
     },
     "welcome": {
-      "title": "Willkommen bei LearnHouse",
+      "title": "Willkommen bei HI-HA",
       "subtitle": "Erstelle Kurse, lade Lernende ein und teile Wissen mit der Welt.",
       "get_started": "Loslegen",
       "features_title": "Alles, was du brauchst",
@@ -5647,7 +5647,7 @@
         "title": "Möchtest du es testen?",
         "body": "Geh zur",
         "link": "Entwicklerseite",
-        "suffix": ", um LearnHouse stattdessen auszuprobieren."
+        "suffix": ", um HI-HA stattdessen auszuprobieren."
       },
       "validation": {
         "required": "Erforderlich",

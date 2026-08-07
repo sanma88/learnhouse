@@ -46,11 +46,11 @@
     "help": "Bantuan",
     "help_menu": {
       "documentation": "Dokumentasi",
-      "website": "Situs Web LearnHouse",
+      "website": "Situs Web HI-HA",
       "discord": "Discord",
       "report_feedback": "Laporkan Masalah atau Umpan Balik",
       "feedback_title": "Kirim Umpan Balik",
-      "feedback_description": "Bantu kami meningkatkan LearnHouse dengan berbagi pemikiran Anda, melaporkan bug, atau menyarankan fitur baru.",
+      "feedback_description": "Bantu kami meningkatkan HI-HA dengan berbagi pemikiran Anda, melaporkan bug, atau menyarankan fitur baru.",
       "feedback_placeholder": "Beritahu kami apa yang Anda pikirkan...",
       "feedback_success": "Terima kasih atas umpan balik Anda!",
       "send_feedback": "Kirim Umpan Balik",
@@ -215,7 +215,7 @@
     "organizations": "Organisasi",
     "billing": "Tagihan",
     "create_organization": "Buat organisasi",
-    "copyright": "© {{year}} HI-HA",
+    "copyright": "© {{year}} HI-HA — berbasis LearnHouse, © LearnHouse, Inc. — AGPL-3.0",
     "source_code": "Kode sumber",
     "delete_organization_error": "Tidak dapat menghapus organisasi ini. Silakan coba lagi.",
     "org_actions": "Tindakan organisasi",
@@ -1457,7 +1457,7 @@
           "description": "Konfigurasikan pengaturan pribadi, kata sandi, email Anda"
         }
       },
-      "learnhouse_university": "Universitas LearnHouse",
+      "learnhouse_university": "Universitas HI-HA",
       "welcome_back": "Selamat datang kembali",
       "plan": "paket",
       "create_course": "Buat Kursus",
@@ -2364,9 +2364,9 @@
         "footer_text_desc": "Teks kustom yang ditampilkan di bagian bawah halaman organisasi Anda",
         "default_language": "Bahasa default",
         "default_language_desc": "Bahasa yang dilihat pengunjung baru secara default dan bahasa yang digunakan untuk email yang dikirim atas nama organisasi ini. Anggota tetap dapat mengganti bahasa antarmuka mereka.",
-        "watermark_desc": "Tampilkan watermark branding LearnHouse di halaman organisasi Anda",
+        "watermark_desc": "Tampilkan watermark branding HI-HA di halaman organisasi Anda",
         "watermark_free_plan": "Watermark selalu ditampilkan pada paket gratis",
-        "watermark_label": "Watermark \"Made with LearnHouse\"",
+        "watermark_label": "Watermark \"Made with HI-HA\"",
         "watermark_ee": "Disembunyikan oleh lisensi Enterprise Edition Anda"
       },
       "images": {
@@ -5079,10 +5079,10 @@
       },
       "teach_the_world": {
         "title": "Belajar & berkembang",
-        "description": "Sumber daya untuk membantu Anda memaksimalkan LearnHouse.",
+        "description": "Sumber daya untuk membantu Anda memaksimalkan HI-HA.",
         "classroom": "Kelas",
         "classroom_desc": "Pelajari cara mengembangkan dan mengelola kursus Anda",
-        "university": "Universitas LearnHouse",
+        "university": "Universitas HI-HA",
         "university_desc": "Panduan, tips, dan praktik terbaik"
       },
       "add_content": {
@@ -5112,7 +5112,7 @@
       }
     },
     "welcome": {
-      "title": "Selamat datang di LearnHouse",
+      "title": "Selamat datang di HI-HA",
       "subtitle": "Buat kursus, undang pembelajar, dan bagikan pengetahuan dengan dunia.",
       "get_started": "Mulai",
       "features_title": "Semua yang Anda butuhkan",
@@ -5156,7 +5156,7 @@
   "embed": {
     "not_supported_description": "Tipe aktivitas ini memerlukan autentikasi dan tidak dapat disematkan.",
     "not_supported_title": "Aktivitas ini tidak didukung",
-    "powered_by": "Didukung oleh LearnHouse",
+    "powered_by": "Didukung oleh HI-HA",
     "visit_activity": "Kunjungi Halaman Aktivitas"
   },
   "migration": {
@@ -5661,7 +5661,7 @@
         "title": "Ingin mencoba?",
         "body": "Kunjungi",
         "link": "halaman Pengembang",
-        "suffix": "untuk mencoba LearnHouse."
+        "suffix": "untuk mencoba HI-HA."
       },
       "validation": {
         "required": "Wajib diisi",

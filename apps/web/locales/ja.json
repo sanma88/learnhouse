@@ -46,11 +46,11 @@
     "help": "ヘルプ",
     "help_menu": {
       "documentation": "ドキュメント",
-      "website": "LearnHouse ウェブサイト",
+      "website": "HI-HA ウェブサイト",
       "discord": "Discord",
       "report_feedback": "問題の報告またはフィードバック",
       "feedback_title": "フィードバックを送信",
-      "feedback_description": "ご意見の共有、バグの報告、新機能のご提案で LearnHouse の改善にご協力ください。",
+      "feedback_description": "ご意見の共有、バグの報告、新機能のご提案で HI-HA の改善にご協力ください。",
       "feedback_placeholder": "お気づきの点をお聞かせください...",
       "feedback_success": "フィードバックありがとうございます！",
       "send_feedback": "フィードバックを送信",
@@ -215,7 +215,7 @@
     "organizations": "組織",
     "billing": "請求",
     "create_organization": "組織を作成",
-    "copyright": "© {{year}} HI-HA",
+    "copyright": "© {{year}} HI-HA — ベース LearnHouse, © LearnHouse, Inc. — AGPL-3.0",
     "source_code": "ソースコード",
     "delete_organization_error": "この組織を削除できませんでした。もう一度お試しください。",
     "org_actions": "組織の操作",
@@ -1445,7 +1445,7 @@
           "description": "個人設定、パスワード、メールを構成する"
         }
       },
-      "learnhouse_university": "LearnHouse大学",
+      "learnhouse_university": "HI-HA大学",
       "welcome_back": "おかえりなさい",
       "plan": "プラン",
       "create_course": "コースを作成",
@@ -2352,9 +2352,9 @@
         "footer_text_desc": "組織ページの下部に表示されるカスタムテキスト",
         "default_language": "デフォルト言語",
         "default_language_desc": "新しい訪問者にデフォルトで表示される言語であり、この組織を代表して送信されるメールに使用される言語です。メンバーは自分のUI言語を引き続き切り替えできます。",
-        "watermark_desc": "組織ページにLearnHouseブランドの透かしを表示",
+        "watermark_desc": "組織ページにHI-HAブランドの透かしを表示",
         "watermark_free_plan": "無料プランでは透かしが常に表示されます",
-        "watermark_label": "\"Made with LearnHouse\"透かし",
+        "watermark_label": "\"Made with HI-HA\"透かし",
         "watermark_ee": "Enterprise Editionライセンスによって非表示になっています"
       },
       "images": {
@@ -5067,10 +5067,10 @@
       },
       "teach_the_world": {
         "title": "学んで成長する",
-        "description": "LearnHouseを最大限に活用するためのリソース。",
+        "description": "HI-HAを最大限に活用するためのリソース。",
         "classroom": "クラスルーム",
         "classroom_desc": "コースの成長と管理の方法を学ぶ",
-        "university": "LearnHouse大学",
+        "university": "HI-HA大学",
         "university_desc": "ガイド、ヒント、ベストプラクティス"
       },
       "add_content": {
@@ -5100,7 +5100,7 @@
       }
     },
     "welcome": {
-      "title": "LearnHouseへようこそ",
+      "title": "HI-HAへようこそ",
       "subtitle": "コースを作成し、学習者を招待し、世界と知識を共有しましょう。",
       "get_started": "始める",
       "features_title": "必要なものがすべて揃っています",
@@ -5144,7 +5144,7 @@
   "embed": {
     "not_supported_description": "このタイプのアクティビティは認証が必要で、埋め込みできません。",
     "not_supported_title": "このアクティビティはサポートされていません",
-    "powered_by": "Powered by LearnHouse",
+    "powered_by": "Powered by HI-HA",
     "visit_activity": "アクティビティページを訪問"
   },
   "migration": {
@@ -5649,7 +5649,7 @@
         "title": "お試しをご希望ですか？",
         "body": "代わりに",
         "link": "開発者ページ",
-        "suffix": "で LearnHouse をお試しください。"
+        "suffix": "で HI-HA をお試しください。"
       },
       "validation": {
         "required": "必須",

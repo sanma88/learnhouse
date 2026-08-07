@@ -64,7 +64,7 @@ function SignUpClient(props: SignUpClientProps) {
     <AuthLayout
       org={props.org}
       welcomeText={t('auth.invited_to_join')}
-      title={t('auth.image_title_signup', { defaultValue: 'Start teaching with LearnHouse.' })}
+      title={t('auth.image_title_signup', { defaultValue: 'Start teaching with HI-HA.' })}
       subtitle={t('auth.image_subtitle_signup', {
         defaultValue: 'Create your account and launch your first course in minutes.',
       })}

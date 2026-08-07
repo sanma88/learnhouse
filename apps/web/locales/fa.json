@@ -48,11 +48,11 @@
     "help": "راهنما",
     "help_menu": {
       "documentation": "مستندات",
-      "website": "وب‌سایت LearnHouse",
+      "website": "وب‌سایت HI-HA",
       "discord": "دیسکورد",
       "report_feedback": "گزارش مشکل یا بازخورد",
       "feedback_title": "ارسال بازخورد",
-      "feedback_description": "با به اشتراک گذاشتن نظرات، گزارش اشکالات یا پیشنهاد ویژگی‌های جدید به ما در بهبود LearnHouse کمک کنید.",
+      "feedback_description": "با به اشتراک گذاشتن نظرات، گزارش اشکالات یا پیشنهاد ویژگی‌های جدید به ما در بهبود HI-HA کمک کنید.",
       "feedback_placeholder": "به ما بگویید چه فکری دارید...",
       "feedback_success": "از بازخورد شما متشکریم!",
       "send_feedback": "ارسال بازخورد",
@@ -216,7 +216,7 @@
     "organizations": "سازمان‌ها",
     "billing": "صورت‌حساب",
     "create_organization": "ایجاد سازمان",
-    "copyright": "© {{year}} HI-HA",
+    "copyright": "© {{year}} HI-HA — مبتنی بر LearnHouse, © LearnHouse, Inc. — AGPL-3.0",
     "source_code": "کد منبع",
     "delete_organization_error": "حذف این سازمان ممکن نشد. لطفاً دوباره تلاش کنید.",
     "org_actions": "اقدامات سازمان",
@@ -1275,7 +1275,7 @@
     "not_supported_title": "این فعالیت پشتیبانی نمی‌شود",
     "not_supported_description": "این نوع فعالیت نیاز به احراز هویت دارد و قابل جاسازی نیست.",
     "visit_activity": "بازدید از صفحه فعالیت",
-    "powered_by": "پشتیبانی شده توسط LearnHouse"
+    "powered_by": "پشتیبانی شده توسط HI-HA"
   },
   "assignments": {
     "submit_assignment": "ارسال تکلیف",
@@ -1725,7 +1725,7 @@
           "description": "پیکربندی تنظیمات شخصی، رمزهای عبور، ایمیل"
         }
       },
-      "learnhouse_university": "دانشگاه LearnHouse",
+      "learnhouse_university": "دانشگاه HI-HA",
       "welcome_back": "خوش آمدید",
       "plan": "طرح",
       "create_course": "ایجاد دوره",
@@ -2631,8 +2631,8 @@
         "footer_text_desc": "متن سفارشی که در پایین صفحات سازمان شما نمایش داده می‌شود",
         "default_language": "زبان پیش‌فرض",
         "default_language_desc": "زبانی که بازدیدکنندگان جدید به طور پیش‌فرض می‌بینند و زبانی که برای ایمیل‌های ارسال شده از طرف این سازمان استفاده می‌شود. اعضا همچنان می‌توانند زبان رابط کاربری خود را تغییر دهند.",
-        "watermark_label": "واترمارک \"ساخته شده با LearnHouse\"",
-        "watermark_desc": "نمایش واترمارک برند LearnHouse در صفحات سازمان شما",
+        "watermark_label": "واترمارک \"ساخته شده با HI-HA\"",
+        "watermark_desc": "نمایش واترمارک برند HI-HA در صفحات سازمان شما",
         "watermark_free_plan": "واترمارک همیشه در طرح رایگان نشان داده می‌شود",
         "watermark_ee": "با مجوز نسخه سازمانی شما پنهان شده است"
       },
@@ -5134,10 +5134,10 @@
       },
       "teach_the_world": {
         "title": "یاد بگیرید و رشد کنید",
-        "description": "منابعی برای کمک به شما در استفاده حداکثری از LearnHouse.",
+        "description": "منابعی برای کمک به شما در استفاده حداکثری از HI-HA.",
         "classroom": "کلاس درس",
         "classroom_desc": "نحوه رشد و مدیریت دوره‌های خود را بیاموزید",
-        "university": "دانشگاه LearnHouse",
+        "university": "دانشگاه HI-HA",
         "university_desc": "راهنماها، نکات و بهترین روش‌ها"
       },
       "add_content": {
@@ -5167,7 +5167,7 @@
       }
     },
     "welcome": {
-      "title": "به LearnHouse خوش آمدید",
+      "title": "به HI-HA خوش آمدید",
       "subtitle": "دوره ایجاد کنید، زبان‌آموزان را دعوت کنید و دانش را با جهان به اشتراک بگذارید.",
       "get_started": "شروع کنید",
       "features_title": "همه چیزهایی که نیاز دارید",
@@ -5510,7 +5510,7 @@
         "title": "می‌خواهید امتحان کنید؟",
         "body": "به",
         "link": "صفحه توسعه‌دهندگان",
-        "suffix": "بروید تا LearnHouse را امتحان کنید."
+        "suffix": "بروید تا HI-HA را امتحان کنید."
       },
       "validation": {
         "required": "الزامی",

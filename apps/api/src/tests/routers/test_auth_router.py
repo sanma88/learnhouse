@@ -142,6 +142,23 @@ class TestAuthHelpers:
 
         assert is_request_secure(request) is True
 
+    def test_is_request_secure_rejects_private_non_loopback_peer(self):
+        """A neighbouring container must not be able to forge the scheme.
+
+        HI-HA regression guard. Upstream trusted any private address, but on a
+        shared Docker network (Coolify) every sibling container has a private IP
+        and can reach the API port directly, bypassing the internal nginx and its
+        strict X-Forwarded-Proto allow-list. Our only legitimate proxy speaks over
+        loopback, so a private-but-not-loopback peer must not be trusted.
+        """
+        request = Mock()
+        request.client = SimpleNamespace(host="172.18.0.4")
+        request.headers = {"x-forwarded-proto": "https"}
+        request.url = SimpleNamespace(scheme="http")
+
+        with patch("src.routers.auth.isDevModeEnabled", return_value=True):
+            assert is_request_secure(request) is False
+
     def test_is_request_secure_falls_back_to_scheme_or_dev_mode(self):
         https_request = Mock()
         https_request.client = SimpleNamespace(host="8.8.8.8")

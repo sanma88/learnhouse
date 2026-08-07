@@ -16,6 +16,7 @@ import { PageViewTracker } from '@components/Analytics/PageViewTracker'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { usePlan } from '@components/Hooks/usePlan'
 import { getGoogleFontUrl, DEFAULT_FONT } from '@/lib/fonts'
+import { SourceNotice } from '@components/Footers/LegalFooters'
 
 // Helper to convert hex to rgba
 const hexToRgba = (hex: string, alpha: number): string => {
@@ -50,6 +51,11 @@ function OrgFooter() {
             />
           </Link>
         )}
+        {/* HI-HA: AGPL-3.0 art. 13 — the source offer must reach everyone using the
+            program over the network, not just visitors of the login screen. This is
+            the learning surface a signed-in learner actually spends their time on,
+            so the notice and the source link belong here too. */}
+        <SourceNotice />
       </div>
     </footer>
   )

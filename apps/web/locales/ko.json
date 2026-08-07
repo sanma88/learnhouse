@@ -44,11 +44,11 @@
     "help": "도움말",
     "help_menu": {
       "documentation": "문서",
-      "website": "LearnHouse 웹사이트",
+      "website": "HI-HA 웹사이트",
       "discord": "Discord",
       "report_feedback": "문제 신고 또는 피드백",
       "feedback_title": "피드백 보내기",
-      "feedback_description": "의견 공유, 버그 신고, 새 기능 제안을 통해 LearnHouse 개선에 도움을 주세요.",
+      "feedback_description": "의견 공유, 버그 신고, 새 기능 제안을 통해 HI-HA 개선에 도움을 주세요.",
       "feedback_placeholder": "생각을 알려주세요...",
       "feedback_success": "피드백 감사합니다!",
       "send_feedback": "피드백 보내기",
@@ -215,7 +215,7 @@
     "organizations": "조직",
     "billing": "결제",
     "create_organization": "조직 만들기",
-    "copyright": "© {{year}} HI-HA",
+    "copyright": "© {{year}} HI-HA — 기반 LearnHouse, © LearnHouse, Inc. — AGPL-3.0",
     "source_code": "소스 코드",
     "delete_organization_error": "이 조직을 삭제할 수 없습니다. 다시 시도해 주세요.",
     "org_actions": "조직 작업",
@@ -1445,7 +1445,7 @@
           "description": "개인 설정, 비밀번호, 이메일을 구성합니다"
         }
       },
-      "learnhouse_university": "LearnHouse 대학교",
+      "learnhouse_university": "HI-HA 대학교",
       "welcome_back": "다시 오신 것을 환영합니다",
       "plan": "플랜",
       "create_course": "강좌 만들기",
@@ -2354,9 +2354,9 @@
         "footer_text_desc": "조직 페이지 하단에 표시되는 사용자 지정 텍스트",
         "default_language": "기본 언어",
         "default_language_desc": "새 방문자에게 기본으로 표시되는 언어이며, 이 조직을 대신해 발송되는 이메일에 사용되는 언어입니다. 구성원은 자신의 UI 언어를 계속 전환할 수 있습니다.",
-        "watermark_desc": "조직 페이지에 LearnHouse 브랜드 워터마크 표시",
+        "watermark_desc": "조직 페이지에 HI-HA 브랜드 워터마크 표시",
         "watermark_free_plan": "무료 플랜에서는 워터마크가 항상 표시됩니다",
-        "watermark_label": "\"Made with LearnHouse\" 워터마크",
+        "watermark_label": "\"Made with HI-HA\" 워터마크",
         "watermark_ee": "Enterprise Edition 라이선스에 의해 숨겨짐"
       },
       "images": {
@@ -4813,10 +4813,10 @@
       },
       "teach_the_world": {
         "title": "배우고 성장하기",
-        "description": "LearnHouse를 최대한 활용하기 위한 리소스.",
+        "description": "HI-HA를 최대한 활용하기 위한 리소스.",
         "classroom": "클래스룸",
         "classroom_desc": "코스를 성장시키고 관리하는 방법을 배우세요",
-        "university": "LearnHouse 대학교",
+        "university": "HI-HA 대학교",
         "university_desc": "가이드, 팁 및 모범 사례"
       },
       "add_content": {
@@ -4846,7 +4846,7 @@
       }
     },
     "welcome": {
-      "title": "LearnHouse에 오신 것을 환영합니다",
+      "title": "HI-HA에 오신 것을 환영합니다",
       "subtitle": "코스를 만들고, 학습자를 초대하고, 세계와 지식을 공유하세요.",
       "get_started": "시작하기",
       "features_title": "필요한 모든 것",
@@ -5146,7 +5146,7 @@
   "embed": {
     "not_supported_description": "이 유형의 활동은 인증이 필요하며 임베드할 수 없습니다.",
     "not_supported_title": "이 활동은 지원되지 않습니다",
-    "powered_by": "Powered by LearnHouse",
+    "powered_by": "Powered by HI-HA",
     "visit_activity": "활동 페이지 방문"
   },
   "migration": {
@@ -5659,7 +5659,7 @@
         "title": "테스트해 보고 싶으신가요?",
         "body": "다음으로 이동하세요:",
         "link": "개발자 페이지",
-        "suffix": "에서 LearnHouse를 대신 사용해 보세요."
+        "suffix": "에서 HI-HA를 대신 사용해 보세요."
       },
       "validation": {
         "required": "필수 항목",

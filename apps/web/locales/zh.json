@@ -44,11 +44,11 @@
     "help": "帮助",
     "help_menu": {
       "documentation": "文档",
-      "website": "LearnHouse 网站",
+      "website": "HI-HA 网站",
       "discord": "Discord",
       "report_feedback": "报告问题或反馈",
       "feedback_title": "发送反馈",
-      "feedback_description": "通过分享您的想法、报告错误或建议新功能来帮助我们改进 LearnHouse。",
+      "feedback_description": "通过分享您的想法、报告错误或建议新功能来帮助我们改进 HI-HA。",
       "feedback_placeholder": "告诉我们您的想法...",
       "feedback_success": "感谢您的反馈！",
       "send_feedback": "发送反馈",
@@ -215,7 +215,7 @@
     "organizations": "组织",
     "billing": "账单",
     "create_organization": "创建组织",
-    "copyright": "© {{year}} HI-HA",
+    "copyright": "© {{year}} HI-HA — 基于 LearnHouse, © LearnHouse, Inc. — AGPL-3.0",
     "source_code": "源代码",
     "delete_organization_error": "无法删除此组织。请重试。",
     "org_actions": "组织操作",
@@ -1445,7 +1445,7 @@
           "description": "配置您的个人设置、密码和电子邮件"
         }
       },
-      "learnhouse_university": "LearnHouse 大学",
+      "learnhouse_university": "HI-HA 大学",
       "welcome_back": "欢迎回来",
       "plan": "方案",
       "create_course": "创建课程",
@@ -2354,9 +2354,9 @@
         "footer_text_desc": "显示在组织页面底部的自定义文本",
         "default_language": "默认语言",
         "default_language_desc": "新访客默认看到的语言，也是代表此组织发出的邮件所使用的语言。成员仍可切换自己的界面语言。",
-        "watermark_desc": "在您的组织页面上显示 LearnHouse 品牌水印",
+        "watermark_desc": "在您的组织页面上显示 HI-HA 品牌水印",
         "watermark_free_plan": "免费方案始终显示水印",
-        "watermark_label": "\"Made with LearnHouse\" 水印",
+        "watermark_label": "\"Made with HI-HA\" 水印",
         "watermark_ee": "已被您的企业版许可证隐藏"
       },
       "images": {
@@ -4813,10 +4813,10 @@
       },
       "teach_the_world": {
         "title": "学习与成长",
-        "description": "帮助您充分利用 LearnHouse 的资源。",
+        "description": "帮助您充分利用 HI-HA 的资源。",
         "classroom": "课堂",
         "classroom_desc": "了解如何扩展和管理您的课程",
-        "university": "LearnHouse 大学",
+        "university": "HI-HA 大学",
         "university_desc": "指南、技巧和最佳实践"
       },
       "add_content": {
@@ -4846,7 +4846,7 @@
       }
     },
     "welcome": {
-      "title": "欢迎来到 LearnHouse",
+      "title": "欢迎来到 HI-HA",
       "subtitle": "创建课程、邀请学员，与世界分享知识。",
       "get_started": "开始",
       "features_title": "您需要的一切",
@@ -5146,7 +5146,7 @@
   "embed": {
     "not_supported_description": "此类活动需要认证，无法嵌入。",
     "not_supported_title": "不支持此活动",
-    "powered_by": "由 LearnHouse 提供支持",
+    "powered_by": "由 HI-HA 提供支持",
     "visit_activity": "访问活动页面"
   },
   "migration": {
@@ -5659,7 +5659,7 @@
         "title": "想先试用一下？",
         "body": "前往",
         "link": "开发者页面",
-        "suffix": "来体验 LearnHouse。"
+        "suffix": "来体验 HI-HA。"
       },
       "validation": {
         "required": "必填",

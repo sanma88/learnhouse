@@ -214,7 +214,7 @@ IMPORTANT GUIDELINES:
 - Activity names should be descriptive (e.g., "Introduction to Variables", "Quiz: Testing Your Knowledge")
 
 ACTIVITY TYPES AND SUGGESTED BLOCKS:
-Activities in LearnHouse use a rich content editor with various block types. For each activity, suggest appropriate blocks:
+Activities in this platform use a rich content editor with various block types. For each activity, suggest appropriate blocks:
 - paragraph: Regular text content
 - heading: Section headers (levels 1-3)
 - bulletList: Unordered lists

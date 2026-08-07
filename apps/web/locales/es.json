@@ -46,11 +46,11 @@
     "help": "Ayuda",
     "help_menu": {
       "documentation": "Documentación",
-      "website": "Sitio web de LearnHouse",
+      "website": "Sitio web de HI-HA",
       "discord": "Discord",
       "report_feedback": "Reportar problema o comentario",
       "feedback_title": "Enviar comentarios",
-      "feedback_description": "Ayúdanos a mejorar LearnHouse compartiendo tus opiniones, reportando errores o sugiriendo nuevas funciones.",
+      "feedback_description": "Ayúdanos a mejorar HI-HA compartiendo tus opiniones, reportando errores o sugiriendo nuevas funciones.",
       "feedback_placeholder": "Cuéntanos qué piensas...",
       "feedback_success": "¡Gracias por tu comentario!",
       "send_feedback": "Enviar comentarios",
@@ -215,7 +215,7 @@
     "organizations": "Organizaciones",
     "billing": "Facturación",
     "create_organization": "Crear organización",
-    "copyright": "© {{year}} HI-HA",
+    "copyright": "© {{year}} HI-HA — basado en LearnHouse, © LearnHouse, Inc. — AGPL-3.0",
     "source_code": "Código fuente",
     "delete_organization_error": "No se pudo eliminar esta organización. Inténtalo de nuevo.",
     "org_actions": "Acciones de la organización",
@@ -1435,7 +1435,7 @@
           "description": "Configurar sus ajustes personales, contraseñas y correo electrónico"
         }
       },
-      "learnhouse_university": "Universidad LearnHouse",
+      "learnhouse_university": "Universidad HI-HA",
       "welcome_back": "Bienvenido de nuevo",
       "plan": "plan",
       "create_course": "Crear curso",
@@ -2342,9 +2342,9 @@
         "footer_text_desc": "Texto personalizado que se muestra en la parte inferior de las páginas de tu organización",
         "default_language": "Idioma predeterminado",
         "default_language_desc": "El idioma que ven los nuevos visitantes por defecto y el que se utiliza para los correos enviados en nombre de esta organización. Los miembros pueden cambiar su propio idioma de la interfaz.",
-        "watermark_desc": "Mostrar la marca de agua de LearnHouse en las páginas de tu organización",
+        "watermark_desc": "Mostrar la marca de agua de HI-HA en las páginas de tu organización",
         "watermark_free_plan": "La marca de agua siempre se muestra en el plan gratuito",
-        "watermark_label": "Marca de agua \"Hecho con LearnHouse\"",
+        "watermark_label": "Marca de agua \"Hecho con HI-HA\"",
         "watermark_ee": "Oculto por tu licencia Enterprise Edition"
       },
       "images": {
@@ -4359,7 +4359,7 @@
   "embed": {
     "not_supported_description": "Este tipo de actividad requiere autenticación y no puede ser incrustada.",
     "not_supported_title": "Esta actividad no es compatible",
-    "powered_by": "Desarrollado por LearnHouse",
+    "powered_by": "Desarrollado por HI-HA",
     "visit_activity": "Visitar página de actividad"
   },
   "analytics": {
@@ -5063,10 +5063,10 @@
       },
       "teach_the_world": {
         "title": "Aprende y crece",
-        "description": "Recursos para ayudarte a sacar el máximo provecho de LearnHouse.",
+        "description": "Recursos para ayudarte a sacar el máximo provecho de HI-HA.",
         "classroom": "El aula",
         "classroom_desc": "Aprende a hacer crecer y gestionar tus cursos",
-        "university": "Universidad LearnHouse",
+        "university": "Universidad HI-HA",
         "university_desc": "Guías, consejos y mejores prácticas"
       },
       "add_content": {
@@ -5096,7 +5096,7 @@
       }
     },
     "welcome": {
-      "title": "Bienvenido a LearnHouse",
+      "title": "Bienvenido a HI-HA",
       "subtitle": "Crea cursos, invita estudiantes y comparte conocimiento con el mundo.",
       "get_started": "Comenzar",
       "features_title": "Todo lo que necesitas",
@@ -5639,7 +5639,7 @@
         "title": "¿Quieres probarlo?",
         "body": "Ve a la",
         "link": "página de Desarrolladores",
-        "suffix": "para probar LearnHouse en su lugar."
+        "suffix": "para probar HI-HA en su lugar."
       },
       "validation": {
         "required": "Obligatorio",

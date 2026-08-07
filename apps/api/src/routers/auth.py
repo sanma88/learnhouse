@@ -164,7 +164,12 @@ def is_request_secure(request: Request | None) -> bool:
         import ipaddress
         try:
             addr = ipaddress.ip_address(direct_ip)
-            trust_proxy = addr.is_loopback or addr.is_private
+            # HI-HA: upstream trusted ANY private address. On a shared Docker
+            # network (Coolify), every neighbouring container has a private IP and
+            # can reach the API port directly, bypassing the internal nginx and its
+            # strict X-Forwarded-Proto allow-list. Our only legitimate proxy is the
+            # in-container nginx, which connects over loopback, so require loopback.
+            trust_proxy = addr.is_loopback
         except ValueError:
             pass
 

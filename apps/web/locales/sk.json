@@ -47,11 +47,11 @@
     "help": "Pomoc",
     "help_menu": {
       "documentation": "Dokumentácia",
-      "website": "Webstránka LearnHouse",
+      "website": "Webstránka HI-HA",
       "discord": "Discord",
       "report_feedback": "Nahlásiť problém alebo spätnú väzbu",
       "feedback_title": "Odoslať spätnú väzbu",
-      "feedback_description": "Pomôžte nám vylepšiť LearnHouse zdieľaním názorov, nahlásením chýb alebo návrhmi nových funkcií.",
+      "feedback_description": "Pomôžte nám vylepšiť HI-HA zdieľaním názorov, nahlásením chýb alebo návrhmi nových funkcií.",
       "feedback_placeholder": "Povedzte nám, čo máte na mysli...",
       "feedback_success": "Ďakujeme za vašu spätnú väzbu!",
       "send_feedback": "Odoslať spätnú väzbu",
@@ -215,7 +215,7 @@
     "organizations": "Organizácie",
     "billing": "Fakturácia",
     "create_organization": "Vytvoriť organizáciu",
-    "copyright": "© {{year}} HI-HA",
+    "copyright": "© {{year}} HI-HA — založené na LearnHouse, © LearnHouse, Inc. — AGPL-3.0",
     "source_code": "Zdrojový kód",
     "delete_organization_error": "Túto organizáciu sa nepodarilo odstrániť. Skúste to znova.",
     "org_actions": "Akcie organizácie",
@@ -1245,7 +1245,7 @@
     "not_supported_title": "Táto aktivita nie je podporovaná",
     "not_supported_description": "Tento typ aktivity vyžaduje autentifikáciu a nemôže byť vložený.",
     "visit_activity": "Navštíviť stránku aktivity",
-    "powered_by": "Používa technológiu LearnHouse"
+    "powered_by": "Používa technológiu HI-HA"
   },
   "assignments": {
     "submit_assignment": "Odovzdať úlohu",
@@ -1694,7 +1694,7 @@
           "description": "Konfigurujte osobné nastavenia, heslá, e-mail"
         }
       },
-      "learnhouse_university": "LearnHouse University",
+      "learnhouse_university": "HI-HA University",
       "welcome_back": "Vitajte späť",
       "plan": "plán",
       "create_course": "Vytvoriť kurz",
@@ -2600,8 +2600,8 @@
         "footer_text_desc": "Vlastný text zobrazený v dolnej časti stránok organizácie",
         "default_language": "Predvolený jazyk",
         "default_language_desc": "Jazyk, ktorý noví návštevníci vidia predvolene, a jazyk používaný pre e-maily odosielané v mene tejto organizácie. Členovia môžu stále prepínať vlastný jazyk rozhrania.",
-        "watermark_label": "Vodoznak \"Made with LearnHouse\"",
-        "watermark_desc": "Zobraziť vodoznak LearnHouse na stránkach organizácie",
+        "watermark_label": "Vodoznak \"Made with HI-HA\"",
+        "watermark_desc": "Zobraziť vodoznak HI-HA na stránkach organizácie",
         "watermark_free_plan": "Vodoznak je vždy zobrazený na bezplatnom pláne",
         "watermark_ee": "Skrytý vaším Enterprise Edition licenciou"
       },
@@ -5095,10 +5095,10 @@
       },
       "teach_the_world": {
         "title": "Učte sa a rastite",
-        "description": "Zdroje, ktoré vám pomôžu využiť LearnHouse naplno.",
+        "description": "Zdroje, ktoré vám pomôžu využiť HI-HA naplno.",
         "classroom": "Učebňa",
         "classroom_desc": "Naučte sa, ako rozvíjať a spravovať kurzy",
-        "university": "LearnHouse University",
+        "university": "HI-HA University",
         "university_desc": "Príručky, tipy a osvedčené postupy"
       },
       "add_content": {
@@ -5128,7 +5128,7 @@
       }
     },
     "welcome": {
-      "title": "Vitajte v LearnHouse",
+      "title": "Vitajte v HI-HA",
       "subtitle": "Vytvárajte kurzy, pozývajte študentov a zdieľajte vedomosti so svetom.",
       "get_started": "Začať",
       "features_title": "Všetko, čo potrebujete",
@@ -5635,7 +5635,7 @@
         "title": "Chcete to len vyskúšať?",
         "body": "Prejdite na",
         "link": "stránku pre vývojárov",
-        "suffix": "a vyskúšajte LearnHouse."
+        "suffix": "a vyskúšajte HI-HA."
       },
       "validation": {
         "required": "Povinné",

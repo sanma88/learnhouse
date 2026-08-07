@@ -271,7 +271,10 @@ def send_email(to: EmailStr, subject: str, body: str):
 
     lh_config = get_learnhouse_config()
     mailing = lh_config.mailing_config
-    sender = f"LearnHouse <{mailing.system_email_address}>"
+    # HI-HA: the display name of the "From:" header of every outgoing mail was
+    # hardcoded to the upstream product name. Follow the configured site name
+    # (LEARNHOUSE_SITE_NAME) so a self-hosted instance signs with its own brand.
+    sender = f"{lh_config.site_name} <{mailing.system_email_address}>"
 
     # Resend (and most providers) require a plain `email@example.com` string.
     # Pydantic's EmailStr is a str subclass, but third-party JSON serializers

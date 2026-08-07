@@ -44,11 +44,11 @@
     "help": "Yardım",
     "help_menu": {
       "documentation": "Dokümantasyon",
-      "website": "LearnHouse Web Sitesi",
+      "website": "HI-HA Web Sitesi",
       "discord": "Discord",
       "report_feedback": "Sorun veya Geri Bildirim Bildir",
       "feedback_title": "Geri Bildirim Gönder",
-      "feedback_description": "Düşüncelerinizi paylaşarak, hata bildirerek veya yeni özellikler önererek LearnHouse'u geliştirmemize yardımcı olun.",
+      "feedback_description": "Düşüncelerinizi paylaşarak, hata bildirerek veya yeni özellikler önererek HI-HA'u geliştirmemize yardımcı olun.",
       "feedback_placeholder": "Aklınızdakileri bize söyleyin...",
       "feedback_success": "Geri bildiriminiz için teşekkürler!",
       "send_feedback": "Geri Bildirim Gönder",
@@ -215,7 +215,7 @@
     "organizations": "Organizasyonlar",
     "billing": "Faturalandırma",
     "create_organization": "Organizasyon oluştur",
-    "copyright": "© {{year}} HI-HA",
+    "copyright": "© {{year}} HI-HA — temel alır LearnHouse, © LearnHouse, Inc. — AGPL-3.0",
     "source_code": "Kaynak kodu",
     "delete_organization_error": "Bu organizasyon silinemedi. Lütfen tekrar deneyin.",
     "org_actions": "Organizasyon işlemleri",
@@ -1457,7 +1457,7 @@
           "description": "Kişisel ayarlarınızı, şifrelerinizi ve e-postanızı yapılandırın"
         }
       },
-      "learnhouse_university": "LearnHouse Üniversitesi",
+      "learnhouse_university": "HI-HA Üniversitesi",
       "welcome_back": "Tekrar hoş geldiniz",
       "plan": "plan",
       "create_course": "Kurs Oluştur",
@@ -2366,9 +2366,9 @@
         "footer_text_desc": "Kuruluş sayfalarınızın altında görüntülenen özel metin",
         "default_language": "Varsayılan dil",
         "default_language_desc": "Yeni ziyaretçilerin varsayılan olarak gördüğü ve bu kuruluş adına gönderilen e-postalarda kullanılan dil. Üyeler kendi arayüz dillerini değiştirmeye devam edebilir.",
-        "watermark_desc": "Organizasyon sayfalarınızda LearnHouse marka filigranını gösterin",
+        "watermark_desc": "Organizasyon sayfalarınızda HI-HA marka filigranını gösterin",
         "watermark_free_plan": "Filigran ücretsiz planda her zaman gösterilir",
-        "watermark_label": "\"Made with LearnHouse\" filigranı",
+        "watermark_label": "\"Made with HI-HA\" filigranı",
         "watermark_ee": "Enterprise Edition lisansınız tarafından gizlendi"
       },
       "images": {
@@ -4825,10 +4825,10 @@
       },
       "teach_the_world": {
         "title": "Öğrenin ve büyüyün",
-        "description": "LearnHouse'dan en iyi şekilde yararlanmanıza yardımcı olacak kaynaklar.",
+        "description": "HI-HA'dan en iyi şekilde yararlanmanıza yardımcı olacak kaynaklar.",
         "classroom": "Sınıf",
         "classroom_desc": "Kurslarınızı nasıl büyüteceğinizi ve yöneteceğinizi öğrenin",
-        "university": "LearnHouse Üniversitesi",
+        "university": "HI-HA Üniversitesi",
         "university_desc": "Kılavuzlar, ipuçları ve en iyi uygulamalar"
       },
       "add_content": {
@@ -4858,7 +4858,7 @@
       }
     },
     "welcome": {
-      "title": "LearnHouse'a hoş geldiniz",
+      "title": "HI-HA'a hoş geldiniz",
       "subtitle": "Kurslar oluşturun, öğrencileri davet edin ve bilgiyi dünyayla paylaşın.",
       "get_started": "Başla",
       "features_title": "İhtiyacınız olan her şey",
@@ -5158,7 +5158,7 @@
   "embed": {
     "not_supported_description": "Bu tür etkinlik kimlik doğrulama gerektirir ve yerleştirilemez.",
     "not_supported_title": "Bu etkinlik desteklenmiyor",
-    "powered_by": "LearnHouse tarafından desteklenmektedir",
+    "powered_by": "HI-HA tarafından desteklenmektedir",
     "visit_activity": "Etkinlik Sayfasını Ziyaret Et"
   },
   "migration": {
@@ -5671,7 +5671,7 @@
         "title": "Denemek mi istiyorsunuz?",
         "body": "Şuraya gidin:",
         "link": "Geliştiriciler sayfası",
-        "suffix": "ve LearnHouse'u deneyin."
+        "suffix": "ve HI-HA'u deneyin."
       },
       "validation": {
         "required": "Zorunlu",

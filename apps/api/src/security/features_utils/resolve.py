@@ -118,6 +118,29 @@ def resolve_feature(feature: str, config: dict, org_id: int = 0, _extras: dict |
     mode = get_deployment_mode()
     required_plan = FEATURE_PLAN_REQUIREMENTS.get(feature)
 
+    # HI-HA: the "ai" feature was resolved purely from the ORG config and never
+    # consulted the INSTANCE setting `ai_config.is_ai_enabled`. On a self-hosted
+    # instance with AI off, the UI still offered "Create with AI" (and the AI
+    # icons in the editor) while the backend could not serve any of it — the
+    # modal opened blank. Make the instance setting authoritative: when AI is off
+    # instance-wide, the feature is neither available nor enabled, so the UI
+    # simply hides it. Flip `is_ai_enabled` to re-enable everything.
+    if feature == "ai":
+        try:
+            from config.config import get_learnhouse_config
+
+            if not get_learnhouse_config().ai_config.is_ai_enabled:
+                return {
+                    "enabled": False,
+                    "available": False,
+                    "limit": 0,
+                    "required_plan": required_plan,
+                }
+        except Exception:
+            # Config unavailable — fall through to the normal resolution rather
+            # than hiding a feature the operator may legitimately have enabled.
+            pass
+
     # Always-on features without limits: enabled in all modes, unlimited, no admin toggle
     if feature in ALWAYS_ON_FEATURES and feature not in ALWAYS_ON_WITH_LIMITS:
         return {"enabled": True, "available": True, "limit": 0, "required_plan": required_plan}
