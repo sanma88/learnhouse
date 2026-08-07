@@ -277,7 +277,7 @@ function PoweredByBadge({ activityUrl }: { activityUrl: string }) {
         className="bg-white/80 backdrop-blur-lg rounded-2xl p-2 light-shadow block cursor-pointer"
       >
         <Image
-          src="/lrn.svg"
+          src="/hiha-logo.svg"
           alt="HI-HA"
           width={20}
           height={20}

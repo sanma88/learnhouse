@@ -603,7 +603,7 @@ function CreateOrgForm({
                 />
               </Form.Control>
               <span className="px-4 py-3 bg-gray-50 text-black/25 border-l border-gray-100 shrink-0 text-[13px] font-medium select-none">
-                .learnhouse.io
+                .hi-ha.be
               </span>
             </div>
             {formik.errors.slug === 'test_hint' && <TestHint t={t} />}
@@ -969,7 +969,7 @@ export default function CreateNewOrgPage() {
             <div className="flex justify-center">
               <Link href="/home">
                 { }
-                <img src="/lrn.svg" alt="HI-HA" width={40} height={40} className="opacity-90" />
+                <img src="/hiha-logo.svg" alt="HI-HA" width={40} height={40} className="opacity-90" />
               </Link>
             </div>
             <div className="flex justify-end">

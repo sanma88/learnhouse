@@ -260,7 +260,7 @@ function DashLeftMenu() {
             />
           ) : (
             <img
-              src="/lrn-dash.svg"
+              src="/hiha-logo-dark.svg"
               alt="HI-HA"
               className="h-8 w-8"
             />

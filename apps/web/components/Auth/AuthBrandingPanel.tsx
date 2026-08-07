@@ -141,13 +141,13 @@ export default function AuthBrandingPanel({ org, welcomeText, title, subtitle }:
 
         {/* Content */}
         <div className="relative z-10 flex flex-col h-full p-10">
-          {/* Top bar with LearnHouse lrn.svg logo - hidden for enterprise users
+          {/* Top bar with LearnHouse hiha-logo.svg logo - hidden for enterprise users
               and for the no-org apex panel (platform shows no logo on the image). */}
           {!isEnterprise && !noOrg && (
             <div className="login-topbar">
               <Link prefetch href="/">
                 <img
-                  src="/lrn.svg"
+                  src="/hiha-logo.svg"
                   alt="HI-HA"
                   width={30}
                   height={30}

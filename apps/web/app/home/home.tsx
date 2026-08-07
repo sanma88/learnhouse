@@ -95,7 +95,7 @@ function HomeClient() {
             <div className="flex flex-col items-center mb-10">
               { }
               <img
-                src="/lrn.svg"
+                src="/hiha-logo.svg"
                 alt="HI-HA"
                 width={44}
                 height={44}

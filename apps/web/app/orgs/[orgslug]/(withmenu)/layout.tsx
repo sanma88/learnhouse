@@ -42,7 +42,7 @@ function OrgFooter() {
         {showWatermark && (
           <Link href="/">
             <Image
-              src="/lrn.svg"
+              src="/hiha-logo.svg"
               alt="HI-HA"
               width={24}
               height={24}

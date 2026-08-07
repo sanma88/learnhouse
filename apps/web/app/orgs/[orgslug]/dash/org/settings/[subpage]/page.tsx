@@ -53,7 +53,7 @@ const getSettingTabs = (t: any): TabConfig[] => [
   { id: 'branding', label: t('dashboard.organization.settings.tabs.branding'), icon: Palette },
   { id: 'menu', label: t('dashboard.organization.settings.tabs.menu') || 'Menu', icon: MenuIcon },
   { id: 'landing', label: t('dashboard.organization.settings.tabs.landing'), icon: LayoutDashboardIcon },
-  { id: 'ai', label: t('dashboard.organization.settings.tabs.ai') || 'AI', customIcon: '/learnhouse_ai_simple_colored.png', requiredPlan: 'standard' },
+  { id: 'ai', label: t('dashboard.organization.settings.tabs.ai') || 'AI', customIcon: '/hiha-ai-simple-colored.png', requiredPlan: 'standard' },
   { id: 'usage', label: t('dashboard.organization.settings.tabs.usage') || 'Usage', icon: BarChart3 },
   { id: 'other', label: t('dashboard.organization.settings.tabs.other'), icon: CodeIcon },
   { id: 'danger', label: t('dashboard.organization.settings.tabs.danger') || 'Danger Zone', icon: AlertTriangle },

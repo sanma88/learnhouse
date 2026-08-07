@@ -667,14 +667,14 @@ export default function OnboardingBar() {
                                     !step.completed && (
                                       <div className="relative px-3 pb-3 space-y-2">
                                         <a
-                                          href="https://university.learnhouse.io"
+                                          href="/"
                                           target="_blank"
                                           rel="noopener noreferrer"
                                           className="flex items-center gap-3 px-4 py-3 rounded-lg bg-white nice-shadow hover:bg-gray-50 transition-colors"
                                         >
                                           <img
                                             src="/UNI_LOGO.png"
-                                            alt="LearnHouse University"
+                                            alt="HI-HA"
                                             className="h-9 w-auto shrink-0 rounded"
                                           />
                                           <div className="min-w-0">
@@ -688,7 +688,7 @@ export default function OnboardingBar() {
                                           <span className="text-gray-300 shrink-0 ml-auto">→</span>
                                         </a>
                                         <a
-                                          href="https://classroom.learnhouse.io"
+                                          href="/"
                                           target="_blank"
                                           rel="noopener noreferrer"
                                           className="flex items-center gap-3 px-4 py-3 rounded-lg bg-white nice-shadow hover:bg-gray-50 transition-colors"

@@ -5,7 +5,7 @@ import Image from 'next/image'
 import { cn } from '@/lib/utils'
 import { useTranslation } from 'react-i18next'
 import type { CoursePlanningMessage, Attachment } from '@services/ai/courseplanning'
-import lrnaiIcon from 'public/lrnai_icon.png'
+import lrnaiIcon from 'public/hiha-ai-icon.png'
 
 interface AICourseChatProps {
   messages: CoursePlanningMessage[]

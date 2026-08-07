@@ -22,8 +22,8 @@ import {
   Type,
   Box,
 } from 'lucide-react'
-import learnhouseAI_icon from 'public/learnhouse_ai_simple.png'
-import learnhouseAI_logo_black from 'public/learnhouse_ai_black_logo.png'
+import learnhouseAI_icon from 'public/hiha-ai-simple.png'
+import learnhouseAI_logo_black from 'public/hiha-ai-wordmark.png'
 import {
   AIEditorStateTypes,
   useAIEditor,

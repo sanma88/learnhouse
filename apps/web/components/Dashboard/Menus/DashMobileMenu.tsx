@@ -100,7 +100,7 @@ function DashMobileMenu() {
             aria-label="Home"
           >
             <img
-              src="/lrn-dash.svg"
+              src="/hiha-logo-dark.svg"
               alt="HI-HA"
               className="h-[18px] w-[18px] opacity-60 hover:opacity-90 transition-opacity"
               style={{ filter: 'brightness(0) invert(1)' }}
@@ -197,7 +197,7 @@ function DashMobileMenu() {
                   />
                 ) : (
                   <div className="h-7 w-7 flex items-center justify-center bg-white/[0.06] rounded-lg">
-                    <img src="/lrn-dash.svg" alt="HI-HA" className="h-4 w-4" style={{ filter: 'brightness(0) invert(1)' }} />
+                    <img src="/hiha-logo-dark.svg" alt="HI-HA" className="h-4 w-4" style={{ filter: 'brightness(0) invert(1)' }} />
                   </div>
                 )}
                 <div className="flex-1 min-w-0">

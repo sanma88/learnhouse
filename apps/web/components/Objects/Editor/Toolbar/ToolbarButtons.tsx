@@ -41,7 +41,7 @@ import ToolTip from '@components/Objects/StyledElements/Tooltip/Tooltip'
 import React from 'react'
 import Image from 'next/image'
 import LinkInputTooltip from './LinkInputTooltip'
-import lrnaiIcon from 'public/lrnai_icon.png'
+import lrnaiIcon from 'public/hiha-ai-icon.png'
 import { useOrg } from '@components/Contexts/OrgContext'
 import { useTranslation } from 'react-i18next'
 

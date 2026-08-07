@@ -93,7 +93,7 @@ export default function BoardToolbar({
       <Link href="/dash/boards">
         <div className="bg-black rounded-md w-[25px] h-[25px] flex items-center justify-center hover:opacity-80 transition-opacity">
           <Image
-            src="/lrn.svg"
+            src="/hiha-logo.svg"
             alt="HI-HA"
             width={14}
             height={14}

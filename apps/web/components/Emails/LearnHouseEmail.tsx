@@ -57,7 +57,7 @@ export interface LearnHouseEmailProps {
 // logo instead; override with NEXT_PUBLIC_LEARNHOUSE_EMAIL_LOGO_URL if needed.
 const LOGO_URL =
   getConfig('NEXT_PUBLIC_LEARNHOUSE_EMAIL_LOGO_URL') ||
-  `${getLEARNHOUSE_HTTP_PROTOCOL_VAL()}${getLEARNHOUSE_DOMAIN_VAL()}/lrn.svg`
+  `${getLEARNHOUSE_HTTP_PROTOCOL_VAL()}${getLEARNHOUSE_DOMAIN_VAL()}/hiha-logo.svg`
 
 // HI-HA: sign-off shown at the bottom of every transactional email.
 const EMAIL_SIGNOFF = getConfig('NEXT_PUBLIC_LEARNHOUSE_EMAIL_SIGNOFF') || 'HI-HA'

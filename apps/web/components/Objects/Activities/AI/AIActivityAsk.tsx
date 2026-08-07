@@ -8,8 +8,8 @@ import { AlertTriangle, BadgeInfo, NotebookTabs, Maximize2, Minimize2, PanelRigh
 import { motion, AnimatePresence } from 'motion/react'
 import { FlaskConical, MessageCircle, X } from 'lucide-react'
 import Image from 'next/image'
-import learnhouseAI_icon from 'public/learnhouse_ai_simple.png'
-import learnhouseAI_logo_black from 'public/learnhouse_ai_black_logo.png'
+import learnhouseAI_icon from 'public/hiha-ai-simple.png'
+import learnhouseAI_logo_black from 'public/hiha-ai-wordmark.png'
 import React, { useEffect, useRef } from 'react'
 import {
   AIChatBotStateTypes,
