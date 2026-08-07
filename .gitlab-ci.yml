@@ -30,7 +30,7 @@ build:
     - docker buildx create --use --name ci --driver docker-container || docker buildx use ci
     # --provenance=false --sbom=false : obligatoires derrière Cloudflare
     # (attestation manifest re-encodé → failed size validation).
-    # --platform linux/amd64 : cible VPS amd64, pas de multi-arch.
+    # : cible VPS amd64, pas de multi-arch.
     # LEARNHOUSE_PUBLIC=true : build communautaire (retire /app/api/ee),
     # même build-arg que le workflow GitHub officiel build-community.yaml.
     - >
