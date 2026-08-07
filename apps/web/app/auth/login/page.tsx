@@ -23,7 +23,7 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 
   return {
-    title: 'Login' + ` — ${org?.name || 'LearnHouse'}`,
+    title: 'Login' + ` — ${org?.name || 'HI-HA'}`,
     robots: { index: false, follow: false },
   }
 }

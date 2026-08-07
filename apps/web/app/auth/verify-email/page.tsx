@@ -24,7 +24,7 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 
   return {
-    title: 'Verify Email' + ` — ${org?.name || 'LearnHouse'}`,
+    title: 'Verify Email' + ` — ${org?.name || 'HI-HA'}`,
     robots: { index: false, follow: false },
   }
 }

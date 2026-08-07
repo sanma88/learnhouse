@@ -718,7 +718,7 @@ const EditorLearnHouseLogo = () => {
       >
         <Image
           src="/lrn.svg"
-          alt="LearnHouse"
+          alt="HI-HA"
           width={14}
           height={14}
           className="invert"

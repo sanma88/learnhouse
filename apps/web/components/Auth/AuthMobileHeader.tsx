@@ -72,7 +72,7 @@ export default function AuthMobileHeader({ org }: AuthMobileHeaderProps) {
               width={40}
               height={40}
               src={learnhouseIcon}
-              alt="LearnHouse"
+              alt="HI-HA"
               className="object-contain"
             />
           )}
@@ -80,7 +80,7 @@ export default function AuthMobileHeader({ org }: AuthMobileHeaderProps) {
       </Link>
 
       <span className="relative z-10 font-semibold text-white text-lg truncate">
-        {org?.name || 'LearnHouse'}
+        {org?.name || 'HI-HA'}
       </span>
 
       {/* Unsplash attribution (required by Unsplash API guidelines) */}

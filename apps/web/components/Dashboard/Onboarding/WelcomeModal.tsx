@@ -148,7 +148,7 @@ export default function WelcomeModal() {
                   <div className="px-10 pt-10 pb-2 text-center">
                     <motion.img
                       src="/lrn-dash.svg"
-                      alt="LearnHouse"
+                      alt="HI-HA"
                       className="h-12 w-12 mx-auto mb-5"
                       style={{ filter: 'brightness(0)' }}
                       initial={{ opacity: 0, y: 10 }}

@@ -11,35 +11,63 @@
 import React from 'react'
 import Link from 'next/link'
 import { useTranslation } from 'react-i18next'
-import { getPlatformUrl } from '@services/config/config'
+import { getPlatformUrl, getConfig } from '@services/config/config'
 
-const TERMS_URL = getPlatformUrl('/terms') || 'https://www.learnhouse.io/terms'
-const PRIVACY_URL = getPlatformUrl('/privacy') || 'https://www.learnhouse.io/privacy'
+// HI-HA: the upstream defaults sent every visitor to learnhouse.io's own Terms
+// and Privacy pages. On a self-hosted instance that is a false statement — our
+// users are not contracting with LearnHouse, Inc. — so the legal links now
+// render ONLY when this deployment actually publishes such pages, i.e. when a
+// platform URL is configured. Otherwise the nav is simply omitted.
+const TERMS_URL = getPlatformUrl('/terms')
+const PRIVACY_URL = getPlatformUrl('/privacy')
+const HAS_LEGAL_PAGES = Boolean(TERMS_URL && PRIVACY_URL)
+
+// HI-HA: AGPL-3.0 art. 13 — anyone interacting with this program over a network
+// must be offered the Corresponding Source of the running version. The NOTICE
+// file alone does not reach them, so the offer is surfaced in the UI itself.
+// Read through getConfig (the runtime mechanism) rather than process.env, so a
+// prebuilt image can be repointed from the environment: NEXT_PUBLIC_ values are
+// inlined at build time and would otherwise freeze this URL into the image.
+// Override with NEXT_PUBLIC_LEARNHOUSE_SOURCE_URL when running your own fork.
+const SOURCE_URL =
+  getConfig('NEXT_PUBLIC_LEARNHOUSE_SOURCE_URL') || 'https://github.com/sanma88/learnhouse'
 
 export function AuthFooter({ className = '' }: { className?: string }) {
   const { t } = useTranslation()
   return (
     <div className={`pb-8 pt-6 text-center px-6 ${className}`}>
-      <p className="text-[13px] text-black/30 font-medium">
-        {t('auth.terms_text', { defaultValue: "By continuing, you agree to LearnHouse's" })}{' '}
+      {HAS_LEGAL_PAGES && (
+        <p className="text-[13px] text-black/30 font-medium">
+          {t('auth.terms_text')}{' '}
+          <Link
+            href={TERMS_URL as string}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-black/50 hover:text-black/70 transition-colors"
+          >
+            {t('auth.terms_of_service', { defaultValue: 'Terms of Service' })}
+          </Link>{' '}
+          {t('auth.and', { defaultValue: 'and' })}{' '}
+          <Link
+            href={PRIVACY_URL as string}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-black/50 hover:text-black/70 transition-colors"
+          >
+            {t('auth.privacy_policy', { defaultValue: 'Privacy Policy' })}
+          </Link>
+          .
+        </p>
+      )}
+      <p className="text-[13px] text-black/30 font-medium pt-1">
         <Link
-          href={TERMS_URL}
+          href={SOURCE_URL}
           target="_blank"
           rel="noopener noreferrer"
           className="text-black/50 hover:text-black/70 transition-colors"
         >
-          {t('auth.terms_of_service', { defaultValue: 'Terms of Service' })}
-        </Link>{' '}
-        {t('auth.and', { defaultValue: 'and' })}{' '}
-        <Link
-          href={PRIVACY_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-black/50 hover:text-black/70 transition-colors"
-        >
-          {t('auth.privacy_policy', { defaultValue: 'Privacy Policy' })}
+          {t('common.source_code', { defaultValue: 'Source code' })}
         </Link>
-        .
       </p>
     </div>
   )
@@ -61,25 +89,35 @@ export function CopyrightFooter({
   return (
     <footer className={`w-full py-6 px-6 ${className}`}>
       <div className="flex flex-col sm:flex-row items-center justify-center gap-x-5 gap-y-2 text-[13px] font-medium">
-        <p className={base}>
-          {t('common.copyright', { defaultValue: '© {{year}} LearnHouse, Inc.', year })}
-        </p>
+        <p className={base}>{t('common.copyright', { year })}</p>
         <nav className="flex items-center gap-x-5">
+          {HAS_LEGAL_PAGES && (
+            <>
+              <Link
+                href={TERMS_URL as string}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`${link} transition-colors`}
+              >
+                {t('auth.terms_of_service', { defaultValue: 'Terms of Service' })}
+              </Link>
+              <Link
+                href={PRIVACY_URL as string}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`${link} transition-colors`}
+              >
+                {t('auth.privacy_policy', { defaultValue: 'Privacy Policy' })}
+              </Link>
+            </>
+          )}
           <Link
-            href={TERMS_URL}
+            href={SOURCE_URL}
             target="_blank"
             rel="noopener noreferrer"
             className={`${link} transition-colors`}
           >
-            {t('auth.terms_of_service', { defaultValue: 'Terms of Service' })}
-          </Link>
-          <Link
-            href={PRIVACY_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={`${link} transition-colors`}
-          >
-            {t('auth.privacy_policy', { defaultValue: 'Privacy Policy' })}
+            {t('common.source_code', { defaultValue: 'Source code' })}
           </Link>
         </nav>
       </div>

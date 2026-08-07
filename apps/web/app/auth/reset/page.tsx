@@ -24,7 +24,7 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 
   return {
-    title: 'Reset Password' + ` — ${org?.name || 'LearnHouse'}`,
+    title: 'Reset Password' + ` — ${org?.name || 'HI-HA'}`,
     robots: { index: false, follow: false },
   }
 }

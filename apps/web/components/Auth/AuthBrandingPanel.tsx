@@ -75,7 +75,7 @@ export default function AuthBrandingPanel({ org, welcomeText, title, subtitle }:
 
   const displayMessage = welcome_message || welcomeText || ''
   // No-org platform copy (defaults mirror the platform login illustration).
-  const noOrgTitle = title || 'Welcome back to LearnHouse.'
+  const noOrgTitle = title || 'Welcome back.'
   const noOrgSubtitle =
     subtitle || 'Pick up where you left off — your courses, students, and tools are waiting.'
   // Treat the no-org illustration like a photo background: dark scrim, no
@@ -145,10 +145,10 @@ export default function AuthBrandingPanel({ org, welcomeText, title, subtitle }:
               and for the no-org apex panel (platform shows no logo on the image). */}
           {!isEnterprise && !noOrg && (
             <div className="login-topbar">
-              <Link prefetch href="https://learnhouse.app" target="_blank">
+              <Link prefetch href="/">
                 <img
                   src="/lrn.svg"
-                  alt="LearnHouse"
+                  alt="HI-HA"
                   width={30}
                   height={30}
                   className={cn(
@@ -194,7 +194,7 @@ export default function AuthBrandingPanel({ org, welcomeText, title, subtitle }:
                           width={96}
                           height={96}
                           src={learnhouseIcon}
-                          alt="LearnHouse"
+                          alt="HI-HA"
                           className="object-contain"
                         />
                       )}
@@ -203,7 +203,7 @@ export default function AuthBrandingPanel({ org, welcomeText, title, subtitle }:
 
                   {/* Text content */}
                   <div className="space-y-1">
-                    <h1 className="font-black text-3xl tracking-tight">{org?.name || 'LearnHouse'}</h1>
+                    <h1 className="font-black text-3xl tracking-tight">{org?.name || 'HI-HA'}</h1>
                     {displayMessage && (
                       <p className={cn(
                         "text-lg max-w-sm leading-relaxed",

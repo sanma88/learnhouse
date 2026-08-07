@@ -36,7 +36,7 @@ export async function generateMetadata(props: MetadataProps): Promise<Metadata> 
 
   if (!courseResult) {
     return {
-      title: `Course — ${org?.name || 'LearnHouse'}`,
+      title: `Course — ${org?.name || 'HI-HA'}`,
       description: 'View this course on LearnHouse',
     }
   }

@@ -11,6 +11,11 @@ import {
   Text,
 } from '@react-email/components'
 import * as React from 'react'
+import {
+  getConfig,
+  getLEARNHOUSE_DOMAIN_VAL,
+  getLEARNHOUSE_HTTP_PROTOCOL_VAL,
+} from '@services/config/config'
 
 // Shared transactional email layout (React Email). One flexible template drives
 // every message — welcome, purchase, plan change, payment failed, etc. — via an
@@ -46,7 +51,16 @@ export interface LearnHouseEmailProps {
   cta?: { label: string; href: string }
 }
 
-const LOGO_URL = 'https://www.learnhouse.io/learnhouse-dark.svg'
+// HI-HA: upstream hotlinked learnhouse.io's logo into every transactional email,
+// which both brands our invitations with someone else's mark and leaks a request
+// to a third party each time a recipient opens one. Serve the instance's own
+// logo instead; override with NEXT_PUBLIC_LEARNHOUSE_EMAIL_LOGO_URL if needed.
+const LOGO_URL =
+  getConfig('NEXT_PUBLIC_LEARNHOUSE_EMAIL_LOGO_URL') ||
+  `${getLEARNHOUSE_HTTP_PROTOCOL_VAL()}${getLEARNHOUSE_DOMAIN_VAL()}/lrn.svg`
+
+// HI-HA: sign-off shown at the bottom of every transactional email.
+const EMAIL_SIGNOFF = getConfig('NEXT_PUBLIC_LEARNHOUSE_EMAIL_SIGNOFF') || 'HI-HA'
 
 export function LearnHouseEmail({
   accentColor,
@@ -68,7 +82,7 @@ export function LearnHouseEmail({
           <div style={{ height: 6, backgroundColor: accentColor }} />
 
           <Section style={{ padding: '32px 40px 8px' }}>
-            <Img src={LOGO_URL} alt="LearnHouse" height={28} style={{ marginBottom: 24 }} />
+            <Img src={LOGO_URL} alt={EMAIL_SIGNOFF} height={28} style={{ marginBottom: 24 }} />
             <Heading style={{ fontSize: 24, fontWeight: 800, color: '#171717', margin: '0 0 8px', lineHeight: 1.25 }}>
               {heading}
             </Heading>
@@ -133,7 +147,7 @@ export function LearnHouseEmail({
           <Hr style={{ borderColor: '#eee', margin: '24px 40px 0' }} />
           <Section style={{ padding: '16px 40px 32px' }}>
             <Text style={{ fontSize: 12, color: '#a3a3a3', margin: 0 }}>
-              LearnHouse — the open-source learning platform.
+              {EMAIL_SIGNOFF}
             </Text>
           </Section>
         </Container>
