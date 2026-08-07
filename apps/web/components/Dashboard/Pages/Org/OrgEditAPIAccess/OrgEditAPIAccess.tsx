@@ -230,7 +230,7 @@ const OrgEditAPIAccess: React.FC = () => {
             </TabsTrigger>
           </TabsList>
           <a
-            href="mailto:contact@hi-ha.be"
+            href="mailto:info@hi-ha.be"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors border border-gray-200"

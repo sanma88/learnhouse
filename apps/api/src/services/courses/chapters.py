@@ -476,7 +476,14 @@ async def DEPRECEATED_get_course_chapters(
     # RBAC check
     await check_resource_access(request, db_session, current_user, course.course_uuid, AccessAction.READ)
 
-    chapters_in_db = await get_course_chapters(request, course.id, db_session, current_user)  # type: ignore
+    # HI-HA: this call predates with_unpublished_activities becoming a required
+    # positional argument, so it raised TypeError -> HTTP 500 on every request,
+    # even for the course owner. False matches the active endpoint
+    # (routers/courses/chapters.py) and is the conservative choice: unpublished
+    # activities stay hidden from a read that any user with READ access can make.
+    chapters_in_db = await get_course_chapters(
+        request, course.id, db_session, current_user, with_unpublished_activities=False
+    )
 
     # activities
 
