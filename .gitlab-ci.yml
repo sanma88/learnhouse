@@ -76,6 +76,10 @@ deploy:
   before_script:
     - apk add --no-cache curl
   script:
+    # An unset COOLIFY_WEBHOOK_URL reaches curl as an empty argument and yields
+    # "option : blank argument where content is expected" — an error that names
+    # neither the variable nor the job. Say which one is missing instead.
+    - '[ -n "$COOLIFY_WEBHOOK_URL" ] || { echo "COOLIFY_WEBHOOK_URL is not set (CI/CD Variables, Protected — the branch must be protected too)"; exit 1; }'
     # Quoted: the "Authorization: Bearer" header contains a colon-space, which YAML
     # reads as a mapping in an unquoted sequence item. GitLab then rejects the whole
     # file ("script config should be a string"), producing a 0-job pipeline.

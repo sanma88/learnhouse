@@ -30,7 +30,19 @@ from src.services.setup.setup import (
 cli = typer.Typer()
 
 
+def _normalize_scheme(url: str) -> str:
+    """`postgres://` is what Coolify, Heroku and Render hand out, and SQLAlchemy
+    dropped that dialect name in 1.4 — `create_engine` raises NoSuchModuleError.
+    `core/events/database.py` already rewrites it for the request path; the
+    install path reached create_engine untouched and crash-looped the container
+    with an error that names a plugin rather than the connection string."""
+    if url.startswith("postgres://"):
+        return url.replace("postgres://", "postgresql://", 1)
+    return url
+
+
 def _to_async_url(url: str) -> str:
+    url = _normalize_scheme(url)
     if "+asyncpg" in url:
         return url
     if url.startswith("postgresql://"):
@@ -39,7 +51,7 @@ def _to_async_url(url: str) -> str:
 
 
 def _to_sync_url(url: str) -> str:
-    return url.replace("+asyncpg", "")
+    return _normalize_scheme(url).replace("+asyncpg", "")
 
 
 @cli.command()

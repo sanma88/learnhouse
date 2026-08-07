@@ -123,4 +123,12 @@ LABEL org.opencontainers.image.source="https://github.com/sanma88/learnhouse" \
 
 EXPOSE 80 9000 4000
 
+# HI-HA: the image ships no healthcheck, so an orchestrator has to invent one —
+# Coolify's default reaches for `wget`, which this image does not carry, and the
+# container never leaves "starting". curl is installed above. 127.0.0.1 rather
+# than localhost for the same reason as nginx.conf: on an IPv6-enabled host the
+# name resolves to ::1 first and nothing listens there.
+HEALTHCHECK --interval=30s --timeout=10s --retries=3 --start-period=120s \
+    CMD curl -fsS http://127.0.0.1:80/api/v1/health || exit 1
+
 CMD ["sh", "/app/start.sh"]
