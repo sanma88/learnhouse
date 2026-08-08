@@ -15,10 +15,11 @@
 # n'impose aucune limite de couche. GitLab reste la source du déploiement et
 # le déclencheur.
 #
-# Le dépôt `hihabe/learnhouse` est PRIVÉ (licence Pro : dépôts privés illimités).
-# Le VPS s'authentifie donc au pull, avec un jeton Read seul — voir
-# PROCEDURE-DOCKERHUB-OPERATEUR.md. L'AGPL art. 13 n'en souffre pas : elle exige
-# d'offrir la *source* (miroir public github.com/sanma88/learnhouse), pas le binaire.
+# Le dépôt `hihabe/learnhouse` est PUBLIC. Il a d'abord été créé privé, puis basculé
+# le 2026-08-08 : le `coolify-helper` exécute le pull dans son propre conteneur et ne
+# voit pas le `docker login` de l'hôte. Le dépôt privé n'achetait rien de réel —
+# l'image ne contient aucun secret et sa source est déjà publique sous AGPL.
+# Le push, lui, reste authentifié (jeton Write ci-dessous).
 #
 # Variables CI à créer (Settings → CI/CD → Variables, Masked + Protected) :
 #   DOCKERHUB_USER       — `hihabe`

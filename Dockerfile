@@ -113,10 +113,10 @@ RUN chmod +x /app/api/docker-entrypoint.sh /app/start.sh
 
 ENV PORT=8000 LEARNHOUSE_PORT=9000 COLLAB_PORT=4000 HOSTNAME=0.0.0.0 LEARNHOUSE_OSS=true NEXT_PUBLIC_LEARNHOUSE_OSS=true
 
-# HI-HA: the image and its source live in different places — the image is pushed
-# to a private Docker Hub repo, the source is the public mirror. `image.source`
-# is the only thing carrying the route back, readable with `docker inspect` by
-# anyone who ends up holding the image without knowing where it came from.
+# HI-HA: the image and its source live in different places — one registry, one
+# git mirror, no link between them but this label. `image.source` is the only
+# thing carrying the route back, readable with `docker inspect` by anyone who
+# ends up holding the image without knowing where it came from.
 LABEL org.opencontainers.image.source="https://github.com/sanma88/learnhouse" \
       org.opencontainers.image.licenses="AGPL-3.0-only" \
       org.opencontainers.image.description="HI-HA Campus — fork AGPL-3.0 de LearnHouse"
