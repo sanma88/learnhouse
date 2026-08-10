@@ -2128,6 +2128,30 @@
   box-shadow: none !important;
 }
 
+/* Inline code — the three editor wrappers only ever styled `pre code`, so an
+   inline span fell back to the Tailwind reset: a change of font and nothing
+   else. Across this course that is 605 spans with no delimiter of any kind.
+
+   The padding is deliberately tiny. The board-card rule this borrows from uses
+   0.3rem, which suits a label but not running prose: it pushes the following
+   punctuation off the word, turning "(low, medium, high)" into
+   "( low , medium , high )", and it reflows lines. Compared in a browser on the
+   reference memo, the densest page in the course.
+
+   In `components` so that an element carrying explicit utility classes still
+   wins — the code playground renders its inline code with `bg-neutral-100
+   text-rose-600 px-1.5`, and an unlayered rule here would silently override it
+   platform-wide. */
+@layer components {
+  .activity-editor-content-wrapper .ProseMirror :not(pre) > code,
+  .canva-content-wrapper .ProseMirror :not(pre) > code,
+  .editor-preview-wrapper .ProseMirror :not(pre) > code {
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 0.2rem;
+    padding: 0.05rem 0.1rem;
+  }
+}
+
 .canva-content-wrapper .ProseMirror pre {
   background: #0d0d0d;
   border-radius: 0.5rem;
