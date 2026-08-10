@@ -4,6 +4,7 @@ import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import EditorOptionsProvider from '@components/Contexts/Editor/EditorContext'
 import { useTranslation } from 'react-i18next'
+import { sanitizeTiptapContent } from './sanitizeContent'
 
 // Extensions
 import InfoCallout from './Extensions/Callout/Info/InfoCallout'
@@ -43,6 +44,11 @@ interface EditorPreviewProps {
 
 function EditorPreview({ content, activity }: EditorPreviewProps) {
   const { t } = useTranslation()
+
+  // Old versions and conflict sides are exactly the content most likely to carry
+  // the invalid nodes a newer pipeline no longer produces — and a blank preview
+  // here sits next to a Restore button. See sanitizeContent.ts.
+  const safeContent = React.useMemo(() => sanitizeTiptapContent(content), [content])
 
   const editor = useEditor({
     editable: false,
@@ -150,16 +156,16 @@ function EditorPreview({ content, activity }: EditorPreviewProps) {
         activity: activity,
       }),
     ],
-    content: content,
+    content: safeContent,
     immediatelyRender: false,
   })
 
   // Update content when it changes
   React.useEffect(() => {
-    if (editor && content) {
-      editor.commands.setContent(content)
+    if (editor && safeContent) {
+      editor.commands.setContent(safeContent)
     }
-  }, [editor, content])
+  }, [editor, safeContent])
 
   if (!editor) {
     return <div className="p-4 text-gray-400">{t('editor.versioning.loading_preview')}</div>

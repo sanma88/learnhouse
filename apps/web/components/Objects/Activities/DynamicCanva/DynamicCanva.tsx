@@ -3,27 +3,7 @@ import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Youtube from '@tiptap/extension-youtube'
 
-/**
- * Transforms ProseMirror JSON content to fix mark type names.
- * TipTap uses 'bold'/'italic' but AI sometimes generates 'strong'/'em'.
- */
-function normalizeMarkTypes(content: any): any {
-  if (!content || typeof content !== 'object') return content;
-  if (Array.isArray(content)) return content.map(normalizeMarkTypes);
-
-  const normalized: any = { ...content };
-  if (normalized.marks && Array.isArray(normalized.marks)) {
-    normalized.marks = normalized.marks.map((mark: any) => {
-      if (mark.type === 'strong') return { ...mark, type: 'bold' };
-      if (mark.type === 'em') return { ...mark, type: 'italic' };
-      return mark;
-    });
-  }
-  if (normalized.content && Array.isArray(normalized.content)) {
-    normalized.content = normalizeMarkTypes(normalized.content);
-  }
-  return normalized;
-}
+import { sanitizeTiptapContent } from '@components/Objects/Editor/sanitizeContent'
 // Custom Extensions
 import Callout from '@components/Objects/Editor/Extensions/Callout/Callout'
 import InfoCallout from '@components/Objects/Editor/Extensions/Callout/Info/InfoCallout'
@@ -80,14 +60,16 @@ function Canva(props: Editor) {
    */
   const isEditable = true
 
-  // Normalize content to fix AI-generated mark types (strong -> bold, em -> italic)
+  // Fix AI-generated mark types (strong -> bold, em -> italic) and drop empty
+  // text nodes, which would otherwise make ProseMirror reject the whole
+  // document and leave the activity blank. See sanitizeContent.ts.
   const normalizedContent = useMemo(() => {
     if (!props.content) return props.content;
     try {
       const parsed = typeof props.content === 'string'
         ? JSON.parse(props.content)
         : props.content;
-      return normalizeMarkTypes(parsed);
+      return sanitizeTiptapContent(parsed);
     } catch {
       return props.content;
     }

@@ -8,46 +8,8 @@ import { OrgProvider } from '@components/Contexts/OrgContext'
 import { useLHSession } from '@components/Contexts/LHSessionContext'
 import { useTranslation } from 'react-i18next'
 import { preloadComponentsForContent } from './editorPreload'
+import { sanitizeTiptapContent } from './sanitizeContent'
 import { useLHAnalytics, AnalyticsEvent } from '@services/analytics'
-
-/**
- * Transforms ProseMirror JSON content to fix mark type names.
- * TipTap uses 'bold'/'italic' but AI sometimes generates 'strong'/'em'.
- * This recursively traverses the content and normalizes mark types.
- */
-function normalizeMarkTypes(content: any): any {
-  if (!content || typeof content !== 'object') {
-    return content;
-  }
-
-  // If it's an array, process each element
-  if (Array.isArray(content)) {
-    return content.map(normalizeMarkTypes);
-  }
-
-  // Clone the object to avoid mutation
-  const normalized: any = { ...content };
-
-  // Fix marks array if present
-  if (normalized.marks && Array.isArray(normalized.marks)) {
-    normalized.marks = normalized.marks.map((mark: any) => {
-      if (mark.type === 'strong') {
-        return { ...mark, type: 'bold' };
-      }
-      if (mark.type === 'em') {
-        return { ...mark, type: 'italic' };
-      }
-      return mark;
-    });
-  }
-
-  // Recursively process content array if present
-  if (normalized.content && Array.isArray(normalized.content)) {
-    normalized.content = normalizeMarkTypes(normalized.content);
-  }
-
-  return normalized;
-}
 
 export interface ConflictInfo {
   hasConflict: boolean
@@ -79,18 +41,20 @@ function EditorWrapper(props: EditorWrapperProps): JSX.Element {
     props.activity.update_date || ''
   )
 
-  // Normalize content to fix AI-generated mark types (strong -> bold, em -> italic).
-  // Most documents have neither, so we pre-scan the raw JSON for those mark
-  // type names before doing the recursive object clone — avoids allocating a
-  // new object per node on every editor open.
+  // Fix AI-generated mark types (strong -> bold, em -> italic) and drop empty
+  // text nodes — ProseMirror rejects those and TipTap silently swaps the whole
+  // document for an empty one, which here would mean opening the editor on a
+  // blank page and saving that blank over real content. See sanitizeContent.ts.
+  // Sanitising unconditionally is both safer and cheaper than pre-scanning: the
+  // API hands us an object, so a regex pre-scan has to stringify the whole
+  // document first — which costs more than the walk it was meant to skip.
   const normalizedContent = React.useMemo(() => {
     if (!props.content) return props.content;
     try {
-      const isString = typeof props.content === 'string';
-      const rawForScan = isString ? props.content : JSON.stringify(props.content);
-      const needsNormalization = /"type"\s*:\s*"(?:strong|em)"/.test(rawForScan);
-      const parsed = isString ? JSON.parse(props.content) : props.content;
-      return needsNormalization ? normalizeMarkTypes(parsed) : parsed;
+      const parsed = typeof props.content === 'string'
+        ? JSON.parse(props.content)
+        : props.content;
+      return sanitizeTiptapContent(parsed);
     } catch (_e) {
       // If parsing fails, return original content
       return props.content;
