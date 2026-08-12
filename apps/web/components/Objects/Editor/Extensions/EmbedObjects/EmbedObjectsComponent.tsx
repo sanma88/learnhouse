@@ -267,6 +267,11 @@ function EmbedObjectsComponent(props: any) {
     const startWidth = resizeRef.current?.offsetWidth || 0
     const startHeight = resizeRef.current?.offsetHeight || 0
     dimensionsRef.current.ratio = aspectRatio
+    if (embedType === 'code' && resizeRef.current) {
+      // Freeze the box while dragging so the isResizing placeholder cannot
+      // collapse it; cleared on mouseup — 'code' embeds stay content-driven.
+      resizeRef.current.style.height = `${startHeight}px`
+    }
 
     const handleMouseMove = (e: MouseEvent) => {
       if (resizeRef.current) {
@@ -293,6 +298,10 @@ function EmbedObjectsComponent(props: any) {
     }
 
     const handleMouseUp = () => {
+      if (embedType === 'code' && resizeRef.current) {
+        resizeRef.current.style.height = ''
+        resizeRef.current.style.aspectRatio = ''
+      }
       setIsResizing(false)
       setEmbedWidth(dimensionsRef.current.width)
       setEmbedHeight(dimensionsRef.current.height)
@@ -322,9 +331,13 @@ function EmbedObjectsComponent(props: any) {
       maxWidth: '100%',
     };
 
-    // An aspect ratio lets the frame shrink with its container instead of
-    // keeping a pixel height the content no longer fills.
-    if (aspectRatio) {
+    // 'code' embeds hug their content: folded <details> set the height,
+    // unfolding grows the block — never a fixed height, never inner scroll.
+    if (embedType === 'code') {
+      styles.height = 'auto';
+      // An aspect ratio lets the frame shrink with its container instead of
+      // keeping a pixel height the content no longer fills.
+    } else if (aspectRatio) {
       styles.aspectRatio = String(aspectRatio);
     } else {
       styles.height = `${embedHeight}px`;
@@ -392,7 +405,8 @@ function EmbedObjectsComponent(props: any) {
       <div
         ref={resizeRef}
         className={cn(
-          "relative bg-white rounded-xl overflow-hidden nice-shadow",
+          "relative bg-white rounded-xl nice-shadow",
+          embedType === 'code' ? "flow-root" : "overflow-hidden",
           alignment === 'center' && "mx-auto"
         )}
         style={(embedUrl || sanitizedEmbedCode) ? getResponsiveStyles() : { width: '100%' }}
@@ -594,12 +608,14 @@ function EmbedObjectsComponent(props: any) {
               >
                 <DotsSixVertical weight="duotone" size={16} className="text-neutral-500" />
               </div>
-              <div
-                className="absolute left-0 right-0 bottom-0 h-4 cursor-ns-resize flex items-center justify-center bg-white/70 hover:bg-white/90 transition-opacity"
-                onMouseDown={(e) => handleResizeStart(e, 'vertical')}
-              >
-                <DotsSix weight="duotone" size={16} className="text-neutral-500" />
-              </div>
+              {embedType !== 'code' && (
+                <div
+                  className="absolute left-0 right-0 bottom-0 h-4 cursor-ns-resize flex items-center justify-center bg-white/70 hover:bg-white/90 transition-opacity"
+                  onMouseDown={(e) => handleResizeStart(e, 'vertical')}
+                >
+                  <DotsSix weight="duotone" size={16} className="text-neutral-500" />
+                </div>
+              )}
             </>
           )}
       </div>
