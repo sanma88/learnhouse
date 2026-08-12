@@ -59,7 +59,7 @@ export default function AuthMobileHeader({ org }: AuthMobileHeaderProps) {
       )}
 
       <Link prefetch href={getUriWithOrg(org?.slug, '/')} className="relative z-10">
-        <div className="w-10 h-10 rounded-lg ring-1 ring-inset ring-white/10 bg-white flex items-center justify-center overflow-hidden shrink-0">
+        <div className="w-10 h-10 rounded-lg ring-1 ring-inset ring-white/10 bg-neutral-950 flex items-center justify-center overflow-hidden shrink-0">
           {org?.logo_image ? (
             <img
               src={getOrgLogoMediaDirectory(org.org_uuid, org.logo_image)}
