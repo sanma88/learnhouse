@@ -2063,7 +2063,8 @@
 .canva-content-wrapper .ProseMirror ul,
 .canva-content-wrapper .ProseMirror ol {
   padding: 0 1rem;
-  padding-left: 20px;
+  padding-left: 1.5rem;
+  margin: 1rem 0;
 }
 
 .canva-content-wrapper .ProseMirror ul {
