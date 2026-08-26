@@ -59,10 +59,10 @@ const CALLOUT_TYPES: Record<
   error: {
     label: 'Error',
     Icon: XCircle,
-    bg: 'bg-red-800',
-    text: 'text-white',
-    iconColor: 'text-white',
-    ring: 'ring-red-900',
+    bg: 'bg-red-50',
+    text: 'text-red-900',
+    iconColor: 'text-red-500',
+    ring: 'ring-red-200',
   },
 }
 
