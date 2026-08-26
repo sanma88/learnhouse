@@ -140,7 +140,8 @@ function Canva(props: Editor) {
       CodeBlockLowlight.configure({
         lowlight,
       }),
-      EmbedObjects.configure({
+      // Read-only view: keep native text selection inside embeds — no drag, no NodeSelection
+      EmbedObjects.extend({ draggable: false, selectable: false }).configure({
         editable: isEditable,
         activity: props.activity,
       }),
