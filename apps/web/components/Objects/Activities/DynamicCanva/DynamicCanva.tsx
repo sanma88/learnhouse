@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Youtube from '@tiptap/extension-youtube'
@@ -192,6 +192,27 @@ function Canva(props: Editor) {
 
     content: normalizedContent,
   })
+
+  // Deep links: scroll to the element targeted by the URL fragment (e.g.
+  // #heading-introduction from the table of contents of another page).
+  // Timing: with immediatelyRender: false the editor is created in a passive
+  // effect (useEditor re-renders through useSyncExternalStore), and
+  // EditorContent attaches the view DOM synchronously in componentDidMount —
+  // a layout-phase lifecycle that runs before this passive effect of the same
+  // commit. So once `editor` is non-null here, the heading ids are already in
+  // the document. No-op when the hash is empty or matches nothing.
+  useEffect(() => {
+    if (!editor) return
+    const hash = window.location.hash
+    if (!hash) return
+    try {
+      document
+        .getElementById(decodeURIComponent(hash.slice(1)))
+        ?.scrollIntoView()
+    } catch {
+      // Malformed percent-encoding in the fragment — ignore
+    }
+  }, [editor])
 
   return (
     <EditorOptionsProvider options={{ isEditable: false }}>
