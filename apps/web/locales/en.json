@@ -1885,7 +1885,7 @@
           "rate_limited": "Too many attempts. Please wait a moment and try again.",
           "status_error": "Could not load your two-factor settings.",
           "copy_failed": "Could not copy. Please select the text and copy it manually.",
-          "codes_file_header": "LearnHouse two-factor backup codes. Each code can be used once.",
+          "codes_file_header": "HI-HA two-factor backup codes. Each code can be used once.",
           "already_enabled": "Two-factor authentication is already enabled on this account.",
           "setup_failed": "Could not start two-factor setup. Please try again.",
           "enabled_toast": "Two-factor authentication is now enabled.",
