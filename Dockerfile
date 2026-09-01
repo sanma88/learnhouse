@@ -16,6 +16,15 @@ RUN bun install --frozen-lockfile
 # Stage 2: Frontend build
 # ───────────────────────────────────────────────
 FROM oven/bun:1.3.14-alpine AS frontend-builder
+# HI-HA: `next build` doit tourner sous Node reel, pas sous le runtime Bun.
+# L'image oven/bun place un shim node->bun (/usr/local/bun-node-fallback-bin,
+# dernier du PATH) : sans vrai node, le shebang `#!/usr/bin/env node` de
+# node_modules/.bin/next retombe sur Bun, et Bun 1.3.14 musl segfaulte au
+# teardown de next build 16.3.4 (CI #604, exit 139 apres compilation reussie).
+# apk nodejs (Alpine 3.22) = Node 22, meme major que le runtime nodesource du
+# stage final ; /usr/bin/node precede le shim dans le PATH, donc `bun run build`
+# execute next sous Node sans autre changement. Bun reste le runtime d'install.
+RUN apk add --no-cache nodejs
 WORKDIR /app
 COPY --from=frontend-deps /app/node_modules ./node_modules
 COPY apps/web .
