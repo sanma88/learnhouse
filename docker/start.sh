@@ -14,6 +14,19 @@ if [ -n "$LEARNHOUSE_SQL_CONNECTION_STRING" ]; then
     fi
 fi
 
+# HI-HA (C1, revue U6d) : appliquer le schema de base AVANT de demarrer les
+# services. Le create_all du demarrage applicatif ne fait jamais d'ALTER
+# TABLE : sans cette etape, organization.is_demo (release 1.3.5) manquerait
+# sur une base deja installee -> 500 generalise. Logique complete (3 etats,
+# `heads` au pluriel, robuste aux tetes multiples) dans apps/api/boot_migrations.py.
+# Echec de migration = echec de boot : le healthcheck reste rouge et
+# l'orchestrateur (rolling update Coolify) conserve l'ancien conteneur.
+echo "Applying database schema (alembic upgrade heads)..."
+if ! (cd /app/api && ./.venv/bin/python boot_migrations.py); then
+    echo "FATAL: database schema migration failed - not starting services." >&2
+    exit 1
+fi
+
 # Start the services
 # Use server-wrapper.js for runtime environment variable injection
 pm2 start server-wrapper.js --cwd /app/web --name learnhouse-web > /dev/null 2>&1

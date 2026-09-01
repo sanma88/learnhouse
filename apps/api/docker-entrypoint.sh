@@ -72,6 +72,23 @@ HOST=${HOSTNAME:-0.0.0.0}
 
 echo "Starting LearnHouse backend on ${HOST}:${PORT}..."
 
+# HI-HA (C1, revue U6d) : appliquer le schema de base AVANT de lancer le
+# serveur. create_all ne fait jamais d'ALTER TABLE — sans cette etape, une
+# colonne neuve sur une table existante (ex. organization.is_demo, release
+# 1.3.5) ne serait jamais creee -> 500 generalise. Logique complete (3 etats,
+# `heads` au pluriel, robuste aux tetes multiples) dans boot_migrations.py,
+# a cote de ce script. `set -e` : un echec de migration est un echec de boot.
+MIGRATIONS_DIR=$(cd "$(dirname "$0")" && pwd)
+BOOT_PY="$MIGRATIONS_DIR/.venv/bin/python"
+echo "Applying database schema (alembic upgrade heads)..."
+cd "$MIGRATIONS_DIR"
+if [ -x "$BOOT_PY" ]; then
+    "$BOOT_PY" boot_migrations.py
+else
+    echo "No venv at $BOOT_PY, falling back to uv run"
+    uv run python boot_migrations.py
+fi
+
 # Start the FastAPI application.
 # Calling the venv's uvicorn directly rather than `uv run` keeps a lockfile
 # resolution out of the container start path (measured 574ms vs 54ms).
