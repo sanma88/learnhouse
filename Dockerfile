@@ -1,11 +1,12 @@
 # ───────────────────────────────────────────────
 # Stage 1: Frontend dependency install
 # ───────────────────────────────────────────────
-# Bun is pinned: the floating `1-alpine` tag was updated on Docker Hub
-# (2026-08-20) to a bun whose --frozen-lockfile check rejects this repo's
-# package.json overrides / bun.lock pair. 1.3.14 is the version proven
-# locally (frozen install "no changes" + full `bun run build` green).
-FROM oven/bun:1.3.14-alpine AS frontend-deps
+# HI-HA: bun reste épinglé exact (jamais de tag flottant `1-alpine`, qui a déjà
+# cassé le build le 2026-08-20). Le motif du pin s'est inversé au merge 1.3.5 :
+# le bun.lock régénéré est en lockfileVersion 3, que bun <= 1.3.14 ne sait pas
+# parser (UnknownLockfileVersion) — 1.4.0 est la version prouvée en local
+# (frozen install + build complets verts).
+FROM oven/bun:1.4.0-alpine AS frontend-deps
 RUN apk update && apk add --no-cache libc6-compat && rm -rf /var/cache/apk/*
 WORKDIR /app
 
@@ -15,11 +16,11 @@ RUN bun install --frozen-lockfile
 # ───────────────────────────────────────────────
 # Stage 2: Frontend build
 # ───────────────────────────────────────────────
-FROM oven/bun:1.3.14-alpine AS frontend-builder
+FROM oven/bun:1.4.0-alpine AS frontend-builder
 # HI-HA: `next build` doit tourner sous Node reel, pas sous le runtime Bun.
 # L'image oven/bun place un shim node->bun (/usr/local/bun-node-fallback-bin,
 # dernier du PATH) : sans vrai node, le shebang `#!/usr/bin/env node` de
-# node_modules/.bin/next retombe sur Bun, et Bun 1.3.14 musl segfaulte au
+# node_modules/.bin/next retombe sur Bun, et Bun 1.3.14 musl segfaultait au
 # teardown de next build 16.3.4 (CI #604, exit 139 apres compilation reussie).
 # apk nodejs (Alpine 3.22) = Node 22, meme major que le runtime nodesource du
 # stage final ; /usr/bin/node precede le shim dans le PATH, donc `bun run build`
@@ -40,7 +41,7 @@ RUN bun run build
 # ───────────────────────────────────────────────
 # Stage 3: Frontend production image
 # ───────────────────────────────────────────────
-FROM node:24-alpine AS frontend-runner
+FROM oven/bun:1.4.0-alpine AS frontend-runner
 WORKDIR /app
 
 RUN apk update && apk add --no-cache curl && rm -rf /var/cache/apk/*
@@ -66,7 +67,7 @@ RUN chmod +x server-wrapper.js
 # ───────────────────────────────────────────────
 # Stage 4: Collab server build
 # ───────────────────────────────────────────────
-FROM oven/bun:1.3.14-alpine AS collab-builder
+FROM oven/bun:1.4.0-alpine AS collab-builder
 WORKDIR /app
 
 COPY apps/collab/package.json apps/collab/bun.lock* ./
@@ -124,7 +125,11 @@ COPY ./apps/api/docker-entrypoint.sh /app/api/docker-entrypoint.sh
 COPY ./docker/start.sh /app/start.sh
 RUN chmod +x /app/api/docker-entrypoint.sh /app/start.sh
 
-ENV PORT=8000 LEARNHOUSE_PORT=9000 COLLAB_PORT=4000 HOSTNAME=0.0.0.0 LEARNHOUSE_OSS=true NEXT_PUBLIC_LEARNHOUSE_OSS=true
+# PYTHONDONTWRITEBYTECODE: the image ships read-only source and gains nothing
+# from writing .pyc files back into it. It also keeps __pycache__ out of the
+# enterprise tree, where stale bytecode could otherwise shadow a source file
+# that verifies clean against the signed manifest.
+ENV PORT=8000 LEARNHOUSE_PORT=9000 COLLAB_PORT=4000 HOSTNAME=0.0.0.0 LEARNHOUSE_OSS=true NEXT_PUBLIC_LEARNHOUSE_OSS=true PYTHONDONTWRITEBYTECODE=1
 
 # HI-HA: the image and its source live in different places — one registry, one
 # git mirror, no link between them but this label. `image.source` is the only

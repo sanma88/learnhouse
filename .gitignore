@@ -70,6 +70,7 @@ apps/api/ee
 
 # Playwright MCP session artifacts
 .playwright-mcp/
+.demo-secrets
 
 # HI-HA: this repo has a PUBLIC mirror (AGPL art. 13). Never let an env file
 # reach it or the build context — the previous rules missed .env.<name>.local.
