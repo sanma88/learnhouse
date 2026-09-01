@@ -25,13 +25,18 @@ const nextConfig = {
       // frame-ancestors), MIME sniffing, referrer leakage and HSTS. The embed
       // override below comes AFTER this block, so it wins for the same header
       // keys on embed paths only (later source overrides earlier in Next).
+      // frame-ancestors is 'self' (not 'none') on purpose: in SPA navigation the
+      // CSP of the ENTRY document governs the whole client-side session, and
+      // blob: documents (MagicBlock preview iframes) inherit it — 'none' made
+      // those same-origin blob: iframes render blank until a full reload.
+      // 'self' + SAMEORIGIN still block all external framing (clickjacking).
       {
         source: '/:path*',
         headers: [
           { key: 'X-Content-Type-Options', value: 'nosniff' },
           { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
-          { key: 'X-Frame-Options', value: 'DENY' },
-          { key: 'Content-Security-Policy', value: "frame-ancestors 'none'" },
+          { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
+          { key: 'Content-Security-Policy', value: "frame-ancestors 'self'" },
           { key: 'Strict-Transport-Security', value: 'max-age=31536000; includeSubDomains' },
           { key: 'X-Download-Options', value: 'noopen' },
         ],
