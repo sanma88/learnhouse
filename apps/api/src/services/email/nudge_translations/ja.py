@@ -167,7 +167,7 @@ STRINGS: dict[str, str] = {
     "nudge.reactivation.opener.heading": "そのまま、置いていかれた状態で",
     "nudge.reactivation.opener.body": "前回いらしてから {org_name} には誰も手を触れていません。コースも章もレッスンも、すべて残っています。再開はワンクリックです。",
     "nudge.reactivation.opener.cta": "ダッシュボードを開く",
-    "nudge.reactivation.whats_changed.subject": "LearnHouse でいくつか変わりました",
+    "nudge.reactivation.whats_changed.subject": "HI-HA でいくつか変わりました",
     "nudge.reactivation.whats_changed.heading": "前回のご訪問から",
     "nudge.reactivation.whats_changed.body": "{org_name} が静かなあいだに製品はかなり進みました。エディター、コース作成まわり、受講者の進み方に手が入っています。作られたものはこれまでどおり動きます。",
     "nudge.reactivation.whats_changed.cta": "変更点を見る",

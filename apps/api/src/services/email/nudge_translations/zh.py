@@ -167,7 +167,7 @@ STRINGS: dict[str, str] = {
     "nudge.reactivation.opener.heading": "一切照旧，和您离开时一样",
     "nudge.reactivation.opener.body": "自您上次来过之后，没人动过 {org_name}——每一门课程、章节和课时都在原处。想接着做，只需一次点击。",
     "nudge.reactivation.opener.cta": "打开控制台",
-    "nudge.reactivation.whats_changed.subject": "LearnHouse 有了一些变化",
+    "nudge.reactivation.whats_changed.subject": "HI-HA 有了一些变化",
     "nudge.reactivation.whats_changed.heading": "自您上次来过之后",
     "nudge.reactivation.whats_changed.body": "在 {org_name} 安静的这段时间，产品推进了不少：编辑器、课程工具和学员的学习路径都做了实在的改动。您做过的一切仍照常运行。",
     "nudge.reactivation.whats_changed.cta": "看看有什么新变化",

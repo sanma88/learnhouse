@@ -173,7 +173,7 @@ STRINGS: dict[str, str] = {
     "nudge.reactivation.opener.heading": "Still here, exactly as you left it",
     "nudge.reactivation.opener.body": "Nobody has touched {org_name} since you were last in — every course, chapter and lesson is where you left it. If you want to pick it up again, it takes one click.",
     "nudge.reactivation.opener.cta": "Open your dashboard",
-    "nudge.reactivation.whats_changed.subject": "A few things have changed on LearnHouse",
+    "nudge.reactivation.whats_changed.subject": "A few things have changed on HI-HA",
     "nudge.reactivation.whats_changed.heading": "Since you were last here",
     "nudge.reactivation.whats_changed.body": "The product has moved on a fair bit while {org_name} has been quiet — the editor, the course tools and how learners work through material have all had real work. Everything you built still works exactly as before.",
     "nudge.reactivation.whats_changed.cta": "See what's new",

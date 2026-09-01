@@ -167,7 +167,7 @@ STRINGS: dict[str, str] = {
     "nudge.reactivation.opener.heading": "Vẫn ở đây, đúng như bạn để lại",
     "nudge.reactivation.opener.body": "Không ai động vào {org_name} kể từ lần cuối bạn ghé — mọi khóa học, chương và bài học đều ở nguyên chỗ. Quay lại chỉ mất một cú nhấp.",
     "nudge.reactivation.opener.cta": "Mở bảng điều khiển",
-    "nudge.reactivation.whats_changed.subject": "Có vài thay đổi trên LearnHouse",
+    "nudge.reactivation.whats_changed.subject": "Có vài thay đổi trên HI-HA",
     "nudge.reactivation.whats_changed.heading": "Kể từ lần cuối bạn ghé",
     "nudge.reactivation.whats_changed.body": "Sản phẩm đã tiến khá xa trong lúc {org_name} im ắng: trình soạn thảo, công cụ khóa học và lộ trình của người học đều đã được làm lại đáng kể. Mọi thứ bạn dựng vẫn chạy như cũ.",
     "nudge.reactivation.whats_changed.cta": "Xem điều gì mới",

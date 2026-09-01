@@ -167,7 +167,7 @@ STRINGS: dict[str, str] = {
     "nudge.reactivation.opener.heading": "এখনও এখানে, যেমন রেখে গিয়েছিলেন",
     "nudge.reactivation.opener.body": "আপনার শেষবার আসার পর {org_name}-এ কেউ হাত দেয়নি — প্রতিটি কোর্স, অধ্যায় আর পাঠ ঠিক জায়গাতেই আছে। আবার শুরু করতে একটি ক্লিকই যথেষ্ট।",
     "nudge.reactivation.opener.cta": "আপনার ড্যাশবোর্ড খুলুন",
-    "nudge.reactivation.whats_changed.subject": "LearnHouse-এ কিছু বদলেছে",
+    "nudge.reactivation.whats_changed.subject": "HI-HA-এ কিছু বদলেছে",
     "nudge.reactivation.whats_changed.heading": "আপনার শেষবার আসার পর",
     "nudge.reactivation.whats_changed.body": "{org_name} চুপচাপ থাকার সময় পণ্যটি বেশ এগিয়েছে: এডিটর, কোর্স তৈরির সরঞ্জাম আর শিক্ষার্থীদের এগিয়ে চলার পথ — সবেতেই সত্যিকারের কাজ হয়েছে। আপনার গড়া সবকিছু আগের মতোই চলে।",
     "nudge.reactivation.whats_changed.cta": "কী নতুন হয়েছে দেখুন",

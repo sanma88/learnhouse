@@ -167,7 +167,7 @@ STRINGS: dict[str, str] = {
     "nudge.reactivation.opener.heading": "Всё на месте, ровно как вы оставили",
     "nudge.reactivation.opener.body": "С вашего последнего визита {org_name} никто не трогал — каждый курс, раздел и урок там, где вы их оставили. Вернуться — один клик.",
     "nudge.reactivation.opener.cta": "Открыть панель",
-    "nudge.reactivation.whats_changed.subject": "В LearnHouse кое-что изменилось",
+    "nudge.reactivation.whats_changed.subject": "В HI-HA кое-что изменилось",
     "nudge.reactivation.whats_changed.heading": "С вашего последнего визита",
     "nudge.reactivation.whats_changed.body": "Пока {org_name} молчала, продукт заметно продвинулся: редактор, инструменты курсов и путь учащегося серьёзно переработаны. Всё, что вы построили, работает как прежде.",
     "nudge.reactivation.whats_changed.cta": "Посмотреть новое",
