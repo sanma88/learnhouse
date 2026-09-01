@@ -84,12 +84,19 @@ RUN bun run build
 FROM python:3.14.6-slim-bookworm AS runner
 
 # Single apt layer: nginx, curl, netcat, node, pm2
+# HI-HA (C2, revue U6d) : le bun du stage final est epingle (`bash -s
+# "bun-v1.4.0"`, le script bun.sh/install prend un tag precis en premier
+# argument), aligne sur les stages de build. Non epingle, il installait « la
+# derniere version publiee » — le mode de panne du 2026-08-20 (et un decalage
+# reel a ete observe : 1.3.14 servi par couche cachee alors que les stages de
+# build sont en 1.4.0). Cette installation reste REQUISE : `bun install
+# --production` (deps du serveur collab, plus bas) en depend.
 RUN apt-get update \
     && apt-get install -y --no-install-recommends nginx curl netcat-openbsd ca-certificates gnupg unzip build-essential \
     && curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
     && apt-get install -y --no-install-recommends nodejs \
     && npm install -g pm2 \
-    && curl -fsSL https://bun.sh/install | bash \
+    && curl -fsSL https://bun.sh/install | bash -s "bun-v1.4.0" \
     && apt-get purge -y gnupg \
     && apt-get autoremove -y \
     && apt-get clean \
