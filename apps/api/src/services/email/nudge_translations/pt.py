@@ -167,7 +167,7 @@ STRINGS: dict[str, str] = {
     "nudge.reactivation.opener.heading": "Continua aqui, do jeito que você deixou",
     "nudge.reactivation.opener.body": "Ninguém mexeu na {org_name} desde a sua última visita — cada curso, capítulo e aula está onde você deixou. Retomar é um clique.",
     "nudge.reactivation.opener.cta": "Abrir seu painel",
-    "nudge.reactivation.whats_changed.subject": "Algumas coisas mudaram no HI-HA",
+    "nudge.reactivation.whats_changed.subject": "Algumas coisas mudaram no {brand}",
     "nudge.reactivation.whats_changed.heading": "Desde a sua última visita",
     "nudge.reactivation.whats_changed.body": "O produto avançou bastante enquanto a {org_name} esteve parada: o editor, as ferramentas de curso e o percurso dos alunos foram bem trabalhados. Tudo o que você construiu continua funcionando como antes.",
     "nudge.reactivation.whats_changed.cta": "Ver as novidades",

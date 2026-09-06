@@ -23,7 +23,13 @@ from email.utils import formataddr
 from typing import Optional
 
 # Platform fallback used when neither the org nor the deployment names a sender.
-DEFAULT_SENDER_NAME = "LearnHouse"
+#
+# HI-HA: this is the instance's own brand, not the upstream product name. The
+# constant is the last line of defence — reached only when the configuration
+# names no sender and carries no site_name — and a name that reaches an inbox
+# cannot be recalled, so the wrong value here is worse than a missing one.
+# ``services/email/branding.py`` re-exports it so there is a single literal.
+DEFAULT_SENDER_NAME = "Campus hi-ha.be"
 
 # Long enough for a real organization name, short enough that the header stays
 # readable in every client's inbox list. Mirrored by the dashboard's character

@@ -167,7 +167,7 @@ STRINGS: dict[str, str] = {
     "nudge.reactivation.opener.heading": "두고 가신 그대로입니다",
     "nudge.reactivation.opener.body": "마지막으로 다녀가신 뒤 {org_name}은 아무도 건드리지 않았습니다. 코스도 챕터도 레슨도 모두 그 자리에 있습니다. 다시 시작하는 데는 클릭 한 번이면 됩니다.",
     "nudge.reactivation.opener.cta": "대시보드 열기",
-    "nudge.reactivation.whats_changed.subject": "HI-HA에 몇 가지가 바뀌었습니다",
+    "nudge.reactivation.whats_changed.subject": "{brand}에 몇 가지가 바뀌었습니다",
     "nudge.reactivation.whats_changed.heading": "마지막으로 오신 뒤로",
     "nudge.reactivation.whats_changed.body": "{org_name}이 조용한 사이 제품이 꽤 나아졌습니다. 에디터와 코스 도구, 학습자의 진행 방식에 실질적인 변화가 있었습니다. 만들어 두신 것은 예전 그대로 동작합니다.",
     "nudge.reactivation.whats_changed.cta": "달라진 점 보기",

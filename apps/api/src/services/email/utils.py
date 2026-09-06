@@ -270,7 +270,7 @@ def get_org_logo_url(org, request: Optional[Request] = None) -> Optional[str]:
 
     Mirrors the frontend's ``getOrgLogoMediaDirectory`` path shape
     (``content/orgs/{uuid}/logos/{file}``). Returns None so callers fall back
-    to the default LearnHouse mark.
+    to this instance's own mark.
     """
     logo_image = getattr(org, "logo_image", None)
     org_uuid = getattr(org, "org_uuid", None)
@@ -280,7 +280,7 @@ def get_org_logo_url(org, request: Optional[Request] = None) -> Optional[str]:
     if not base:
         # No absolute media host resolvable (no request, nothing configured).
         # A relative src would render broken in every mail client, so fall
-        # back to the default LearnHouse mark instead.
+        # back to this instance's own mark instead.
         return None
     return f"{base}/content/orgs/{org_uuid}/logos/{logo_image}"
 
@@ -404,9 +404,16 @@ def send_email(
     # configured site name (LEARNHOUSE_SITE_NAME), not the upstream product name.
     # An explicit system_email_sender_name (upstream feature) still wins, and an
     # explicit empty string still means "no display name" (upstream semantics).
+    #
+    # site_name is read through getattr: this line went from unreachable to
+    # running on every send when the hardcoded "LearnHouse" default was removed
+    # from config.py, and a config object without the attribute (older shape, a
+    # test double) must degrade to the built-in name rather than raise on the
+    # way to the provider. Mirrors branding.email_brand(), which resolves the
+    # same chain for everything else in the message.
     default_sender_name = getattr(mailing, "system_email_sender_name", None)
     if default_sender_name is None:
-        default_sender_name = lh_config.site_name
+        default_sender_name = getattr(lh_config, "site_name", None)
     sender = format_sender(
         sender_name,
         mailing.system_email_address,

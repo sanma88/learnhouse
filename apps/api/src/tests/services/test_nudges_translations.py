@@ -71,7 +71,8 @@ class TestPlaceholders:
             )
 
     def test_only_known_placeholders_are_used(self):
-        allowed = {"org_name", "course_name", "plan_name", "next_plan"}
+        # "brand" is supplied by t() itself, not by the nudge's copy_vars.
+        allowed = {"org_name", "course_name", "plan_name", "next_plan", "brand"}
         for key, template in ENGLISH.items():
             assert _placeholders(template) <= allowed, key
 

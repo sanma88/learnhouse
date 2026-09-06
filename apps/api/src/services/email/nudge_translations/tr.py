@@ -167,7 +167,7 @@ STRINGS: dict[str, str] = {
     "nudge.reactivation.opener.heading": "Hâlâ burada, bıraktığınız gibi",
     "nudge.reactivation.opener.body": "Son ziyaretinizden bu yana {org_name} kuruluşuna kimse dokunmadı — her kurs, bölüm ve ders bıraktığınız yerde. Kaldığınız yerden devam etmek tek tık.",
     "nudge.reactivation.opener.cta": "Panelinizi açın",
-    "nudge.reactivation.whats_changed.subject": "HI-HA'ta birkaç şey değişti",
+    "nudge.reactivation.whats_changed.subject": "{brand}'ta birkaç şey değişti",
     "nudge.reactivation.whats_changed.heading": "Son ziyaretinizden bu yana",
     "nudge.reactivation.whats_changed.body": "{org_name} sessizken ürün epey yol aldı: editör, kurs araçları ve katılımcıların ilerleyişi baştan ele alındı. Kurduğunuz her şey eskisi gibi çalışıyor.",
     "nudge.reactivation.whats_changed.cta": "Yenilikleri görün",

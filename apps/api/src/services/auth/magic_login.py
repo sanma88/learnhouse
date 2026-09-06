@@ -3,7 +3,7 @@
 Distinct from the admin/integration magic link (``purpose: "magic_link"`` in
 :mod:`src.services.admin.admin`), which an API-token integration mints for a
 specific user and is delivered out-of-band. This one is requested by the end user
-from the login page ("email me a login link"), is emailed by LearnHouse, and
+from the login page ("email me a login link"), is emailed by this instance, and
 carries ``purpose: "magic_login"``.
 
 Security posture mirrors the admin link:
@@ -103,32 +103,43 @@ def send_magic_login_email(
     lang: str = "en",
 ) -> bool:
     """Email the clickable login link. Link points at the frontend consume page,
-    which posts the token back to the verify endpoint."""
+    which posts the token back to the verify endpoint.
+
+    Copy comes from the shared ``magic_login.*`` bundle rather than the literals
+    this used to carry: it is the only email in the codebase that named the
+    upstream product instead of the instance, and the only one that ignored the
+    ``lang`` it is handed. Both were invisible until the passwordless login was
+    switched on in production.
+    """
+    from src.services.email.translations import t
     from src.services.users.emails import STYLES, _email_layout
 
     safe_token = quote(token, safe="")
     login_url = f"{base_url.rstrip('/')}/auth/magic?token={safe_token}"
     safe_name = html.escape(user.username or user.email)
 
+    heading = t(lang, "magic_login.heading")
+    body_text = t(lang, "magic_login.body", username=safe_name)
+    cta = t(lang, "magic_login.cta")
+    copy_paste = t(lang, "magic_login.copy_paste")
+
     body_content = f"""
-        <h1 style="{STYLES['h1']}">Sign in to LearnHouse</h1>
+        <h1 style="{STYLES['h1']}">{heading}</h1>
         <p style="{STYLES['p']}">
-            Hi {safe_name}, click the button below to sign in. This link works
-            once and expires in 15 minutes. If you didn't request it, you can
-            safely ignore this email.
+            {body_text}
         </p>
-        <a href="{login_url}" style="{STYLES['button']}">Sign in</a>
+        <a href="{login_url}" style="{STYLES['button']}">{cta}</a>
         <p style="{STYLES['link_text']}">
-            Or paste this link into your browser:<br />{login_url}
+            {copy_paste}<br />{login_url}
         </p>
     """
     return send_email(
         to=email,
-        subject="Your LearnHouse login link",
+        subject=t(lang, "magic_login.subject"),
         body=_email_layout(
-            title="Sign in to LearnHouse",
+            title=heading,
             body_content=body_content,
-            footer_note="This link signs you in to your LearnHouse account.",
+            footer_note=t(lang, "magic_login.footer"),
         ),
     )
 

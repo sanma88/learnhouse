@@ -167,7 +167,7 @@ STRINGS: dict[str, str] = {
     "nudge.reactivation.opener.heading": "ยังอยู่ ตรงที่คุณวางไว้",
     "nudge.reactivation.opener.body": "ไม่มีใครแตะ {org_name} เลยนับจากครั้งล่าสุดที่คุณเข้ามา ทุกคอร์ส ทุกบท ทุกบทเรียนยังอยู่ที่เดิม กลับมาทำต่อแค่คลิกเดียว",
     "nudge.reactivation.opener.cta": "เปิดแดชบอร์ดของคุณ",
-    "nudge.reactivation.whats_changed.subject": "มีบางอย่างเปลี่ยนไปบน HI-HA",
+    "nudge.reactivation.whats_changed.subject": "มีบางอย่างเปลี่ยนไปบน {brand}",
     "nudge.reactivation.whats_changed.heading": "นับจากครั้งล่าสุดที่คุณเข้ามา",
     "nudge.reactivation.whats_changed.body": "ระหว่างที่ {org_name} เงียบ ผลิตภัณฑ์พัฒนาไปพอสมควร ทั้งตัวแก้ไข เครื่องมือสร้างคอร์ส และเส้นทางของผู้เรียนได้รับการปรับจริงจัง ทุกอย่างที่คุณสร้างไว้ยังทำงานเหมือนเดิม",
     "nudge.reactivation.whats_changed.cta": "ดูสิ่งที่เปลี่ยนไป",

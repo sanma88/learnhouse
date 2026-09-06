@@ -27,8 +27,14 @@ export function isEmailEnabled(): boolean {
   return Boolean(process.env.RESEND_API_KEY)
 }
 
+// HI-HA: the fallback used to be a third party's brand on a third party's
+// domain — a message escaping this path would have been signed "LearnHouse"
+// from learnhouse.app. Any real deployment sets RESEND_FROM_EMAIL (Resend only
+// accepts a domain it has verified); this value exists so the unset case names
+// the instance rather than someone else. Inert on campus.hi-ha.be either way:
+// send() returns early unless the deployment mode is 'saas'.
 const DEFAULT_FROM =
-  process.env.RESEND_FROM_EMAIL || 'LearnHouse <hello@emails.learnhouse.app>'
+  process.env.RESEND_FROM_EMAIL || 'Campus hi-ha.be <no-reply@hi-ha.be>'
 
 export interface SendResult {
   ok: boolean

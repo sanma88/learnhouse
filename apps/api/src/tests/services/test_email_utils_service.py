@@ -289,7 +289,6 @@ class TestEmailUtilsService:
             return_value=_config(
                 email_provider="resend",
                 system_email_address="system@test.com",
-                resend_api_key="resend-key",
             ),
         ), patch(
             "src.services.email.utils.resend.Emails.send",
@@ -750,10 +749,16 @@ class TestFormatSender:
 
     @pytest.mark.parametrize("display_name", [None, "", "   ", "\r\n"])
     def test_falls_back_to_platform_default(self, display_name):
-        from src.services.email.sender import format_sender
+        from email.utils import parseaddr
 
-        assert format_sender(display_name, "system@test.com") == (
-            "LearnHouse <system@test.com>"
+        from src.services.email.sender import DEFAULT_SENDER_NAME, format_sender
+
+        # The built-in default is this instance's brand; asserted through the
+        # constant so a rebrand is a one-line change and not a test rewrite.
+        # (formataddr quotes it — the name contains a dot, an RFC 5322 special.)
+        assert parseaddr(format_sender(display_name, "system@test.com")) == (
+            DEFAULT_SENDER_NAME,
+            "system@test.com",
         )
         assert format_sender(display_name, "system@test.com", "Acme Platform") == (
             "Acme Platform <system@test.com>"
@@ -882,8 +887,11 @@ class TestSendEmailSenderName:
         assert parseaddr(from_header)[1] == "system@test.com"
 
     def test_mailing_config_without_the_field_keeps_current_behaviour(self):
-        """An older config object (no ``system_email_sender_name``) must not
-        break — it falls back to the built-in platform name."""
+        """An older config object (no ``system_email_sender_name``, no
+        ``site_name``) must not break — it falls back to the built-in platform
+        name, and must not raise on the way to the provider."""
+        from src.services.email.sender import DEFAULT_SENDER_NAME
+
         config = _config(email_provider="resend")
         del config.mailing_config.system_email_sender_name
 
@@ -897,5 +905,25 @@ class TestSendEmailSenderName:
 
         assert (
             mock_resend_send.call_args.args[0]["from"]
-            == "LearnHouse <system@test.com>"
+            == f'"{DEFAULT_SENDER_NAME}" <system@test.com>'
+        )
+
+    def test_unset_sender_name_falls_back_to_the_site_name(self):
+        """The deployment-level default. A hardcoded product name in config.py
+        used to shadow this branch, which is how a rebranded instance sent every
+        message under the upstream name."""
+        config = _config(email_provider="resend", system_email_sender_name=None)
+        config.site_name = "Some Campus"
+
+        with patch(
+            "src.services.email.utils.get_learnhouse_config", return_value=config
+        ), patch(
+            "src.services.email.utils.resend.Emails.send",
+            return_value={"id": "msg-1"},
+        ) as mock_resend_send:
+            send_email("to@test.com", "Hello", "<p>Body</p>")
+
+        assert (
+            mock_resend_send.call_args.args[0]["from"]
+            == "Some Campus <system@test.com>"
         )

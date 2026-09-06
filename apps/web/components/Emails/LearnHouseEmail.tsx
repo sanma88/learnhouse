@@ -59,8 +59,11 @@ const LOGO_URL =
   getConfig('NEXT_PUBLIC_LEARNHOUSE_EMAIL_LOGO_URL') ||
   `${getLEARNHOUSE_HTTP_PROTOCOL_VAL()}${getLEARNHOUSE_DOMAIN_VAL()}/hiha-logo.svg`
 
-// HI-HA: sign-off shown at the bottom of every transactional email.
-const EMAIL_SIGNOFF = getConfig('NEXT_PUBLIC_LEARNHOUSE_EMAIL_SIGNOFF') || 'HI-HA'
+// HI-HA: sign-off shown at the bottom of every transactional email. Matches the
+// API's mail brand (mailing_config.system_email_sender_name) so the two senders
+// cannot sign the same instance with two different names.
+const EMAIL_SIGNOFF =
+  getConfig('NEXT_PUBLIC_LEARNHOUSE_EMAIL_SIGNOFF') || 'Campus hi-ha.be'
 
 export function LearnHouseEmail({
   accentColor,

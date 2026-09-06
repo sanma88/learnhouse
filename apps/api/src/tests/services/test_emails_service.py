@@ -7,6 +7,7 @@ import pytest
 
 from src.db.organizations import OrganizationRead
 from src.db.users import UserRead
+from src.services.email.branding import email_brand
 from src.services.users.emails import (
     send_account_creation_email,
     send_account_deleted_email,
@@ -75,16 +76,18 @@ class TestEmailsService:
         assert "user&lt;script&gt;" in body
         assert "Get Started" in body
 
-    def test_orgless_welcome_uses_cta_url_and_learnhouse_branding(self):
+    def test_orgless_welcome_uses_cta_url_and_instance_branding(self):
         with patch("src.services.users.emails.send_email", return_value=True) as send_email:
             send_account_creation_email(
                 _user(), "user@test.com", cta_url="https://platform.test/organizations"
             )
         call = send_email.call_args.kwargs
         assert "https://platform.test/organizations" in call["body"]
-        # Org-less keeps the LearnHouse-branded subject + Academy footer, no org logo.
-        assert "Welcome to LearnHouse" in call["subject"]
-        assert "LearnHouse Academy" in call["body"]
+        # Org-less keeps the instance-branded subject + academy footer, no org logo.
+        brand = email_brand()
+        assert f"Welcome to {brand}" in call["subject"]
+        assert brand in call["body"]
+        assert "LearnHouse" not in call["body"]
         assert "<img" not in call["body"]
 
     def test_welcome_is_whitelabeled_when_org_supplied(self):
@@ -97,27 +100,30 @@ class TestEmailsService:
                 logo_url="https://api.test/content/orgs/org_uuid/logos/logo.png",
             )
         call = send_email.call_args.kwargs
-        # Subject/body name the org (html-escaped), not LearnHouse.
+        # Subject/body name the org (html-escaped), not the instance.
+        brand = email_brand()
         assert "Acme &amp; Co" in call["subject"]
-        assert "Welcome to LearnHouse" not in call["subject"]
+        assert f"Welcome to {brand}" not in call["subject"]
         assert "Acme &amp; Co" in call["body"]
-        # Org logo replaces the mark; Academy link is gone; powered-by remains.
+        # Org logo replaces the mark; academy link is gone; powered-by remains.
         assert '<img src="https://api.test/content/orgs/org_uuid/logos/logo.png"' in call["body"]
-        assert "LearnHouse Academy" not in call["body"]
-        assert "Powered by LearnHouse" in call["body"]
+        assert f"Powered by {brand}" in call["body"]
+        assert "LearnHouse" not in call["body"]
         assert "https://acme.test/home" in call["body"]
 
-    def test_whitelabel_without_logo_falls_back_to_learnhouse_mark(self):
+    def test_whitelabel_without_logo_falls_back_to_the_instance_mark(self):
         with patch("src.services.users.emails.send_email", return_value=True) as send_email:
             send_account_creation_email(
                 _user(), "user@test.com", org_name="Acme", logo_url=None
             )
         call = send_email.call_args.kwargs
-        # No org logo → LearnHouse wordmark (SVG), but text still white-labeled.
+        # No org logo → the instance mark, but the text stays white-labeled.
+        # No public URL is resolvable under test, so the mark degrades to text.
+        brand = email_brand()
         assert "<img" not in call["body"]
-        assert "<svg" in call["body"]
+        assert f">{brand}</span>" in call["body"]
         assert "Acme" in call["subject"]
-        assert "Powered by LearnHouse" in call["body"]
+        assert f"Powered by {brand}" in call["body"]
 
     def test_role_changed_email_links_back_to_the_org(self):
         """Telling someone their permissions changed is useless without a way
@@ -162,7 +168,7 @@ class TestEmailsService:
         # Hostile username/org names are escaped, never rendered as markup.
         assert "<script>" not in call["body"]
 
-    def test_org_join_email_falls_back_to_learnhouse_mark_without_logo(self):
+    def test_org_join_email_falls_back_to_the_instance_mark_without_logo(self):
         with patch("src.services.users.emails.send_email", return_value=True) as send_email:
             send_org_join_email(
                 email="user@test.com",
@@ -172,7 +178,7 @@ class TestEmailsService:
             )
         call = send_email.call_args.kwargs
         assert "<img" not in call["body"]
-        assert "<svg" in call["body"]
+        assert f">{email_brand()}</span>" in call["body"]
 
     def test_org_join_email_translates(self):
         with patch("src.services.users.emails.send_email", return_value=True) as send_email:
@@ -466,3 +472,117 @@ class TestSenderNameRouting:
                 signup_url="https://org.test/signup",
             )
             assert sent.call_args.kwargs["sender_name"] is None
+
+
+class TestBrandMark:
+    """Every email carries a mark, and it is this instance's.
+
+    The layout's default was ``None``, interpolated straight into the header
+    div, so the nine emails that never passed a logo — password reset,
+    invitation, verification, the lifecycle confirmations, the magic link —
+    rendered the word "None" where the logo belongs.
+    """
+
+    def test_layout_without_a_logo_renders_the_instance_mark(self):
+        from src.services.users.emails import _email_layout
+
+        html = _email_layout("Title", "<p>body</p>")
+        assert "None" not in html
+        assert email_brand() in html
+
+    def test_layout_accepts_an_explicit_no_mark(self):
+        """`""` is how a caller asks for a bare header; only the default changed."""
+        from src.services.users.emails import _email_layout
+
+        html = _email_layout("Title", "<p>body</p>", logo_html="")
+        assert "None" not in html
+        assert "<img" not in html
+
+    def test_every_transactional_email_carries_the_mark(self):
+        """Sweeps the senders that pass no logo of their own."""
+        brand = email_brand()
+        with patch("src.services.users.emails.send_email", return_value=True) as sent:
+            calls = [
+                lambda: send_org_created_email("a@test.com", "Org", "https://o.test"),
+                lambda: send_org_deleted_email("a@test.com", "Org"),
+                lambda: send_account_deleted_email("a@test.com", "user"),
+                lambda: send_password_reset_email(
+                    "code", _user(), _org(), "a@test.com", "https://o.test"
+                ),
+                lambda: send_password_reset_email_platform(
+                    "code", _user(), "a@test.com", "https://o.test"
+                ),
+                lambda: send_invitation_email(
+                    "a@test.com", "Org", "admin", "https://o.test/signup"
+                ),
+                lambda: send_role_changed_email(
+                    email="a@test.com", username="u", org_name="Org", new_role_name="Admin"
+                ),
+                lambda: send_email_verification_email(
+                    "tok", _user(), _org(), "a@test.com", "https://o.test"
+                ),
+            ]
+            for call in calls:
+                call()
+                body = sent.call_args.kwargs["body"]
+                assert "None" not in body, sent.call_args.kwargs["subject"]
+                assert brand in body, sent.call_args.kwargs["subject"]
+                assert "LearnHouse" not in body
+
+    def test_an_org_logo_still_wins_over_the_instance_mark(self):
+        """White labelling is the point of the parameter — only the fallback moved."""
+        with patch("src.services.users.emails.send_email", return_value=True) as sent:
+            send_org_join_email(
+                email="a@test.com",
+                username="learner",
+                org_name="Acme",
+                cta_url="https://acme.test/home",
+                logo_url="https://api.test/content/orgs/o/logos/acme.png",
+            )
+        body = sent.call_args.kwargs["body"]
+        assert '<img src="https://api.test/content/orgs/o/logos/acme.png"' in body
+        assert body.count("<img") == 1
+
+
+class TestEmailBrandResolution:
+    """Order: the mail brand, then site_name, then the built-in default."""
+
+    def _config(self, sender_name, site_name="Site Name"):
+        return SimpleNamespace(
+            mailing_config=SimpleNamespace(system_email_sender_name=sender_name),
+            site_name=site_name,
+        )
+
+    def test_mail_brand_wins(self):
+        from src.services.email.branding import email_brand as brand
+
+        with patch(
+            "config.config.get_learnhouse_config",
+            return_value=self._config("Mail Brand"),
+        ):
+            assert brand() == "Mail Brand"
+
+    def test_falls_back_to_site_name_when_unset(self):
+        from src.services.email.branding import email_brand as brand
+
+        with patch(
+            "config.config.get_learnhouse_config", return_value=self._config(None)
+        ):
+            assert brand() == "Site Name"
+
+    def test_empty_mail_brand_does_not_leave_the_body_unbranded(self):
+        """`""` means "no From display name", not "no name in the heading"."""
+        from src.services.email.branding import email_brand as brand
+
+        with patch(
+            "config.config.get_learnhouse_config", return_value=self._config("")
+        ):
+            assert brand() == "Site Name"
+
+    def test_unreadable_config_still_yields_a_brand(self):
+        from src.services.email.branding import DEFAULT_EMAIL_BRAND
+        from src.services.email.branding import email_brand as brand
+
+        with patch("config.config.get_learnhouse_config", side_effect=RuntimeError):
+            assert brand() == DEFAULT_EMAIL_BRAND
+        assert "LearnHouse" not in DEFAULT_EMAIL_BRAND

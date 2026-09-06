@@ -41,8 +41,24 @@ class TestT:
 
     def test_falls_back_to_english_when_key_missing_in_locale(self):
         # Insert a locale that's missing a specific key, then look it up;
-        # we expect the English bundle's value back.
-        assert t("fr", "academy_link_text") == EMAIL_TRANSLATIONS["fr"]["academy_link_text"]
+        # we expect the English bundle's value back. {brand} is the one
+        # placeholder t() supplies itself, so the comparison fills it too.
+        from src.services.email.branding import email_brand
+
+        assert t("fr", "academy_link_text") == EMAIL_TRANSLATIONS["fr"][
+            "academy_link_text"
+        ].format(brand=email_brand())
+
+    def test_brand_placeholder_is_filled_without_the_caller_asking(self):
+        """The instance name lives in one setting, not in 180-odd strings."""
+        from src.services.email.branding import email_brand
+
+        rendered = t("en", "account_creation.footer_powered")
+        assert rendered == f"Powered by {email_brand()}"
+        assert "{brand}" not in rendered
+
+    def test_an_explicit_brand_still_wins(self):
+        assert t("en", "academy_link_text", brand="Other") == "Other"
 
     def test_returns_key_itself_when_key_unknown_everywhere(self):
         # No locale has this key — t() must not raise.

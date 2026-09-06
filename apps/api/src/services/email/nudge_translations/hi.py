@@ -167,7 +167,7 @@ STRINGS: dict[str, str] = {
     "nudge.reactivation.opener.heading": "वैसी ही, जैसी आपने छोड़ी थी",
     "nudge.reactivation.opener.body": "आपकी पिछली बार के बाद {org_name} को किसी ने नहीं छुआ — हर कोर्स, अध्याय और पाठ वहीं है जहाँ आपने छोड़ा था। दोबारा शुरू करना एक क्लिक का काम है।",
     "nudge.reactivation.opener.cta": "अपना डैशबोर्ड खोलें",
-    "nudge.reactivation.whats_changed.subject": "HI-HA में कुछ चीज़ें बदली हैं",
+    "nudge.reactivation.whats_changed.subject": "{brand} में कुछ चीज़ें बदली हैं",
     "nudge.reactivation.whats_changed.heading": "आपकी पिछली बार के बाद",
     "nudge.reactivation.whats_changed.body": "{org_name} के शांत रहते हुए उत्पाद काफ़ी आगे बढ़ा है: एडिटर, कोर्स के उपकरण और सीखने वालों का रास्ता — सब पर असली काम हुआ है। आपने जो बनाया वह पहले जैसा ही चलता है।",
     "nudge.reactivation.whats_changed.cta": "नया क्या है देखें",

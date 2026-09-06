@@ -183,3 +183,41 @@ class TestSendMagicLoginEmail:
             )
         body = send_mock.call_args.kwargs["body"]
         assert "/auth/magic?token=a%20b%2Fc%2Bd" in body
+
+    def test_carries_the_instance_brand_and_a_mark(self):
+        """This email shipped with the upstream product name hardcoded into its
+        subject, heading and footer, and passed no logo — so the header rendered
+        the literal string "None". It was the first thing a new user saw."""
+        from src.services.email.branding import email_brand
+
+        with patch.object(ml, "send_email", return_value=True) as send_mock:
+            send_magic_login_email(
+                _fake_user_read(),
+                "learner@example.com",
+                "https://academy.example.com",
+                "raw.jwt.token",
+            )
+        call = send_mock.call_args.kwargs
+        brand = email_brand()
+        assert brand in call["subject"]
+        assert brand in call["body"]
+        assert "LearnHouse" not in call["subject"]
+        assert "LearnHouse" not in call["body"]
+        # The header block holds a mark, never the repr of a missing one.
+        assert ">None<" not in call["body"]
+        assert "\n                None\n" not in call["body"]
+
+    def test_honours_the_requested_language(self):
+        """``lang`` was in the signature and ignored; every other email in the
+        codebase translates."""
+        with patch.object(ml, "send_email", return_value=True) as send_mock:
+            send_magic_login_email(
+                _fake_user_read(),
+                "learner@example.com",
+                "https://academy.example.com",
+                "raw.jwt.token",
+                lang="fr",
+            )
+        call = send_mock.call_args.kwargs
+        assert "Votre lien de connexion" in call["subject"]
+        assert "Connectez-vous à" in call["body"]

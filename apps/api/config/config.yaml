@@ -1,6 +1,7 @@
-# HI-HA: these three feed the page metadata, /openapi.json and the "From:" name of
-# every outgoing email. Override in production with LEARNHOUSE_SITE_NAME /
-# LEARNHOUSE_SITE_DESCRIPTION / LEARNHOUSE_CONTACT_EMAIL.
+# HI-HA: these three feed the page metadata and /openapi.json. Override in
+# production with LEARNHOUSE_SITE_NAME / LEARNHOUSE_SITE_DESCRIPTION /
+# LEARNHOUSE_CONTACT_EMAIL. The name on outgoing email is NOT site_name — see
+# mailing_config.system_email_sender_name below.
 site_name: HI-HA
 site_description: Campus de formation HI-HA.
 contact_email: info@hi-ha.be
@@ -52,6 +53,13 @@ hosting_config:
 mailing_config:
   email_provider: "resend" # "resend" or "smtp"
   system_email_address: ""
+  # HI-HA: the brand every outgoing email carries — From name, header logo,
+  # subject, heading and footer all read this one value (services/email/branding.py).
+  # Deliberately NOT site_name: that one is suffixed per environment
+  # ("HI-HA Campus (local)", "… (test2)") and such a suffix must never reach a
+  # recipient. Override with LEARNHOUSE_SYSTEM_EMAIL_SENDER_NAME; leave unset in
+  # a generic deployment and it falls back to site_name.
+  system_email_sender_name: "Campus hi-ha.be"
   resend_api_key: ""
   smtp_host: ""
   smtp_port: 587

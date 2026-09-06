@@ -111,7 +111,13 @@ class MailingConfig(BaseModel):
     # configurable would break DKIM alignment and burn a shared sending
     # reputation. Organizations may override this name per-org; see
     # ``src/services/email/sender.py``.
-    system_email_sender_name: Optional[str] = "LearnHouse"
+    #
+    # HI-HA: the default is None, NOT the upstream product name. None means
+    # "unset", which ``services/email/utils.py`` and
+    # ``services/email/branding.py`` both resolve to ``site_name``; a hardcoded
+    # name here shadowed that fallback and put "LearnHouse" on every message a
+    # rebranded instance sent. An explicit "" still means "no display name".
+    system_email_sender_name: Optional[str] = None
     resend_api_key: Optional[str] = None
     smtp_host: Optional[str] = None
     smtp_port: Optional[int] = 587
@@ -506,11 +512,13 @@ def get_learnhouse_config() -> LearnHouseConfig:
     system_email_address = env_system_email_address or yaml_config.get(
         "mailing_config", {}
     ).get("system_email_address")
-    # Defaults to "LearnHouse" so an unset deployment keeps the historical
-    # From name exactly as it was.
+    # No default: unset must stay None so the mail layer can fall back to
+    # site_name (see MailingConfig above). LEARNHOUSE_SYSTEM_EMAIL_SENDER_NAME
+    # still wins over the yaml, and an explicit "" in either still means "send
+    # with no From display name".
     system_email_sender_name = env_system_email_sender_name or yaml_config.get(
         "mailing_config", {}
-    ).get("system_email_sender_name", "LearnHouse")
+    ).get("system_email_sender_name")
     smtp_host = env_smtp_host or yaml_config.get("mailing_config", {}).get("smtp_host")
     smtp_port = int(env_smtp_port) if env_smtp_port else yaml_config.get("mailing_config", {}).get("smtp_port", 587)
     smtp_username = env_smtp_username or yaml_config.get("mailing_config", {}).get("smtp_username")

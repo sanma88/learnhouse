@@ -7,6 +7,7 @@ from urllib.parse import quote
 from pydantic import EmailStr
 from src.db.organizations import OrganizationRead
 from src.db.users import UserRead
+from src.services.email.branding import email_brand
 from src.services.email.translations import t
 from src.services.email.utils import send_email
 
@@ -57,13 +58,12 @@ def _public_base_url() -> str:
         return ""
 
 
+# HI-HA: kept as a name for what the mark *says*, but the value now comes from
+# the one resolver every part of an email shares (From header, logo, body copy)
+# instead of reading site_name directly — that setting is suffixed per
+# environment ("… (local)"), which has no business in a recipient's inbox.
 def _site_name() -> str:
-    try:
-        from config.config import get_learnhouse_config
-
-        return get_learnhouse_config().site_name or "HI-HA"
-    except Exception:
-        return "HI-HA"
+    return email_brand()
 
 
 # HI-HA: upstream pointed this at university.learnhouse.io — a third party's site,
@@ -120,10 +120,10 @@ STYLES = {
 def _org_logo_img(logo_url: str, alt: str) -> str:
     """<img> for a white-labeled org logo.
 
-    Bounded to the same footprint as the LearnHouse wordmark. Raster logos
+    Bounded to the same footprint as the instance wordmark. Raster logos
     (PNG/JPG) render in every mail client; an SVG logo may be stripped by some
     (e.g. Gmail), in which case the ``alt`` (the org name) shows instead — still
-    org-branded, never a broken LearnHouse mark.
+    org-branded, never a broken instance mark.
     """
     return (
         f'<img src="{html.escape(logo_url)}" alt="{html.escape(alt)}" '
@@ -229,7 +229,12 @@ def _email_layout(
     """Wrap content in the standard email layout.
 
     ``logo_html`` defaults to this instance's brand mark; white-labeled emails
-    pass the org's logo <img> instead.
+    pass the org's logo <img> instead. Passing ``""`` is the way to ask for no
+    mark at all — the distinction matters because the default used to be the
+    string ``None``, interpolated straight into the header, and the nine emails
+    that never passed a logo (password reset, invitation, verification, the
+    lifecycle confirmations, the magic link) each rendered the word "None"
+    where the mark belongs.
 
     ``unsubscribe_url`` is set only by bulk lifecycle mail. Transactional email
     (password reset, invitation, verification) leaves it empty and renders
@@ -238,6 +243,9 @@ def _email_layout(
     and can't find the exit reports spam instead, which costs the sending domain
     far more than the opt-out does.
 """
+    if logo_html is None:
+        logo_html = _brand_logo_html()
+
     note_html = ""
     if footer_note:
         note_html = f'\n            <p style="{STYLES["footer_text"]}">{footer_note}</p>'
@@ -299,10 +307,10 @@ def send_account_creation_email(
     signups. Falls back to the public academy when no URL is supplied.
 
     When ``org_name`` is set the email is WHITE-LABELED to that organization:
-    the subject and body name the org (not LearnHouse), the org's ``logo_url``
-    replaces the LearnHouse mark when present, and the footer is reduced to a
-    subtle "Powered by LearnHouse". Org-less signups keep the LearnHouse-branded
-    variant with the Academy footer link.
+    the subject and body name the org (not the instance), the org's ``logo_url``
+    replaces the instance mark when present, and the footer is reduced to a
+    subtle "Powered by <brand>". Org-less signups keep the instance-branded
+    variant with the academy footer link.
     """
     safe_username = html.escape(user.username)
     white_label = bool(org_name)
@@ -585,7 +593,7 @@ def send_org_join_email(
     mail at all and had to find their way to the org on their own.
 
     Always white-labeled to the org — the user is being welcomed into that
-    academy, not onto LearnHouse — with the org's logo when it has one.
+    academy, not onto the platform — with the org's logo when it has one.
     """
     safe_username = html.escape(username)
     safe_org_name = html.escape(org_name)
