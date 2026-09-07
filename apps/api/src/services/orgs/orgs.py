@@ -224,9 +224,18 @@ async def _try_send_org_created(request: Request, org, current_user, db_session)
         # platform confirming an action taken on the platform.
         #
         # Its LANGUAGE is a different question, and the answer is the reader's,
-        # not the platform's. `create_org_with_config` accepts a submitted
-        # config, so an org can be created with `default_language: fr` in the
-        # same request — and its creator was still told about it in English.
+        # not the platform's — so it is read from the org's own config rather
+        # than hardcoded to English.
+        #
+        # Today that read always yields "en", and saying otherwise would be
+        # overselling it: the only caller of `create_org_with_config` is the
+        # router, which types the body as `OrganizationConfigBase`, whose v1
+        # `OrgGeneralConfig` carries no `default_language` at all; the plain
+        # `create_org` path writes `OrganizationConfigV2Base()`, whose default
+        # is "en". The wiring is here for the day the creation schema exposes
+        # the setting (and for a config restored or seeded outside that path),
+        # not because an org can be born in French through the API right now.
+        #
         # Guarded separately from the send: the language is decoration, the
         # confirmation is not. A config that cannot be read costs the reader
         # their language, never the email.
@@ -1448,6 +1457,20 @@ async def update_org_email_sender_name_config(
     return {"detail": "Email sender name updated"}
 
 
+def _config_section(parent, key: str) -> dict:
+    """The ``key`` sub-object of a config blob, or ``{}`` when there isn't one.
+
+    A config blob can carry an explicit ``null`` for a section it has never
+    populated, and ``{}.get(k, {})`` returns that None rather than the default.
+    Every org-scoped email walks these sections, so a missing or mistyped one
+    must yield "nothing configured", not an AttributeError mid-send.
+    """
+    if not isinstance(parent, dict):
+        return {}
+    value = parent.get(key)
+    return value if isinstance(value, dict) else {}
+
+
 def resolve_org_sender_name(org_config: OrganizationConfig | None) -> str:
     """The org's configured email display name, or "" when it has none.
 
@@ -1463,18 +1486,12 @@ def resolve_org_sender_name(org_config: OrganizationConfig | None) -> str:
         return ""
     cfg = org_config.config
 
-    def _section(parent: dict, key: str) -> dict:
-        # A config blob can carry an explicit ``null`` for a section it has
-        # never populated, and ``{}.get(k, {})`` returns that None rather than
-        # the default. Every org-scoped email reads this, so a missing section
-        # must yield "no name", not an AttributeError mid-send.
-        value = parent.get(key)
-        return value if isinstance(value, dict) else {}
-
-    v2 = _section(_section(cfg, "customization"), "general").get("email_sender_name")
+    v2 = _config_section(_config_section(cfg, "customization"), "general").get(
+        "email_sender_name"
+    )
     if v2:
         return sanitize_sender_name(v2)
-    v1 = _section(cfg, "general").get("email_sender_name")
+    v1 = _config_section(cfg, "general").get("email_sender_name")
     return sanitize_sender_name(v1) if v1 else ""
 
 
@@ -1569,15 +1586,27 @@ async def update_org_default_language_config(
 
 
 def get_org_default_language(org_config: OrganizationConfig | None) -> str:
-    """Read the org's default language from its config, falling back to 'en'."""
-    if org_config is None or not org_config.config:
+    """Read the org's default language from its config, falling back to 'en'.
+
+    Hardened exactly like ``resolve_org_sender_name``, and for the same reason:
+    the value is read straight out of a JSON column, so it can be a ``null``
+    section, a non-dict config, or a code of the wrong type — written before
+    the setting was validated, restored from a backup, or edited directly in
+    the database. Ten call sites read this, one of them the magic login link,
+    which is a user's only way in. A stored oddity must therefore cost the
+    *language* and nothing else: this function always returns a ``str``, never
+    raises, and never lets a mistyped language stop a send.
+    """
+    if org_config is None or not isinstance(org_config.config, dict):
         return "en"
     cfg = org_config.config
-    v2 = cfg.get("customization", {}).get("general", {}).get("default_language")
-    if v2:
+    v2 = _config_section(_config_section(cfg, "customization"), "general").get(
+        "default_language"
+    )
+    if isinstance(v2, str) and v2:
         return v2
-    v1 = cfg.get("general", {}).get("default_language")
-    return v1 or "en"
+    v1 = _config_section(cfg, "general").get("default_language")
+    return v1 if isinstance(v1, str) and v1 else "en"
 
 
 async def update_org_watermark_config(

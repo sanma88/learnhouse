@@ -959,9 +959,17 @@ async def magic_link_request(
     if not user.email_verified and get_deployment_mode() == "saas":
         return generic
 
-    # Decorate the mail with the org's own language, logo and sender name when
-    # the link was requested from an organization's login page (the frontend
-    # sends `org_slug` there, so `org` is already resolved above).
+    # Decorate the mail with the org's own language and logo when the link was
+    # requested from an organization's login page (the frontend sends
+    # `org_slug` there, so `org` is already resolved above).
+    #
+    # The org's `email_sender_name` is deliberately NOT read here, unlike every
+    # other org-scoped mail. A login link authenticates against the PLATFORM,
+    # not on behalf of an organization: it is an instance email, so it keeps
+    # the instance's From name (`LEARNHOUSE_SYSTEM_EMAIL_SENDER_NAME`, the one
+    # the operator actually configured and verified on a received message).
+    # Passing the org name here would silently override that deployment
+    # setting on the one message a locked-out user has to trust.
     #
     # Every step is best-effort and isolated: a magic link is the user's only
     # way in, so a missing org config, an unreadable logo path or a database
@@ -971,15 +979,11 @@ async def magic_link_request(
     lang = "en"
     org_name: Optional[str] = None
     logo_url: Optional[str] = None
-    sender_name: Optional[str] = None
     if org is not None:
         try:
             from src.db.organization_config import OrganizationConfig
             from src.services.email.utils import get_org_logo_url
-            from src.services.orgs.orgs import (
-                get_org_default_language,
-                resolve_org_sender_name,
-            )
+            from src.services.orgs.orgs import get_org_default_language
 
             org_config = (
                 await db_session.execute(
@@ -987,7 +991,6 @@ async def magic_link_request(
                 )
             ).scalars().first()
             lang = get_org_default_language(org_config)
-            sender_name = resolve_org_sender_name(org_config) or None
             org_name = org.name
             logo_url = get_org_logo_url(org, request)
         except Exception:
@@ -1009,7 +1012,6 @@ async def magic_link_request(
             lang=lang,
             org_name=org_name,
             logo_url=logo_url,
-            sender_name=sender_name,
         )
     except Exception:
         import logging

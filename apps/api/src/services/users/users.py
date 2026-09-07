@@ -980,6 +980,15 @@ async def delete_user_by_id(
     await db_session.commit()
 
     # Best-effort deletion confirmation email.
+    #
+    # Sent in ENGLISH, and no `lang` is passed: there is no per-user language
+    # anywhere in the schema, and by this point the user's org memberships are
+    # gone, so there is no language left that is legitimately theirs. Reading
+    # one from an arbitrary org before the cascade would be technically
+    # possible — the instance is single-org, so it would even be deterministic
+    # — but it would put a language on a message for someone who has just
+    # stopped being a member of anything. Left English on purpose; if that is
+    # revisited, the translated strings already exist (translations.py).
     if deleted_email:
         try:
             from src.services.users.emails import send_account_deleted_email

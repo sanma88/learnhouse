@@ -133,6 +133,14 @@ EMAIL_TRANSLATIONS: dict[str, dict[str, str]] = {
         "org_deleted.body": "Votre organisation et tout son contenu ont été définitivement supprimés de {brand}. Si vous n'êtes pas à l'origine de cette suppression, contactez immédiatement l'assistance.",
         "org_deleted.footer": "Vous recevez cet e-mail parce que vous étiez administrateur de cette organisation.",
 
+        # NOT reachable today, and deliberately kept anyway. The single caller
+        # of `send_account_deleted_email` (services/users/users.py) sends after
+        # the account and its memberships are gone and passes no `lang`, so
+        # these four render in English. There is no per-user language column in
+        # the schema to pass instead, and picking an arbitrary org's language
+        # for a user who no longer belongs to any is a product decision, not a
+        # translation one. They stay so the bundle is complete the day a
+        # language reaches this send; the NOTICE says the same.
         "account_deleted.subject": "Votre compte {brand} a été supprimé",
         "account_deleted.heading": "Votre compte a été supprimé",
         "account_deleted.body": "Votre compte {brand} et vos données personnelles ont été définitivement supprimés. Nous sommes désolés de vous voir partir. Si vous n'êtes pas à l'origine de cette suppression, contactez immédiatement l'assistance.",
@@ -1184,8 +1192,20 @@ for _nudge_lang, _nudge_keys in NUDGE_TRANSLATIONS.items():
 
 
 def normalize_language(lang: str | None) -> str:
-    """Return a supported locale code, falling back to English."""
-    if not lang:
+    """Return a supported locale code, falling back to English.
+
+    Non-string input falls back too rather than raising. Callers hand this
+    whatever an organization has stored in its JSON config, and a value of the
+    wrong type (a number, a list, a nested object — from a restore, an import,
+    or a row edited before the setting was validated) used to raise an
+    ``AttributeError`` on ``.split`` *inside the send*, where the caller's
+    ``except`` swallowed it and the email was silently never sent. Nothing
+    about an unusable language code justifies losing a message, least of all a
+    login link. The resolver is hardened for the same reason
+    (``get_org_default_language``); this is the second line, covering every
+    caller including those that pass a value from somewhere else.
+    """
+    if not lang or not isinstance(lang, str):
         return DEFAULT_LANGUAGE
     code = lang.split("-")[0].lower()
     return code if code in SUPPORTED_LANGUAGES else DEFAULT_LANGUAGE

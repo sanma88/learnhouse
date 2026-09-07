@@ -170,6 +170,62 @@ class TestGetOrgDefaultLanguage:
         row = await _make_org_config(db, org, {})
         assert get_org_default_language(row) == "en"
 
+    # --- Hardening: this is read out of a plain JSON column, so it can hold
+    # anything a restore, an import or a hand-edited row put there. Seven
+    # emails call it, one of them the magic login link, which is a user's only
+    # way in — so it must always return a str and never raise. See
+    # test_auth_magic_link.py for the end-to-end proof that the link still goes.
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize(
+        "stored", [42, ["fr"], {"code": "fr"}, True, 3.5, None, ""],
+        ids=["int", "list", "dict", "bool", "float", "null", "empty"],
+    )
+    async def test_returns_en_when_the_stored_value_is_not_a_language_string(
+        self, db, org, stored
+    ):
+        row = await _make_org_config(
+            db,
+            org,
+            {
+                "config_version": "2.0",
+                "customization": {"general": {"default_language": stored}},
+            },
+        )
+        assert get_org_default_language(row) == "en"
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize(
+        "config",
+        [
+            {"customization": None},
+            {"customization": {"general": None}},
+            {"general": None},
+            "not a dict at all",
+            ["not", "a", "dict"],
+            42,
+        ],
+        ids=["customization_null", "general_null", "v1_general_null",
+             "string", "list", "int"],
+    )
+    async def test_returns_en_when_a_section_is_null_or_mistyped(
+        self, db, org, config
+    ):
+        """Previously raised AttributeError: ``{}.get(k, {})`` hands back an
+        explicit ``null`` rather than the default. Mirrors the guard
+        ``resolve_org_sender_name`` already had."""
+        row = await _make_org_config(db, org, config)
+        assert get_org_default_language(row) == "en"
+
+    @pytest.mark.asyncio
+    async def test_still_reads_a_v1_string_under_a_null_v2_section(self, db, org):
+        row = await _make_org_config(
+            db,
+            org,
+            {"customization": None, "general": {"default_language": "es"}},
+        )
+        assert get_org_default_language(row) == "es"
+
 
 class TestApiUpdateOrgDefaultLanguageRouterWrapper:
     """Cover the thin router handler that just delegates to the service."""

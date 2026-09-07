@@ -103,7 +103,6 @@ def send_magic_login_email(
     lang: str = "en",
     org_name: Optional[str] = None,
     logo_url: Optional[str] = None,
-    sender_name: Optional[str] = None,
 ) -> bool:
     """Email the clickable login link. Link points at the frontend consume page,
     which posts the token back to the verify endpoint.
@@ -114,18 +113,24 @@ def send_magic_login_email(
     ``lang`` it is handed. Both were invisible until the passwordless login was
     switched on in production.
 
-    ``org_name`` / ``logo_url`` / ``sender_name`` white-label the mail when the
-    login was requested from an organization's own login page. They are the same
-    three values every other org-scoped mail already resolves (invitation,
-    password reset, verification); this one was the last that resolved none of
-    them, so an org with a French default language and its own logo still
-    received an English link under the instance wordmark.
+    ``org_name`` / ``logo_url`` white-label the BODY when the login was
+    requested from an organization's own login page: an org with a French
+    default language and its own logo used to receive an English link under the
+    instance wordmark, because this was the last org-scoped mail to resolve
+    neither.
 
-    All three are optional and every one of them degrades on its own: no
-    ``logo_url`` falls back to the instance mark, no ``sender_name`` to the
-    deployment's From name, an unknown ``lang`` to English inside ``t()``. A
-    magic link is the user's only way in — it must go out even when the org
-    lookup that decorates it did not.
+    There is deliberately no ``sender_name``, unlike the other org-scoped mails.
+    This message authenticates against the platform rather than acting on any
+    organization's behalf, so its ``From`` name stays the deployment's own —
+    the value the operator configured and verified on a delivered message. An
+    org display name would override that deployment setting on the single
+    message a locked-out user has to recognise and trust, so the parameter does
+    not exist rather than merely going unused.
+
+    Both remaining decorations are optional and degrade on their own: no
+    ``logo_url`` falls back to the instance mark, an unknown or mistyped
+    ``lang`` to English inside ``t()``. A magic link is the user's only way in
+    — it must go out even when the org lookup that decorates it did not.
     """
     from src.services.email.translations import t
     from src.services.users.emails import (
@@ -167,7 +172,6 @@ def send_magic_login_email(
             footer_note=t(lang, "magic_login.footer"),
             logo_html=logo_html,
         ),
-        sender_name=sender_name,
     )
 
 

@@ -1,5 +1,7 @@
 """Tests for src/services/email/translations.py."""
 
+import pytest
+
 from src.services.email.translations import (
     DEFAULT_LANGUAGE,
     EMAIL_TRANSLATIONS,
@@ -29,6 +31,26 @@ class TestNormalizeLanguage:
 
     def test_empty_string_falls_back_to_english(self):
         assert normalize_language("") == DEFAULT_LANGUAGE
+
+    @pytest.mark.parametrize(
+        "value", [42, ["fr"], {"code": "fr"}, True, 3.5, object()],
+        ids=["int", "list", "dict", "bool", "float", "object"],
+    )
+    def test_non_string_falls_back_instead_of_raising(self, value):
+        """A language read out of an org's JSON config can be of any type.
+
+        This used to raise ``AttributeError`` on ``.split`` from inside the
+        send, where the caller's ``except`` swallowed it and the email was
+        silently dropped — on the magic login link, that locked the user out.
+        Nothing about an unusable language code justifies losing a message.
+        """
+        assert normalize_language(value) == DEFAULT_LANGUAGE
+
+    @pytest.mark.parametrize("value", [42, ["fr"], {"code": "fr"}])
+    def test_t_renders_english_for_a_non_string_lang(self, value):
+        assert t(value, "invitation.heading") == EMAIL_TRANSLATIONS["en"][
+            "invitation.heading"
+        ]
 
 
 class TestT:

@@ -307,7 +307,11 @@ class TestRefreshPreservesProvenance:
 
 class TestMagicLinkCarriesTheOrgsLanguageAndLogo:
     """The magic link is sent from an ORG's login page, so it must arrive in
-    that org's language, under that org's mark and name.
+    that org's language and under that org's mark.
+
+    Its ``From`` NAME is a separate question and the answer is different: see
+    ``TestMagicLinkKeepsTheInstanceFromName``. The body is the organization's;
+    the envelope is the platform's.
 
     Before this, the router called ``send_magic_login_email`` with neither
     ``lang`` nor a logo: an organization whose config says
@@ -401,8 +405,12 @@ class TestMagicLinkCarriesTheOrgsLanguageAndLogo:
         assert "black_logo.png" not in body
         assert body.count("<img") == 1
 
-        # …and the From name it already had configured
-        assert kwargs["sender_name"] == "Académie Test"
+        # (iii) …and NOT the org's own From name, even though this org has one
+        # configured. A login link is an instance email: overriding the
+        # deployment's configured sender on it is the regression this asserts
+        # against. The header itself is proved in
+        # TestMagicLinkKeepsTheInstanceFromName below.
+        assert "sender_name" not in kwargs
 
     async def test_org_without_a_logo_keeps_the_instance_mark(
         self, client, db, verified_user
@@ -434,7 +442,7 @@ class TestMagicLinkCarriesTheOrgsLanguageAndLogo:
         kwargs = sent.call_args.kwargs
         assert "Sign in" in kwargs["body"]
         assert "black_logo.png" in kwargs["body"]
-        assert kwargs["sender_name"] is None
+        assert "sender_name" not in kwargs
 
     async def test_a_failing_org_lookup_does_not_stop_the_link(
         self, client, db, verified_user
@@ -467,3 +475,262 @@ class TestMagicLinkCarriesTheOrgsLanguageAndLogo:
         body = sent.call_args.kwargs["body"]
         assert "Sign in" in body
         assert "None" not in body
+
+
+class TestMagicLinkKeepsTheInstanceFromName:
+    """The login link's ``From`` name is the deployment's, never an org's.
+
+    Every other org-scoped mail (invitation, password reset, role change,
+    address verification) signs with ``resolve_org_sender_name`` — it acts on
+    an organization's behalf. A login link does not: it authenticates against
+    the platform. Reading the org's ``email_sender_name`` here would silently
+    override ``LEARNHOUSE_SYSTEM_EMAIL_SENDER_NAME`` — the value the operator
+    configured and verified on a delivered message — on the single message a
+    locked-out user has to recognise before clicking.
+
+    That is not hypothetical: the organization actually running on this
+    deployment has ``email_sender_name: "hi-ha.be"`` while the deployment is
+    configured to send as "Campus hi-ha.be", so wiring the org name in changed
+    the header on the real production login mail. This class exists so no
+    future change can do that again without a red test.
+
+    Unlike the tests above, these do NOT stub ``send_email``: only the provider
+    transport underneath it is replaced, so ``send_email`` and ``format_sender``
+    really run and the captured ``From`` is the header that would be sent.
+    """
+
+    _ORG_WITH_ITS_OWN_SENDER = {
+        "config_version": "2.0",
+        "customization": {
+            "general": {
+                "default_language": "fr",
+                # A different string from the deployment's, exactly as in
+                # production — otherwise the assertion below proves nothing.
+                "email_sender_name": "Nom de l'organisation",
+            }
+        },
+    }
+
+    async def _capture_from_header(self, client, db, verified_user, *, org_slug):
+        from src.db.organizations import Organization
+
+        db.add(
+            Organization(
+                id=78,
+                name="Organisation Test",
+                slug="orgsender",
+                email="org@test.com",
+                org_uuid="org_sender",
+                logo_image="620e84b0_logo.png",
+                creation_date=str(datetime.now()),
+                update_date=str(datetime.now()),
+            )
+        )
+        db.add(
+            OrganizationConfig(
+                org_id=78,
+                config=self._ORG_WITH_ITS_OWN_SENDER,
+                creation_date=str(datetime.now()),
+                update_date=str(datetime.now()),
+            )
+        )
+        await db.commit()
+
+        seen = {}
+
+        def transport(sender, to, subject, body, mailing, headers=None):
+            seen["From"] = sender
+            seen["subject"] = subject
+            seen["body"] = body
+            return {"id": "stub"}
+
+        payload = {"email": verified_user.email}
+        if org_slug:
+            payload["org_slug"] = org_slug
+
+        with patch(
+            "src.routers.auth.check_login_rate_limit", return_value=(True, None)
+        ), patch(
+            "src.services.auth.magic_login.issue_magic_login_token", return_value="tok"
+        ), patch(
+            "src.services.email.utils._send_email_resend", transport
+        ), patch(
+            "src.services.email.utils._send_email_smtp", transport
+        ), patch.dict(
+            "os.environ",
+            {
+                "LEARNHOUSE_MEDIA_URL": "https://api.test",
+                "LEARNHOUSE_SYSTEM_EMAIL_ADDRESS": "no-reply@example.test",
+                "LEARNHOUSE_SYSTEM_EMAIL_SENDER_NAME": "Nom de l'instance",
+            },
+        ):
+            response = await client.post(
+                "/api/v1/auth/magic-link/request", json=payload
+            )
+
+        assert response.status_code == 200
+        assert seen, "no email reached the transport at all"
+        return seen
+
+    async def test_from_is_the_instance_even_when_the_org_configured_its_own(
+        self, client, db, verified_user
+    ):
+        seen = await self._capture_from_header(
+            client, db, verified_user, org_slug="orgsender"
+        )
+
+        assert seen["From"] == "Nom de l'instance <no-reply@example.test>"
+        assert "Nom de l'organisation" not in seen["From"]
+        # The body is still the org's: this is about the envelope only.
+        assert "Se connecter" in seen["body"]
+        assert "content/orgs/org_sender/logos/" in seen["body"]
+
+    async def test_from_is_the_instance_without_an_org_too(
+        self, client, db, verified_user
+    ):
+        seen = await self._capture_from_header(client, db, verified_user, org_slug=None)
+
+        assert seen["From"] == "Nom de l'instance <no-reply@example.test>"
+
+
+class TestAStoredLanguageOfTheWrongTypeStillSendsTheLink:
+    """A ``default_language`` that is not a string must cost the language only.
+
+    The column is plain JSON: a restore, an import or a row edited before the
+    setting was validated can leave a number, a list or an object in there.
+    Resolving it used to hand that value straight to ``normalize_language``,
+    whose ``lang.split`` then raised ``AttributeError`` *inside* the send —
+    where the router's ``except`` swallowed it. The caller got the same generic
+    200 as a success and the login link was never sent, locking the user out
+    with no signal anywhere.
+
+    ``send_email`` is asserted by CALL COUNT, not by absence of an exception:
+    the swallowing except is exactly what made the old failure invisible.
+    """
+
+    @staticmethod
+    async def _org_with_language(db, value):
+        from src.db.organizations import Organization
+
+        db.add(
+            Organization(
+                id=79,
+                name="Organisation Test",
+                slug="badlang",
+                email="bad@test.com",
+                org_uuid="org_badlang",
+                logo_image="620e84b0_logo.png",
+                creation_date=str(datetime.now()),
+                update_date=str(datetime.now()),
+            )
+        )
+        db.add(
+            OrganizationConfig(
+                org_id=79,
+                config={
+                    "config_version": "2.0",
+                    "customization": {"general": {"default_language": value}},
+                },
+                creation_date=str(datetime.now()),
+                update_date=str(datetime.now()),
+            )
+        )
+        await db.commit()
+
+    @pytest.mark.parametrize(
+        "stored", [42, ["fr"], {"code": "fr"}, True, 3.5], ids=
+        ["int", "list", "dict", "bool", "float"]
+    )
+    async def test_the_link_still_goes_out_in_english(
+        self, client, db, verified_user, stored
+    ):
+        await self._org_with_language(db, stored)
+
+        with patch(
+            "src.routers.auth.check_login_rate_limit", return_value=(True, None)
+        ), patch(
+            "src.services.auth.magic_login.issue_magic_login_token", return_value="tok"
+        ), patch(
+            "src.services.auth.magic_login.send_email", return_value=True
+        ) as sent, patch.dict(
+            "os.environ", {"LEARNHOUSE_MEDIA_URL": "https://api.test"}
+        ):
+            response = await client.post(
+                "/api/v1/auth/magic-link/request",
+                json={"email": verified_user.email, "org_slug": "badlang"},
+            )
+
+        assert response.status_code == 200
+        assert sent.call_count == 1, "the login link was NOT sent"
+        body = sent.call_args.kwargs["body"]
+        # Falls back to English rather than to nothing…
+        assert "Sign in" in body
+        # …and the rest of the decoration is untouched: only the language is lost.
+        assert "content/orgs/org_badlang/logos/" in body
+
+
+class TestANullConfigSectionOnlyCostsTheLanguage:
+    """``{"customization": null}`` must not take the logo down with it.
+
+    ``get_org_default_language`` is resolved first in the router, so before it
+    was hardened, an explicit ``null`` section made it raise and the single
+    ``except`` around the whole block dropped the org's logo as well — a
+    failure to read one setting silently discarded another that was perfectly
+    readable.
+    """
+
+    @pytest.mark.parametrize(
+        "config",
+        [
+            {"customization": None},
+            {"customization": {"general": None}},
+            "not a dict at all",
+        ],
+        ids=["customization_null", "general_null", "config_not_a_dict"],
+    )
+    async def test_logo_survives_an_unreadable_language_section(
+        self, client, db, verified_user, config
+    ):
+        from src.db.organizations import Organization
+
+        db.add(
+            Organization(
+                id=80,
+                name="Organisation Test",
+                slug="nullcfg",
+                email="null@test.com",
+                org_uuid="org_nullcfg",
+                logo_image="620e84b0_logo.png",
+                creation_date=str(datetime.now()),
+                update_date=str(datetime.now()),
+            )
+        )
+        db.add(
+            OrganizationConfig(
+                org_id=80,
+                config=config,
+                creation_date=str(datetime.now()),
+                update_date=str(datetime.now()),
+            )
+        )
+        await db.commit()
+
+        with patch(
+            "src.routers.auth.check_login_rate_limit", return_value=(True, None)
+        ), patch(
+            "src.services.auth.magic_login.issue_magic_login_token", return_value="tok"
+        ), patch(
+            "src.services.auth.magic_login.send_email", return_value=True
+        ) as sent, patch.dict(
+            "os.environ", {"LEARNHOUSE_MEDIA_URL": "https://api.test"}
+        ):
+            response = await client.post(
+                "/api/v1/auth/magic-link/request",
+                json={"email": verified_user.email, "org_slug": "nullcfg"},
+            )
+
+        assert response.status_code == 200
+        assert sent.call_count == 1, "the login link was NOT sent"
+        body = sent.call_args.kwargs["body"]
+        assert "Sign in" in body
+        assert "content/orgs/org_nullcfg/logos/" in body
