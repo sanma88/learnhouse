@@ -1,5 +1,6 @@
 import 'server-only'
 import { LoopsClient } from 'loops'
+import { getLEARNHOUSE_DOMAIN_VAL } from '@services/config/config'
 
 // Loops.so contact + event sync. Used to grow the marketing/lifecycle audience
 // (e.g. add every new signup to the `signed-users` group, drive onboarding
@@ -26,6 +27,15 @@ type EventProps = Record<string, string | number | boolean>
 /** The default lifecycle group new signups land in. */
 export const LOOPS_SIGNED_USERS_GROUP = 'signed-users'
 
+// HI-HA: every contact synced from this instance was stamped with the upstream
+// product's domain as its acquisition source. Loops drives onboarding email
+// automations off contact properties, so that literal both misattributes the
+// contact and can select the wrong audience. Report this deployment's own
+// domain instead. Inert without LOOPS_API_KEY, like the rest of this module.
+function acquisitionSource(): string {
+  return getLEARNHOUSE_DOMAIN_VAL().split(':')[0]
+}
+
 /**
  * Create (or upsert) a contact. On Loops a duplicate email is an error, so we
  * fall back to updateContact to make this idempotent.
@@ -38,7 +48,7 @@ export async function addContactWithLoops(
   const c = client()
   if (!c) return null
   try {
-    const props: ContactProps = { userGroup, source: 'learnhouse.io', ...(extra || {}) }
+    const props: ContactProps = { userGroup, source: acquisitionSource(), ...(extra || {}) }
     const res = await c.createContact({ email, properties: props })
     // Already exists → update instead so the call is idempotent.
     if ((res as any)?.success === false) {

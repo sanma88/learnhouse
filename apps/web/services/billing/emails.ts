@@ -7,6 +7,10 @@ import "server-only";
 // Plain server module (no `"use server"`) — internal helpers invoked only from
 // server actions / route handlers, never directly from the client.
 import { send, planColor } from "@services/emails/resend";
+// HI-HA: the purchase mail thanked the buyer for supporting the upstream
+// product by name. Sign it with the same constant the shared template's
+// sign-off uses, so one instance never names two different brands in one mail.
+import { EMAIL_SIGNOFF } from "@components/Emails/LearnHouseEmail";
 
 const prettyPlan = (plan?: string) =>
   (plan || "free")
@@ -64,7 +68,7 @@ export async function sendPurchaseCompleteMail(args: {
   await send(email, `Welcome to ${prettyPlan(plan)} 🎉`, {
     accentColor: planColor(plan),
     heading: "Payment received — you're all set!",
-    subtitle: `Your ${prettyPlan(plan)} plan is now active. Thanks for supporting LearnHouse.`,
+    subtitle: `Your ${prettyPlan(plan)} plan is now active. Thanks for supporting ${EMAIL_SIGNOFF}.`,
     card: {
       label: "Your plan",
       title: prettyPlan(plan),
