@@ -78,15 +78,19 @@ ACADEMY_URL = os.environ.get("LEARNHOUSE_ACADEMY_URL") or _public_base_url() or 
 # logo shown in the interface. The two have different backgrounds and cannot
 # always be the same file: campus.hi-ha.be's org logo is a white PNG, correct on
 # the dark interface chrome and invisible on the white card every email is laid
-# out on. Read through one helper so "is it set?" has exactly one answer
-# everywhere — `_brand_logo_html` used the raw value, and a second, differently
-# spelled test elsewhere would eventually disagree with it.
+# out on. Read through one helper so "is it set?" has exactly one answer in THIS
+# module — `_brand_logo_html` used the raw value, and a second, differently
+# spelled test beside it would eventually disagree. The scope of that promise is
+# the module and no wider: the Next.js mail path has its own, separately spelled
+# NEXT_PUBLIC_LEARNHOUSE_EMAIL_LOGO_URL (apps/web/components/Emails/
+# LearnHouseEmail.tsx), and _org_logo_img does not strip its own argument either
+# — an org logo URL comes from the database, not from a deployment's shell.
 #
 # Whitespace is stripped: a value of "  " is not a URL, and treating it as one
 # only produces <img src="  "> — a broken image where the mark belongs. Unset
 # (the case every deployment that never heard of this variable is in) is
-# unaffected: os.environ.get returns None and this returns "" exactly as the
-# raw read did.
+# unaffected in the only way that matters: the raw read returned None and this
+# returns "", and every reader of the value tests it for truthiness.
 def _email_logo_url() -> str:
     return (os.environ.get("LEARNHOUSE_EMAIL_LOGO_URL") or "").strip()
 
@@ -119,6 +123,14 @@ def _email_logo_overrides_org_logo() -> bool:
 
         return get_learnhouse_config().hosting_config.tenancy == "single"
     except Exception:  # config unavailable — keep the pre-existing behaviour
+        # Logged, unlike the other config guards on this path: this one silently
+        # decides WHOSE brand a message carries, and an operator who set the
+        # variable and sees the org logo anyway needs somewhere to look.
+        logger.debug(
+            "Could not read tenancy; LEARNHOUSE_EMAIL_LOGO_URL will not "
+            "outrank an organization logo on this send.",
+            exc_info=True,
+        )
         return False
 
 
@@ -204,9 +216,15 @@ def _logo_or_brand(logo_url: Optional[str], alt: Optional[str] = None) -> str:
        ``LEARNHOUSE_EMAIL_LOGO_URL``; step 1 is what makes the variable mean the
        same thing whether or not the org happens to have uploaded a logo.
 
-    ``alt`` falls back to the instance name so the ``<img>`` never carries an
-    empty alternative text — a client that strips images would otherwise show a
-    blank header.
+    ``alt`` applies to step 2 only, where it falls back to the instance name so
+    the ``<img>`` never carries an empty alternative text — a client that strips
+    images would otherwise show a blank header. Steps 1 and 3 both render the
+    INSTANCE mark, whose ``alt`` is the instance brand by construction: an
+    operator who chooses an email logo has chosen the image a recipient sees,
+    and labelling that image with an organization's name would misdescribe it.
+    The org name therefore disappears from the alternative text when step 1
+    fires — deliberately, and only in the single-org mode where the two names
+    describe the same entity anyway.
     """
     if _email_logo_overrides_org_logo():
         return _brand_logo_html()

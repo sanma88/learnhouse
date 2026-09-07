@@ -42,19 +42,26 @@ os.environ["LEARNHOUSE_DEMO_ENABLED"] = "0"
 # from — which is exactly what an operator debugging this setting has — and
 # read from apps/api/.env, because config.py calls load_dotenv() inside
 # get_learnhouse_config(). Either way it silently changes the header mark of
-# every email the suite renders. Measured on this tree: with the variable set,
-# the email test files go from 0 failures to 18, none of them a real defect.
-# Three of those already failed this way before the variable outranked an org
-# logo; the rest are new, because that is precisely what the override now does.
-# A suite whose result depends on an ambient variable reports its own
+# every email the suite renders, and none of the resulting failures is a real
+# defect. Measured with this pin removed, over the four email test files that
+# predate it (152 cases, 0 failures when the variable is unset):
+#
+#     value                                    before the override   with it
+#     https://campus.hi-ha.be/black_logo.png              3 failed   18 failed
+#     any other URL                                       5 failed   20 failed
+#
+# The count depends on the VALUE — two of those cases assert black_logo.png and
+# survive when the operator's chosen logo happens to be it — which is the whole
+# argument: a suite whose result depends on an ambient variable reports its own
 # environment, not the code.
 #
 # Assigned "" rather than popped, for the same reason the two settings above are
 # assigned: load_dotenv() runs lazily, long after this module, and only skips
 # keys already PRESENT in os.environ (presence, not truthiness — an empty string
-# is enough). A pop here is undone by the first config read; measured, and it is
-# the .env route specifically that survives it. Empty is also the right value:
-# every reader of this variable tests it for truthiness.
+# is enough). A pop here is undone by the first config read. That is measured,
+# not assumed: there is no apps/api/.env in this repository, so the .env route
+# was reproduced by writing one for the duration of the run and deleting it
+# after. Empty is also the right value: every reader tests it for truthiness.
 #
 # Tests that need the override set it themselves — see
 # src/tests/services/test_email_logo_override.py, which uses monkeypatch: that

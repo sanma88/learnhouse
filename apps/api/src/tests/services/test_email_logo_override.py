@@ -16,6 +16,8 @@ What these tests pin, in order:
    every one of the eight org-scoped emails still renders the org's own logo.
 """
 
+import inspect
+import re
 from types import SimpleNamespace
 from unittest.mock import patch
 
@@ -189,13 +191,38 @@ class TestTheResolutionOrder:
         assert MAIL_LOGO in with_logo
 
 
+def test_the_census_of_eight_is_still_the_whole_census():
+    """Guards the sweep below against a ninth send site appearing.
+
+    The sweep can only cover what it names. Counting the resolver's call sites
+    in the source is the only assertion here that actually fails when someone
+    adds an org-scoped email and wires its logo without adding it to
+    ``_send_all_eight`` — checking ``len(bodies) == 8`` would not, since that
+    dict is built from eight literal keys and can never hold any other number.
+
+    If this fails, the fix is to add the new email to ``_send_all_eight``, not
+    to bump the number.
+    """
+    import src.services.users.emails as emails_mod
+
+    sources = {
+        "emails.py": inspect.getsource(emails_mod),
+        "magic_login.py": inspect.getsource(ml),
+    }
+    counts = {
+        name: len(re.findall(r"_logo_or_brand\(", src)) - src.count("def _logo_or_brand(")
+        for name, src in sources.items()
+    }
+    assert counts == {"emails.py": 7, "magic_login.py": 1}, counts
+    assert sum(counts.values()) == len(EIGHT)
+
+
 def _send_all_eight(logo_url):
     """Every send site that resolves an ORG logo. Returns {name: body}.
 
-    The census is the point: a ninth site added later that open-codes its own
-    logo resolution will not appear here, and the sweep below will not cover
-    it. ``send_magic_login_email`` lives in another module and is the one that
-    used to resolve its logo inline.
+    ``send_magic_login_email`` lives in another module and is the one that used
+    to resolve its logo inline. The census itself is asserted just above, in
+    ``test_the_census_of_eight_is_still_the_whole_census``.
     """
     bodies = {}
     with patch("src.services.users.emails.send_email", return_value=True) as sent:
@@ -246,7 +273,6 @@ def _send_all_eight(logo_url):
         )
         bodies["magic_login"] = magic.call_args.kwargs["body"]
 
-    assert len(bodies) == 8
     return bodies
 
 
@@ -292,6 +318,9 @@ class TestEveryOrgScopedEmailObeysTheOverride:
 
     @pytest.mark.parametrize("name", EIGHT)
     def test_no_org_logo_falls_back_to_the_mail_logo(self, name, monkeypatch):
+        """Passes on the code before this change too — step 3 always honored the
+        variable. Kept as the pin that step 1 and step 3 must not diverge again,
+        not as evidence of the fix."""
         monkeypatch.setenv(ENV, MAIL_LOGO)
         with _patched_config("single"):
             bodies = _send_all_eight(None)
