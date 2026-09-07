@@ -586,3 +586,111 @@ class TestEmailBrandResolution:
         with patch("config.config.get_learnhouse_config", side_effect=RuntimeError):
             assert brand() == DEFAULT_EMAIL_BRAND
         assert "LearnHouse" not in DEFAULT_EMAIL_BRAND
+
+
+class TestOrgLogoOnOrgScopedTransactionalMail:
+    """The four transactional mails that spoke the org's language but wore ours.
+
+    Password reset, invitation, role change and address verification already
+    resolved the org's default language and its ``From`` display name — and then
+    headed the message with the instance wordmark. A message white-labeled in
+    the subject, the body and the sender but not the mark reads like a
+    forwarded one, so each now takes a ``logo_url``.
+
+    The fallback is what those mails did unconditionally before: no logo on the
+    org (or no resolvable media host) still renders the instance mark, never an
+    empty header and never the string "None".
+    """
+
+    LOGO = "https://api.test/content/orgs/org_uuid/logos/acme.png"
+
+    def _senders_with_logo(self, logo_url):
+        return [
+            (
+                "password_reset",
+                lambda: send_password_reset_email(
+                    "code", _user(), _org(), "a@test.com", "https://o.test",
+                    logo_url=logo_url,
+                ),
+            ),
+            (
+                "invitation",
+                lambda: send_invitation_email(
+                    "a@test.com", "Org & Co", "admin", "https://o.test/signup",
+                    logo_url=logo_url,
+                ),
+            ),
+            (
+                "role_changed",
+                lambda: send_role_changed_email(
+                    email="a@test.com", username="u", org_name="Org & Co",
+                    new_role_name="Admin", logo_url=logo_url,
+                ),
+            ),
+            (
+                "email_verification",
+                lambda: send_email_verification_email(
+                    "tok", _user(), _org(), "a@test.com", "https://o.test",
+                    logo_url=logo_url,
+                ),
+            ),
+        ]
+
+    def test_each_one_renders_the_orgs_logo(self):
+        with patch("src.services.users.emails.send_email", return_value=True) as sent:
+            for name, call in self._senders_with_logo(self.LOGO):
+                call()
+                body = sent.call_args.kwargs["body"]
+                assert f'<img src="{self.LOGO}"' in body, name
+                assert "black_logo.png" not in body, name
+                assert body.count("<img") == 1, name
+
+    def test_each_one_falls_back_to_the_instance_mark_without_a_logo(self):
+        brand = email_brand()
+        with patch("src.services.users.emails.send_email", return_value=True) as sent:
+            for name, call in self._senders_with_logo(None):
+                call()
+                body = sent.call_args.kwargs["body"]
+                assert "None" not in body, name
+                assert brand in body, name
+
+    def test_the_alt_text_is_the_org_name_not_an_empty_string(self):
+        """A client that strips images shows the alt; it must name the org."""
+        with patch("src.services.users.emails.send_email", return_value=True) as sent:
+            send_invitation_email(
+                "a@test.com", "Org & Co", "admin", "https://o.test/signup",
+                logo_url=self.LOGO,
+            )
+        assert 'alt="Org &amp; Co"' in sent.call_args.kwargs["body"]
+
+    def test_a_logo_with_no_org_name_still_gets_a_usable_alt(self):
+        """`_logo_or_brand` falls back to the instance name rather than "".
+
+        Reachable through the magic link, which may hold a logo for an org
+        whose name could not be read.
+        """
+        from src.services.users.emails import _logo_or_brand
+
+        assert f'alt="{email_brand()}"' in _logo_or_brand(self.LOGO, None)
+
+
+class TestLifecycleConfirmationsSpeakTheReadersLanguage:
+    """`org_created` / `org_deleted` stay platform-BRANDED but not English-only.
+
+    Both confirm an action to the acting admin, and both are deliberately not
+    white-labeled: the org has no logo yet in one case and no longer exists in
+    the other. Language is a separate question with a different answer — the
+    reader's — and both senders already accepted a `lang`; nobody passed one.
+    """
+
+    def test_org_created_translates(self):
+        with patch("src.services.users.emails.send_email", return_value=True) as sent:
+            send_org_created_email("a@test.com", "Acme", "https://o.test/dash", lang="fr")
+        kwargs = sent.call_args.kwargs
+        assert kwargs["subject"] == "Votre organisation Acme est prête"
+        assert "Ouvrir le tableau de bord" in kwargs["body"]
+
+    def test_org_deleted_translates(self):
+        with patch("src.services.users.emails.send_email", return_value=True) as sent:
+            send_org_deleted_email("a@test.com", "Acme", lang="fr")
+        assert sent.call_args.kwargs["subject"] == "Votre organisation Acme a été supprimée"

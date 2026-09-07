@@ -101,6 +101,9 @@ def send_magic_login_email(
     base_url: str,
     token: str,
     lang: str = "en",
+    org_name: Optional[str] = None,
+    logo_url: Optional[str] = None,
+    sender_name: Optional[str] = None,
 ) -> bool:
     """Email the clickable login link. Link points at the frontend consume page,
     which posts the token back to the verify endpoint.
@@ -110,9 +113,27 @@ def send_magic_login_email(
     upstream product instead of the instance, and the only one that ignored the
     ``lang`` it is handed. Both were invisible until the passwordless login was
     switched on in production.
+
+    ``org_name`` / ``logo_url`` / ``sender_name`` white-label the mail when the
+    login was requested from an organization's own login page. They are the same
+    three values every other org-scoped mail already resolves (invitation,
+    password reset, verification); this one was the last that resolved none of
+    them, so an org with a French default language and its own logo still
+    received an English link under the instance wordmark.
+
+    All three are optional and every one of them degrades on its own: no
+    ``logo_url`` falls back to the instance mark, no ``sender_name`` to the
+    deployment's From name, an unknown ``lang`` to English inside ``t()``. A
+    magic link is the user's only way in — it must go out even when the org
+    lookup that decorates it did not.
     """
     from src.services.email.translations import t
-    from src.services.users.emails import STYLES, _email_layout
+    from src.services.users.emails import (
+        STYLES,
+        _email_layout,
+        _org_logo_img,
+        _site_name,
+    )
 
     safe_token = quote(token, safe="")
     login_url = f"{base_url.rstrip('/')}/auth/magic?token={safe_token}"
@@ -133,6 +154,10 @@ def send_magic_login_email(
             {copy_paste}<br />{login_url}
         </p>
     """
+    # None (not "") is the "use the instance mark" signal in _email_layout; an
+    # empty string would ask for no mark at all.
+    logo_html = _org_logo_img(logo_url, org_name or _site_name()) if logo_url else None
+
     return send_email(
         to=email,
         subject=t(lang, "magic_login.subject"),
@@ -140,7 +165,9 @@ def send_magic_login_email(
             title=heading,
             body_content=body_content,
             footer_note=t(lang, "magic_login.footer"),
+            logo_html=logo_html,
         ),
+        sender_name=sender_name,
     )
 
 

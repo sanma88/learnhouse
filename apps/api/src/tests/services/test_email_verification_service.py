@@ -509,3 +509,74 @@ class TestEmailVerificationService:
         ):
             result = get_redis_connection()
         assert result is fake_redis
+
+
+class TestVerificationEmailForwardsTheOrgLogo:
+    """Address verification is org-scoped when a signup happens inside an org.
+
+    It resolved that org's language and From name and then headed the mail with
+    the instance wordmark. Org-less (platform) signups keep the instance mark —
+    there is no org to borrow one from.
+    """
+
+    @pytest.mark.asyncio
+    async def test_org_signup_forwards_the_orgs_logo(self, mock_request, db, org):
+        user = await _make_user(
+            db, id=61, username="verif-logo", email="verif-logo@test.com",
+            user_uuid="user_verif_logo",
+        )
+        org.logo_image = "620e84b0_logo.png"
+        db.add(org)
+        await db.commit()
+
+        with patch(
+            "src.services.users.email_verification.get_redis_connection",
+            return_value=Mock(setex=Mock()),
+        ), patch(
+            "src.services.users.email_verification.generate_verification_token",
+            return_value="verification-token",
+        ), patch(
+            "src.services.users.email_verification.get_base_url_from_request",
+            return_value="https://learnhouse.test",
+        ), patch(
+            "src.services.users.email_verification.send_email_verification_email",
+            return_value=True,
+        ) as mock_send, patch.dict(
+            "os.environ", {"LEARNHOUSE_MEDIA_URL": "https://api.test"}
+        ):
+            await send_verification_email(mock_request, db, user, org.id)
+
+        assert mock_send.call_args.kwargs["logo_url"] == (
+            f"https://api.test/content/orgs/{org.org_uuid}/logos/620e84b0_logo.png"
+        )
+
+    @pytest.mark.asyncio
+    async def test_platform_signup_forwards_no_logo(self, mock_request, db, org):
+        """Org-less: no logo, and no From name either — unchanged behaviour."""
+        user = await _make_user(
+            db, id=62, username="verif-platform", email="verif-platform@test.com",
+            user_uuid="user_verif_platform",
+        )
+        org.logo_image = "620e84b0_logo.png"
+        db.add(org)
+        await db.commit()
+
+        with patch(
+            "src.services.users.email_verification.get_redis_connection",
+            return_value=Mock(setex=Mock()),
+        ), patch(
+            "src.services.users.email_verification.generate_verification_token",
+            return_value="verification-token",
+        ), patch(
+            "src.services.users.email_verification.get_base_url_from_request",
+            return_value="https://learnhouse.test",
+        ), patch(
+            "src.services.users.email_verification.send_email_verification_email",
+            return_value=True,
+        ) as mock_send, patch.dict(
+            "os.environ", {"LEARNHOUSE_MEDIA_URL": "https://api.test"}
+        ):
+            await send_verification_email(mock_request, db, user, None)
+
+        assert mock_send.call_args.kwargs["logo_url"] is None
+        assert mock_send.call_args.kwargs["sender_name"] == ""

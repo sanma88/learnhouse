@@ -1340,3 +1340,68 @@ def _skip_org_mfa_policy():
     """
     with patch("src.services.orgs.users.enforce_org_mfa", new=AsyncMock(return_value=None)):
         yield
+
+
+class TestRoleChangeEmailForwardsTheOrgLogo:
+    """A role change is org news, and now looks like it.
+
+    It already carried the org's language, name and From name; the mark was the
+    remaining instance-branded slot. No logo on the org keeps the instance mark.
+    """
+
+    @pytest.mark.asyncio
+    async def test_logo_url_is_forwarded_when_the_org_has_a_logo(
+        self, mock_request, db, org, admin_user, regular_user
+    ):
+        role = await _make_role(db, org, id=41, name="Instructor",
+                                role_uuid="role_logo_instructor")
+        org.logo_image = "620e84b0_logo.png"
+        db.add(org)
+        await db.commit()
+
+        with patch(
+            "src.services.orgs.users.rbac_check", new_callable=AsyncMock,
+        ), patch(
+            "src.routers.users._invalidate_session_cache"
+        ), patch(
+            "src.services.orgs.users.decrease_feature_usage"
+        ), patch(
+            "src.services.orgs.users.dispatch_webhooks", new_callable=AsyncMock,
+        ), patch(
+            "src.services.orgs.users.send_role_changed_email"
+        ) as mock_send, patch.dict(
+            "os.environ", {"LEARNHOUSE_MEDIA_URL": "https://api.test"}
+        ):
+            await update_user_role(
+                mock_request, org.id, regular_user.id, role.role_uuid, db, admin_user
+            )
+
+        assert mock_send.call_args.kwargs["logo_url"] == (
+            f"https://api.test/content/orgs/{org.org_uuid}/logos/620e84b0_logo.png"
+        )
+
+    @pytest.mark.asyncio
+    async def test_logo_url_is_none_without_an_org_logo(
+        self, mock_request, db, org, admin_user, regular_user
+    ):
+        role = await _make_role(db, org, id=42, name="Instructor",
+                                role_uuid="role_nologo_instructor")
+
+        with patch(
+            "src.services.orgs.users.rbac_check", new_callable=AsyncMock,
+        ), patch(
+            "src.routers.users._invalidate_session_cache"
+        ), patch(
+            "src.services.orgs.users.decrease_feature_usage"
+        ), patch(
+            "src.services.orgs.users.dispatch_webhooks", new_callable=AsyncMock,
+        ), patch(
+            "src.services.orgs.users.send_role_changed_email"
+        ) as mock_send, patch.dict(
+            "os.environ", {"LEARNHOUSE_MEDIA_URL": "https://api.test"}
+        ):
+            await update_user_role(
+                mock_request, org.id, regular_user.id, role.role_uuid, db, admin_user
+            )
+
+        assert mock_send.call_args.kwargs["logo_url"] is None

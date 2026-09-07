@@ -733,3 +733,88 @@ class TestPasswordResetService:
             with pytest.raises(HTTPException) as exc351:
                 await send_reset_password_code_platform(mock_request, db, AnonymousUser(), regular_user.email)
         assert exc351.value.status_code == 500
+
+
+class TestOrgPasswordResetForwardsTheOrgLogo:
+    """Org-scoped reset: the org's own mark, the instance's when it has none.
+
+    The reset already spoke the org's language and arrived under its From name;
+    the mark was the one white-label slot it never filled.
+    """
+
+    @pytest.mark.asyncio
+    async def test_logo_url_is_forwarded_for_an_org_with_a_logo(
+        self, mock_request, db, org, regular_user
+    ):
+        user = (await db.execute(
+            select(User).where(User.email == regular_user.email)
+        )).scalars().first()
+        org.logo_image = "620e84b0_logo.png"
+        db.add(org)
+        await db.commit()
+
+        fake_redis = Mock()
+        fake_redis.set = Mock()
+        with patch(
+            "src.services.users.password_reset.generate_secure_reset_code",
+            return_value="RESET123",
+        ), patch(
+            "src.services.users.password_reset.get_learnhouse_config",
+            return_value=SimpleNamespace(
+                redis_config=SimpleNamespace(redis_connection_string="redis://test")
+            ),
+        ), patch(
+            "src.services.users.password_reset.redis.Redis.from_url",
+            return_value=fake_redis,
+        ), patch(
+            "src.services.users.password_reset.get_base_url_from_request",
+            return_value="https://learnhouse.test",
+        ), patch(
+            "src.services.users.password_reset.send_password_reset_email",
+            return_value=True,
+        ) as mock_send, patch.dict(
+            "os.environ", {"LEARNHOUSE_MEDIA_URL": "https://api.test"}
+        ):
+            await send_reset_password_code(
+                mock_request, db, AnonymousUser(), org.id, user.email
+            )
+
+        assert mock_send.call_args.kwargs["logo_url"] == (
+            f"https://api.test/content/orgs/{org.org_uuid}/logos/620e84b0_logo.png"
+        )
+
+    @pytest.mark.asyncio
+    async def test_logo_url_is_none_when_the_org_has_no_logo(
+        self, mock_request, db, org, regular_user
+    ):
+        user = (await db.execute(
+            select(User).where(User.email == regular_user.email)
+        )).scalars().first()
+
+        fake_redis = Mock()
+        fake_redis.set = Mock()
+        with patch(
+            "src.services.users.password_reset.generate_secure_reset_code",
+            return_value="RESET123",
+        ), patch(
+            "src.services.users.password_reset.get_learnhouse_config",
+            return_value=SimpleNamespace(
+                redis_config=SimpleNamespace(redis_connection_string="redis://test")
+            ),
+        ), patch(
+            "src.services.users.password_reset.redis.Redis.from_url",
+            return_value=fake_redis,
+        ), patch(
+            "src.services.users.password_reset.get_base_url_from_request",
+            return_value="https://learnhouse.test",
+        ), patch(
+            "src.services.users.password_reset.send_password_reset_email",
+            return_value=True,
+        ) as mock_send, patch.dict(
+            "os.environ", {"LEARNHOUSE_MEDIA_URL": "https://api.test"}
+        ):
+            await send_reset_password_code(
+                mock_request, db, AnonymousUser(), org.id, user.email
+            )
+
+        assert mock_send.call_args.kwargs["logo_url"] is None

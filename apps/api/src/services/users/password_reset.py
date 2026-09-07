@@ -166,7 +166,7 @@ async def send_reset_password_code(
     # the org's own host — including a verified CUSTOM DOMAIN (learn.acme.org) —
     # not the org-less platform apex (where /reset can't resolve the org). Mirrors
     # the invitation flow (services/orgs/invites.py).
-    from src.services.email.utils import get_org_signup_base_url
+    from src.services.email.utils import get_org_logo_url, get_org_signup_base_url
     base_url = await get_org_signup_base_url(
         org.slug, request, db_session=db_session, org_id=org.id
     )
@@ -178,6 +178,10 @@ async def send_reset_password_code(
         base_url=base_url,
         lang=get_org_default_language(org_config),
         sender_name=resolve_org_sender_name(org_config),
+        # Org-scoped reset: the org's own mark, falling back to the instance's
+        # when it has no logo (or when no absolute media host is resolvable —
+        # a relative src renders broken in every mail client).
+        logo_url=get_org_logo_url(org, request),
     )
 
     if not isEmailSent:

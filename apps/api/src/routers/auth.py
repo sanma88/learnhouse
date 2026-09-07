@@ -959,6 +959,46 @@ async def magic_link_request(
     if not user.email_verified and get_deployment_mode() == "saas":
         return generic
 
+    # Decorate the mail with the org's own language, logo and sender name when
+    # the link was requested from an organization's login page (the frontend
+    # sends `org_slug` there, so `org` is already resolved above).
+    #
+    # Every step is best-effort and isolated: a magic link is the user's only
+    # way in, so a missing org config, an unreadable logo path or a database
+    # hiccup must degrade the *decoration* — instance mark, default language —
+    # and never stop the link going out. That is why this block cannot raise
+    # into the send below, and why the send keeps its own except.
+    lang = "en"
+    org_name: Optional[str] = None
+    logo_url: Optional[str] = None
+    sender_name: Optional[str] = None
+    if org is not None:
+        try:
+            from src.db.organization_config import OrganizationConfig
+            from src.services.email.utils import get_org_logo_url
+            from src.services.orgs.orgs import (
+                get_org_default_language,
+                resolve_org_sender_name,
+            )
+
+            org_config = (
+                await db_session.execute(
+                    select(OrganizationConfig).where(OrganizationConfig.org_id == org.id)
+                )
+            ).scalars().first()
+            lang = get_org_default_language(org_config)
+            sender_name = resolve_org_sender_name(org_config) or None
+            org_name = org.name
+            logo_url = get_org_logo_url(org, request)
+        except Exception:
+            import logging
+            logging.getLogger(__name__).warning(
+                "Magic-login: could not resolve org branding for org %s; "
+                "sending with instance defaults",
+                getattr(org, "id", None),
+                exc_info=True,
+            )
+
     try:
         token = issue_magic_login_token(user.email, org.id if org else None)
         send_magic_login_email(
@@ -966,6 +1006,10 @@ async def magic_link_request(
             user.email,
             get_base_url_from_request(request),
             token,
+            lang=lang,
+            org_name=org_name,
+            logo_url=logo_url,
+            sender_name=sender_name,
         )
     except Exception:
         import logging

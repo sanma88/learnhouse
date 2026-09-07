@@ -116,6 +116,28 @@ EMAIL_TRANSLATIONS: dict[str, dict[str, str]] = {
         "account_creation.footer": "Besoin d'aide ? Consultez {academy_link} pour apprendre les bases.",
         "academy_link_text": "{brand}",
 
+        # The three lifecycle confirmations below existed in English only, in
+        # every one of the twenty bundles: `t()` falls back per KEY, so an org
+        # configured in French received nine mails in French and these three in
+        # English. French is filled in here because it is the language this
+        # deployment's organizations are configured in; the eighteen remaining
+        # locales still fall back to English and are tracked as follow-up work.
+        "org_created.subject": "Votre organisation {org_name} est prête",
+        "org_created.heading": "{org_name} est en ligne !",
+        "org_created.body": "Votre nouvelle organisation est configurée et prête. Invitez votre équipe, créez votre premier cours et faites-en la vôtre.",
+        "org_created.cta": "Ouvrir le tableau de bord",
+        "org_created.footer": "Vous recevez cet e-mail parce que vous avez créé une organisation sur {brand}.",
+
+        "org_deleted.subject": "Votre organisation {org_name} a été supprimée",
+        "org_deleted.heading": "{org_name} a été supprimée",
+        "org_deleted.body": "Votre organisation et tout son contenu ont été définitivement supprimés de {brand}. Si vous n'êtes pas à l'origine de cette suppression, contactez immédiatement l'assistance.",
+        "org_deleted.footer": "Vous recevez cet e-mail parce que vous étiez administrateur de cette organisation.",
+
+        "account_deleted.subject": "Votre compte {brand} a été supprimé",
+        "account_deleted.heading": "Votre compte a été supprimé",
+        "account_deleted.body": "Votre compte {brand} et vos données personnelles ont été définitivement supprimés. Nous sommes désolés de vous voir partir. Si vous n'êtes pas à l'origine de cette suppression, contactez immédiatement l'assistance.",
+        "account_deleted.footer": "Ceci confirme la suppression de votre compte.",
+
         "password_reset.subject": "Réinitialisez votre mot de passe",
         "password_reset.heading": "Réinitialisez votre mot de passe",
         "password_reset.body": "Bonjour {username}, nous avons reçu une demande de réinitialisation de votre mot de passe. Utilisez le code ci-dessous ou cliquez sur le bouton.",

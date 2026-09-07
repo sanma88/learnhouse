@@ -395,7 +395,7 @@ async def send_invite_email(
 
     # Build signup URL rooted at the org's own frontend subdomain (or primary
     # verified custom domain if one is configured — passing db_session opts in).
-    from src.services.email.utils import get_org_signup_base_url
+    from src.services.email.utils import get_org_logo_url, get_org_signup_base_url
     org_base_url = await get_org_signup_base_url(
         org.slug, request, db_session=db_session, org_id=org.id
     )
@@ -441,6 +441,10 @@ async def send_invite_email(
             signup_url=signup_url,
             lang=lang,
             sender_name=sender_name,
+            # The invitation already speaks the org's language and arrives under
+            # the org's name; the mark completes it. None when the org has no
+            # logo (or no media host is resolvable) -> instance mark, as before.
+            logo_url=get_org_logo_url(org, request),
         )
         return result is not None
     except Exception:

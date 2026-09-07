@@ -872,7 +872,10 @@ async def update_user_role(
             org_config = (await db_session.execute(org_config_stmt)).scalars().first()
             # The org's own host (verified custom domain when it has one), so
             # the recipient can act on the permissions they were just given.
-            from src.services.email.utils import get_org_signup_base_url
+            from src.services.email.utils import (
+                get_org_logo_url,
+                get_org_signup_base_url,
+            )
 
             org_base_url = await get_org_signup_base_url(
                 org.slug, request, db_session=db_session, org_id=org.id
@@ -885,6 +888,7 @@ async def update_user_role(
                 lang=get_org_default_language(org_config),
                 cta_url=org_base_url.rstrip("/") or "/",
                 sender_name=resolve_org_sender_name(org_config),
+                logo_url=get_org_logo_url(org, request),
             )
     except Exception:
         logger.warning("Failed to send role change email to user %s", user_id)

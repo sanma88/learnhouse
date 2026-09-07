@@ -219,10 +219,36 @@ async def _try_send_org_created(request: Request, org, current_user, db_session)
         base = await get_org_signup_base_url(
             org.slug, request, db_session=db_session, org_id=org.id
         )
-        # Deliberately platform-branded: the org was created seconds ago, so it
-        # has no configured sender name yet, and this mail is the platform
-        # confirming an action taken on the platform.
-        send_org_created_email(email, org.name, f"{base.rstrip('/')}/dash")
+        # Deliberately platform-BRANDED: the org was created seconds ago, so it
+        # has no logo and no configured sender name yet, and this mail is the
+        # platform confirming an action taken on the platform.
+        #
+        # Its LANGUAGE is a different question, and the answer is the reader's,
+        # not the platform's. `create_org_with_config` accepts a submitted
+        # config, so an org can be created with `default_language: fr` in the
+        # same request — and its creator was still told about it in English.
+        # Guarded separately from the send: the language is decoration, the
+        # confirmation is not. A config that cannot be read costs the reader
+        # their language, never the email.
+        lang = "en"
+        try:
+            org_config = (await db_session.execute(
+                select(OrganizationConfig).where(OrganizationConfig.org_id == org.id)
+            )).scalars().first()
+            lang = get_org_default_language(org_config)
+        except Exception:
+            logging.warning(
+                "Could not read the default language of org %s; the creation "
+                "confirmation falls back to English",
+                getattr(org, "id", None),
+                exc_info=True,
+            )
+        send_org_created_email(
+            email,
+            org.name,
+            f"{base.rstrip('/')}/dash",
+            lang=lang,
+        )
     except Exception:
         logging.exception("send_org_created_email failed")
 
@@ -768,6 +794,24 @@ async def delete_org(
     # Capture the acting admin's email before the cascade removes memberships.
     acting_email = getattr(current_user, "email", None)
 
+    # …and the org's language before the cascade removes its config. The
+    # confirmation is sent after the delete, so by then there is nothing left to
+    # read it from — which is why this mail used to be English for everyone.
+    # Brand stays the platform's on purpose (see the send below).
+    deleted_org_lang = "en"
+    try:
+        _deleted_org_config = (await db_session.execute(
+            select(OrganizationConfig).where(OrganizationConfig.org_id == org_id)
+        )).scalars().first()
+        deleted_org_lang = get_org_default_language(_deleted_org_config)
+    except Exception:
+        logging.warning(
+            "Could not read the default language of org %s before deletion; "
+            "the confirmation email falls back to English",
+            org_id,
+            exc_info=True,
+        )
+
     # Delete the organization
     # Related data (UserOrganization, Courses, Folders, etc.) will be
     # automatically deleted via CASCADE constraints in the database
@@ -781,7 +825,7 @@ async def delete_org(
             # Platform-branded on purpose: the org (and its config, including
             # any sender name) no longer exists, and mail confirming a deletion
             # should not arrive under the deleted org's own name.
-            send_org_deleted_email(acting_email, org_name)
+            send_org_deleted_email(acting_email, org_name, lang=deleted_org_lang)
         except Exception:
             logging.exception("send_org_deleted_email failed")
 

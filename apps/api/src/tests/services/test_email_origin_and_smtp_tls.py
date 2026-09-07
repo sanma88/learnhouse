@@ -264,9 +264,14 @@ class TestMagicLinkUrlInEmailBody:
     async def _request_link(self, client, email, headers):
         sent = {}
 
-        def _capture(to, subject, body):
+        # **kwargs, not a fixed three: this stub stands in for the real
+        # `send_email`, whose keyword surface grows (headers, sender_name, …).
+        # The URL is what is under test here; a narrower signature turns any
+        # unrelated addition into a failure in a security test.
+        def _capture(to, subject, body, **kwargs):
             sent["to"] = to
             sent["body"] = body
+            sent["kwargs"] = kwargs
             return {"id": "msg"}
 
         with patch(

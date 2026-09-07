@@ -303,3 +303,167 @@ class TestRefreshPreservesProvenance:
         rotated = decode_jwt(response.json()["access_token"])
         assert rotated[AMR_CLAIM] == "magic_login"
         assert rotated[SORG_CLAIM] == 1
+
+
+class TestMagicLinkCarriesTheOrgsLanguageAndLogo:
+    """The magic link is sent from an ORG's login page, so it must arrive in
+    that org's language, under that org's mark and name.
+
+    Before this, the router called ``send_magic_login_email`` with neither
+    ``lang`` nor a logo: an organization whose config says
+    ``default_language: fr`` and which has uploaded a logo still received an
+    English link headed by the instance wordmark. The other org-scoped mails
+    (invitation, password reset, verification) had resolved all of this for a
+    while; this endpoint was the one that never did.
+
+    These go through the real endpoint and assert on the rendered message at
+    the transport boundary — patching ``send_email`` inside the magic-login
+    module rather than the sender above it, so the assertions cover the
+    template too, not just the arguments.
+    """
+
+    @staticmethod
+    async def _org_with(db, *, config, logo_image=None, name="Académie Test"):
+        from src.db.organizations import Organization
+
+        org = Organization(
+            id=77,
+            name=name,
+            slug="acad",
+            email="acad@test.com",
+            org_uuid="org_acad",
+            logo_image=logo_image,
+            creation_date=str(datetime.now()),
+            update_date=str(datetime.now()),
+        )
+        db.add(org)
+        db.add(
+            OrganizationConfig(
+                org_id=77,
+                config=config,
+                creation_date=str(datetime.now()),
+                update_date=str(datetime.now()),
+            )
+        )
+        await db.commit()
+        return org
+
+    _FR_CONFIG = {
+        "config_version": "2.0",
+        "customization": {
+            "general": {
+                "default_language": "fr",
+                "email_sender_name": "Académie Test",
+            }
+        },
+    }
+
+    async def _request(self, client, payload):
+        with patch(
+            "src.routers.auth.check_login_rate_limit", return_value=(True, None)
+        ), patch(
+            "src.services.auth.magic_login.issue_magic_login_token", return_value="tok"
+        ), patch(
+            "src.services.auth.magic_login.send_email", return_value=True
+        ) as sent, patch.dict(
+            "os.environ", {"LEARNHOUSE_MEDIA_URL": "https://api.test"}
+        ):
+            response = await client.post(
+                "/api/v1/auth/magic-link/request", json=payload
+            )
+        return response, sent
+
+    async def test_french_org_with_a_logo_gets_french_copy_and_its_own_mark(
+        self, client, db, verified_user
+    ):
+        await self._org_with(
+            db, config=self._FR_CONFIG, logo_image="620e84b0_logo.png"
+        )
+        response, sent = await self._request(
+            client, {"email": verified_user.email, "org_slug": "acad"}
+        )
+
+        assert response.status_code == 200
+        sent.assert_called_once()
+        kwargs = sent.call_args.kwargs
+        body = kwargs["body"]
+
+        # (i) the org's language
+        assert "Se connecter" in body
+        assert "Ou copiez et collez ce lien" in body
+        assert "Sign in" not in body
+
+        # (ii) the org's logo, and NOT the instance wordmark
+        assert (
+            '<img src="https://api.test/content/orgs/org_acad/logos/620e84b0_logo.png"'
+            in body
+        )
+        assert "black_logo.png" not in body
+        assert body.count("<img") == 1
+
+        # …and the From name it already had configured
+        assert kwargs["sender_name"] == "Académie Test"
+
+    async def test_org_without_a_logo_keeps_the_instance_mark(
+        self, client, db, verified_user
+    ):
+        """Language is the org's; the mark falls back — it has none to use."""
+        await self._org_with(db, config=self._FR_CONFIG, logo_image=None)
+        response, sent = await self._request(
+            client, {"email": verified_user.email, "org_slug": "acad"}
+        )
+
+        assert response.status_code == 200
+        body = sent.call_args.kwargs["body"]
+        assert "Se connecter" in body
+        assert "black_logo.png" in body
+        assert "None" not in body
+
+    async def test_without_an_org_the_link_still_goes_out_unbranded(
+        self, client, verified_user
+    ):
+        """The org-less fallback: default language, instance mark, no From name.
+
+        This is also the path every misconfiguration degrades to, so it is the
+        one that must never break — a magic link is the user's only way in.
+        """
+        response, sent = await self._request(client, {"email": verified_user.email})
+
+        assert response.status_code == 200
+        sent.assert_called_once()
+        kwargs = sent.call_args.kwargs
+        assert "Sign in" in kwargs["body"]
+        assert "black_logo.png" in kwargs["body"]
+        assert kwargs["sender_name"] is None
+
+    async def test_a_failing_org_lookup_does_not_stop_the_link(
+        self, client, db, verified_user
+    ):
+        """The decoration is best-effort; the send is not.
+
+        If reading the org's config raises, the mail must still leave with the
+        instance defaults rather than the user being locked out.
+        """
+        await self._org_with(
+            db, config=self._FR_CONFIG, logo_image="620e84b0_logo.png"
+        )
+        with patch(
+            "src.routers.auth.check_login_rate_limit", return_value=(True, None)
+        ), patch(
+            "src.services.auth.magic_login.issue_magic_login_token", return_value="tok"
+        ), patch(
+            "src.services.auth.magic_login.send_email", return_value=True
+        ) as sent, patch(
+            "src.services.orgs.orgs.get_org_default_language",
+            side_effect=RuntimeError("config unreadable"),
+        ):
+            response = await client.post(
+                "/api/v1/auth/magic-link/request",
+                json={"email": verified_user.email, "org_slug": "acad"},
+            )
+
+        assert response.status_code == 200
+        sent.assert_called_once()
+        body = sent.call_args.kwargs["body"]
+        assert "Sign in" in body
+        assert "None" not in body

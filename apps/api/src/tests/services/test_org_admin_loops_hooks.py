@@ -431,3 +431,63 @@ async def test_try_send_org_created_links_to_the_new_org_dashboard():
         await _try_send_org_created(MagicMock(), org, user, MagicMock())
 
     assert send_mock.call_args.args[2] == "https://acme.learn.test/dash"
+
+
+@pytest.mark.asyncio
+async def test_try_send_org_created_speaks_the_orgs_language(db, org):
+    """`create_org_with_config` accepts a submitted config, so an org can be
+    born with `default_language: fr` — and its creator was still told about it
+    in English. The mail stays platform-BRANDED (no logo, no org From name):
+    the org is seconds old and has neither."""
+    from datetime import datetime as _dt
+
+    from src.db.organization_config import OrganizationConfig
+    from src.services.orgs.orgs import _try_send_org_created
+
+    db.add(
+        OrganizationConfig(
+            org_id=org.id,
+            config={
+                "config_version": "2.0",
+                "customization": {"general": {"default_language": "fr"}},
+            },
+            creation_date=str(_dt.now()),
+            update_date=str(_dt.now()),
+        )
+    )
+    await db.commit()
+
+    user = MagicMock()
+    user.email = "creator@test.com"
+
+    with patch(
+        "src.services.email.utils.get_org_signup_base_url",
+        new_callable=AsyncMock,
+        return_value="https://acme.learn.test/",
+    ), patch("src.services.users.emails.send_org_created_email") as send_mock:
+        await _try_send_org_created(MagicMock(), org, user, db)
+
+    assert send_mock.call_args.kwargs["lang"] == "fr"
+
+
+@pytest.mark.asyncio
+async def test_try_send_org_created_falls_back_to_english_on_a_broken_session():
+    """The language lookup is guarded on its own: the confirmation still goes."""
+    from src.services.orgs.orgs import _try_send_org_created
+
+    user = MagicMock()
+    user.email = "creator@test.com"
+    org = MagicMock()
+    org.name = "Acme Co"
+    org.slug = "acme"
+    org.id = 7
+
+    with patch(
+        "src.services.email.utils.get_org_signup_base_url",
+        new_callable=AsyncMock,
+        return_value="https://acme.learn.test/",
+    ), patch("src.services.users.emails.send_org_created_email") as send_mock:
+        await _try_send_org_created(MagicMock(), org, user, MagicMock())
+
+    send_mock.assert_called_once()
+    assert send_mock.call_args.kwargs["lang"] == "en"

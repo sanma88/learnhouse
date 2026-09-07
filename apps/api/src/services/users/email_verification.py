@@ -86,6 +86,8 @@ async def send_verification_email(
     # Stays empty for org-less (platform) signups, so those keep the platform's
     # own From name rather than borrowing some organization's.
     sender_name = ""
+    # Same rule for the mark: org-less signups keep the instance wordmark.
+    logo_url = None
 
     if org_id is not None:
         statement = select(Organization).where(Organization.id == org_id)
@@ -103,6 +105,9 @@ async def send_verification_email(
         org_config = (await db_session.execute(org_config_stmt)).scalars().first()
         lang = get_org_default_language(org_config)
         sender_name = resolve_org_sender_name(org_config)
+        from src.services.email.utils import get_org_logo_url
+
+        logo_url = get_org_logo_url(org, request)
 
     # Get Redis connection
     r = get_redis_connection()
@@ -167,6 +172,7 @@ async def send_verification_email(
         base_url=base_url,
         lang=lang,
         sender_name=sender_name,
+        logo_url=logo_url,
     )
 
     if not email_sent:

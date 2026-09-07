@@ -131,6 +131,27 @@ def _org_logo_img(logo_url: str, alt: str) -> str:
     )
 
 
+def _logo_or_brand(logo_url: Optional[str], alt: Optional[str] = None) -> str:
+    """Header mark for an ORG-SCOPED email: the org's own logo, else ours.
+
+    Every mail that already carries the org's name in its ``From`` header and
+    the org's language in its copy should also carry the org's mark — a message
+    that is white-labeled in three places out of four reads as a forwarded one.
+    The four transactional mails that resolved the language but not the logo
+    (password reset, invitation, role change, address verification) now route
+    through here.
+
+    ``logo_url`` absent (org has no logo, or no absolute media host is
+    resolvable) falls back to this instance's mark, which is the behaviour those
+    four mails had unconditionally. ``alt`` falls back to the instance name so
+    the ``<img>`` never carries an empty alternative text — a client that
+    strips images would otherwise show a blank header.
+    """
+    if not logo_url:
+        return _brand_logo_html()
+    return _org_logo_img(logo_url, alt or _site_name())
+
+
 def _first_sentence(text: str, limit: int = 110) -> str:
     """Opening sentence of a body string, for use as preheader text.
 
@@ -323,7 +344,7 @@ def send_account_creation_email(
         subject = t(lang, "account_creation.subject_org", org_name=safe_org, username=safe_username)
         body_text = t(lang, "account_creation.body_in_org", org_name=safe_org)
         footer_note = t(lang, "account_creation.footer_powered")
-        logo_html = _org_logo_img(logo_url, org_name) if logo_url else _brand_logo_html()
+        logo_html = _logo_or_brand(logo_url, org_name)
     else:
         subject = t(lang, "account_creation.subject", username=safe_username)
         body_text = t(lang, "account_creation.body")
@@ -443,7 +464,14 @@ def send_password_reset_email(
     base_url: str,
     lang: str = "en",
     sender_name: str | None = None,
+    logo_url: str | None = None,
 ):
+    """Reset code + link for an account inside an ORGANIZATION.
+
+    White-labeled to that org: its language, its ``From`` name and — since the
+    org logo was wired through — its mark. ``logo_url`` absent keeps the
+    instance mark, which is what every one of these sent before.
+    """
     safe_username = html.escape(user.username)
     safe_code = html.escape(generated_reset_code)
     safe_email = quote(str(email), safe='')
@@ -474,6 +502,7 @@ def send_password_reset_email(
             title=heading,
             body_content=body_content,
             footer_note=t(lang, "password_reset.footer_org"),
+            logo_html=_logo_or_brand(logo_url, getattr(organization, "name", None)),
         ),
         sender_name=sender_name,
     )
@@ -528,6 +557,7 @@ def send_invitation_email(
     invite_code: Optional[str] = None,
     lang: str = "en",
     sender_name: str | None = None,
+    logo_url: str | None = None,
 ):
     safe_org_name = html.escape(org_name)
     safe_inviter = html.escape(inviter_username)
@@ -571,6 +601,7 @@ def send_invitation_email(
             title=heading,
             body_content=body_content,
             footer_note=t(lang, "invitation.footer", inviter=safe_inviter),
+            logo_html=_logo_or_brand(logo_url, org_name),
         ),
         sender_name=sender_name,
     )
@@ -620,7 +651,7 @@ def send_org_join_email(
             title=heading,
             body_content=body_content,
             footer_note=t(lang, "org_join.footer", org_name=safe_org_name),
-            logo_html=_org_logo_img(logo_url, org_name) if logo_url else _brand_logo_html(),
+            logo_html=_logo_or_brand(logo_url, org_name),
         ),
         sender_name=sender_name,
     )
@@ -634,6 +665,7 @@ def send_role_changed_email(
     lang: str = "en",
     cta_url: str | None = None,
     sender_name: str | None = None,
+    logo_url: str | None = None,
 ):
     """
     Send an email notifying a user that their role has changed in an organization.
@@ -678,6 +710,7 @@ def send_role_changed_email(
             title=heading,
             body_content=body_content,
             footer_note=t(lang, "role_changed.footer", org_name=safe_org_name),
+            logo_html=_logo_or_brand(logo_url, org_name),
         ),
         sender_name=sender_name,
     )
@@ -691,6 +724,7 @@ def send_email_verification_email(
     base_url: str,
     lang: str = "en",
     sender_name: str | None = None,
+    logo_url: str | None = None,
 ):
     """
     Send email verification email with verification link.
@@ -738,6 +772,9 @@ def send_email_verification_email(
             title=heading,
             body_content=body_content,
             footer_note=t(lang, "email_verification.footer"),
+            logo_html=_logo_or_brand(
+                logo_url, getattr(organization, "name", None)
+            ),
         ),
         sender_name=sender_name,
     )
@@ -835,7 +872,7 @@ def send_nudge_email(
             title=heading,
             body_content=body_content,
             footer_note=t(lang, "nudge.common.footer", org_name=safe_org_name),
-            logo_html=_org_logo_img(logo_url, org_name) if logo_url else _brand_logo_html(),
+            logo_html=_logo_or_brand(logo_url, org_name),
             unsubscribe_url=unsubscribe_url,
             unsubscribe_label=t(lang, "nudge.common.unsubscribe"),
             preheader=preheader,

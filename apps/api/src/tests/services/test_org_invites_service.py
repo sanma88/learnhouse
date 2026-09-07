@@ -720,3 +720,62 @@ class TestGetRedis:
         mock_pool.assert_called_once_with("redis://test", max_connections=10)
         mock_redis.assert_called_once_with(connection_pool=fake_pool)
         assert result is fake_client
+
+
+class TestSendInviteEmailForwardsTheOrgLogo:
+    """The invitation resolved the org's language and From name but not its mark.
+
+    An org that has uploaded a logo now heads its own invitations with it; one
+    that has not keeps the instance mark, which is what every invitation used
+    unconditionally before.
+    """
+
+    @pytest.mark.asyncio
+    async def test_org_with_a_logo_forwards_an_absolute_logo_url(
+        self, mock_request, db, org, admin_user
+    ):
+        from src.services.orgs.invites import send_invite_email
+
+        org.logo_image = "620e84b0_logo.png"
+        db.add(org)
+        await db.commit()
+
+        with patch(
+            "src.services.email.utils.get_org_signup_base_url",
+            new_callable=AsyncMock,
+            return_value="https://test-org.learnhouse.io",
+        ), patch(
+            "src.services.orgs.invites.send_invitation_email",
+            return_value={"id": "email"},
+        ) as mock_send, patch.dict(
+            "os.environ", {"LEARNHOUSE_MEDIA_URL": "https://api.test"}
+        ):
+            await send_invite_email(
+                org, None, admin_user, admin_user.email, mock_request, db_session=db
+            )
+
+        assert mock_send.call_args.kwargs["logo_url"] == (
+            f"https://api.test/content/orgs/{org.org_uuid}/logos/620e84b0_logo.png"
+        )
+
+    @pytest.mark.asyncio
+    async def test_org_without_a_logo_forwards_none(
+        self, mock_request, db, org, admin_user
+    ):
+        from src.services.orgs.invites import send_invite_email
+
+        with patch(
+            "src.services.email.utils.get_org_signup_base_url",
+            new_callable=AsyncMock,
+            return_value="https://test-org.learnhouse.io",
+        ), patch(
+            "src.services.orgs.invites.send_invitation_email",
+            return_value={"id": "email"},
+        ) as mock_send, patch.dict(
+            "os.environ", {"LEARNHOUSE_MEDIA_URL": "https://api.test"}
+        ):
+            await send_invite_email(
+                org, None, admin_user, admin_user.email, mock_request, db_session=db
+            )
+
+        assert mock_send.call_args.kwargs["logo_url"] is None
