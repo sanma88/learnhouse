@@ -600,6 +600,79 @@ class TestSendInviteEmailLangLookup:
         assert mock_send.call_args.kwargs["lang"] == "en"
 
 
+class TestInviteFallbackLabelsAreLocalisedAndUnbranded:
+    """A display name that scrubs down to nothing must not brand the mail.
+
+    ``sanitize_display_name`` strips link-like text; a name made only of a URL
+    leaves fewer than two characters and the fallback label takes its place —
+    in the subject line and twice in the body. Those two labels used to be the
+    English literals "A LearnHouse organization" / "A LearnHouse user", so an
+    invitation from this instance named the upstream product, untranslated,
+    inside an otherwise French mail.
+    """
+
+    @pytest.mark.asyncio
+    async def test_degenerate_names_render_localised_labels_and_no_upstream_brand(
+        self, mock_request, db, org, admin_user
+    ):
+        from datetime import datetime as _dt
+
+        from src.db.organization_config import OrganizationConfig
+        from src.services.email.branding import email_brand
+        from src.services.email.translations import t
+        from src.services.orgs.invites import send_invite_email
+
+        db.add(
+            OrganizationConfig(
+                org_id=org.id,
+                config={
+                    "config_version": "2.0",
+                    "customization": {"general": {"default_language": "fr"}},
+                },
+                creation_date=str(_dt.now()),
+                update_date=str(_dt.now()),
+            )
+        )
+        await db.commit()
+
+        # Both names are nothing but a link once scrubbed: the exact input the
+        # scrubber exists for, and the only input that reaches the fallback.
+        org.name = "http://bit.ly/x"
+        admin_user.username = "http://bit.ly/x"
+
+        with patch(
+            "src.services.email.utils.get_org_signup_base_url",
+            new_callable=AsyncMock,
+            return_value="https://acme.campus.test",
+        ), patch(
+            "src.services.users.emails.send_email", return_value=True
+        ) as sent:
+            result = await send_invite_email(
+                org,
+                None,
+                admin_user,
+                admin_user.email,
+                mock_request,
+                db_session=db,
+            )
+
+        assert result is True
+        subject = sent.call_args.kwargs["subject"]
+        body = sent.call_args.kwargs["body"]
+
+        # The regression itself: the upstream name reached the subject line.
+        assert "learnhouse" not in subject.lower()
+        assert "learnhouse" not in body.lower()
+
+        # Localised: the labels come from the org's language, not from English.
+        assert t("fr", "invitation.fallback_org") in subject
+        assert t("fr", "invitation.fallback_inviter") in body
+        assert t("en", "invitation.fallback_org") not in subject
+
+        # And the instance is still named — once, by the brand resolver.
+        assert email_brand() in body
+
+
 class TestSendInviteEmailExceptionBranch:
     """Cover the except Exception: pass path in send_invite_email when the
     db_session is present but raises during the OrganizationConfig lookup."""

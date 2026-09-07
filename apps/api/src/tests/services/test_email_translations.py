@@ -97,3 +97,50 @@ class TestSupportedUILanguages:
         for code in SUPPORTED_UI_LANGUAGES:
             if code not in EMAIL_TRANSLATIONS:
                 assert t(code, "invitation.heading") == EMAIL_TRANSLATIONS["en"]["invitation.heading"]
+
+
+class TestInvitationFallbackLabels:
+    """The labels used when a display name scrubs down to nothing.
+
+    They are rendered into the subject line and the body of a translated
+    invitation, so they have to exist in every locale and must not name a
+    product other than this instance.
+    """
+
+    KEYS = ("invitation.fallback_inviter", "invitation.fallback_org")
+
+    def test_every_locale_defines_both_labels(self):
+        missing = [
+            (code, key)
+            for code in SUPPORTED_LANGUAGES
+            for key in self.KEYS
+            if not EMAIL_TRANSLATIONS.get(code, {}).get(key)
+        ]
+        assert missing == []
+
+    def test_no_locale_names_the_upstream_product(self):
+        branded = [
+            (code, key, EMAIL_TRANSLATIONS[code][key])
+            for code in SUPPORTED_LANGUAGES
+            for key in self.KEYS
+            if "learnhouse" in EMAIL_TRANSLATIONS[code][key].lower()
+        ]
+        assert branded == []
+
+    def test_labels_carry_no_format_placeholder(self):
+        # They are substituted in as {org_name} / {inviter}; a placeholder of
+        # their own would survive into the rendered mail unformatted.
+        leftover = [
+            (code, key, EMAIL_TRANSLATIONS[code][key])
+            for code in SUPPORTED_LANGUAGES
+            for key in self.KEYS
+            if "{" in EMAIL_TRANSLATIONS[code][key]
+        ]
+        assert leftover == []
+
+    def test_labels_are_actually_translated(self):
+        # A missing locale would silently fall back to English; assert on two
+        # locales that the value differs from the English one.
+        for code in ("fr", "de"):
+            for key in self.KEYS:
+                assert t(code, key) != EMAIL_TRANSLATIONS["en"][key]

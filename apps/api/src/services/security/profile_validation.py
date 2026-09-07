@@ -93,7 +93,17 @@ def strip_urls(value: Optional[str]) -> str:
     return re.sub(r"\s+", " ", cleaned).strip()
 
 
-def sanitize_display_name(value: Optional[str], *, fallback: str = "A LearnHouse user") -> str:
+# HI-HA: the default used to name the upstream product ("A LearnHouse user"),
+# which put a third party's brand into an invitation sent by this instance —
+# in English, inside an otherwise translated mail. This module is security
+# plumbing and must not know about mail branding or locales, so the default is
+# now unbranded and callers that render into an email pass a localised label
+# (see services/orgs/invites.py, which passes `invitation.fallback_*` through
+# `t()`, the same lookup that resolves the instance's mail brand).
+DEFAULT_DISPLAY_NAME_FALLBACK = "a member"
+
+
+def sanitize_display_name(value: Optional[str], *, fallback: str = DEFAULT_DISPLAY_NAME_FALLBACK) -> str:
     """Return a link-free display name suitable for rendering into emails.
     Falls back to a neutral label if stripping leaves nothing meaningful."""
     cleaned = strip_urls(value)

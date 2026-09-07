@@ -420,12 +420,23 @@ async def send_invite_email(
         # Defense in depth: scrub any link out of the inviter's display name
         # before it is relayed to recipients, even if it slipped past
         # write-time validation (e.g. imported via OAuth).
+        from src.services.email.translations import t
         from src.services.security.profile_validation import sanitize_display_name
 
+        # When scrubbing leaves nothing usable, the placeholder is rendered into
+        # the subject line and the body of a translated mail — so it comes from
+        # the same `t()` bundle as the rest of the copy (and therefore from the
+        # same brand resolver), not from an English literal naming the upstream
+        # product. Both labels are deliberately generic: the sentences they land
+        # in already carry `{brand}`, so the instance is still named, once.
         result = send_invitation_email(
             email=email,
-            org_name=sanitize_display_name(org.name, fallback="A LearnHouse organization"),
-            inviter_username=sanitize_display_name(user.username),
+            org_name=sanitize_display_name(
+                org.name, fallback=t(lang, "invitation.fallback_org")
+            ),
+            inviter_username=sanitize_display_name(
+                user.username, fallback=t(lang, "invitation.fallback_inviter")
+            ),
             invite_code=invite_code,
             signup_url=signup_url,
             lang=lang,

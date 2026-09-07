@@ -7,6 +7,7 @@ import pytest
 
 from src.services.security.profile_validation import (
     contains_url,
+    DEFAULT_DISPLAY_NAME_FALLBACK,
     sanitize_display_name,
     strip_urls,
     validate_display_name,
@@ -83,7 +84,12 @@ def test_strip_urls_removes_links_and_control_chars():
 
 
 def test_sanitize_display_name_falls_back_when_empty_after_scrub():
-    assert sanitize_display_name("platf-yndx.online") == "A LearnHouse user"
+    # The default label must stay unbranded: it is rendered into outgoing mail,
+    # where naming the upstream product would sign this instance's invitations
+    # with someone else's brand.
+    fallback = sanitize_display_name("platf-yndx.online")
+    assert fallback == DEFAULT_DISPLAY_NAME_FALLBACK
+    assert "learnhouse" not in fallback.lower()
     assert sanitize_display_name("platf-yndx.online", fallback="Someone") == "Someone"
     assert sanitize_display_name("John Smith") == "John Smith"
 
