@@ -36,6 +36,31 @@ os.environ["LEARNHOUSE_DISABLE_EE"] = "1"
 # and nowhere else. Tests that need the feature on enable it themselves.
 os.environ["LEARNHOUSE_DEMO_ENABLED"] = "0"
 
+# Neutralise the email logo override for the whole suite.
+#
+# Same leak as the two above, by both routes: exported in the shell pytest runs
+# from — which is exactly what an operator debugging this setting has — and
+# read from apps/api/.env, because config.py calls load_dotenv() inside
+# get_learnhouse_config(). Either way it silently changes the header mark of
+# every email the suite renders. Measured on this tree: with the variable set,
+# the email test files go from 0 failures to 18, none of them a real defect.
+# Three of those already failed this way before the variable outranked an org
+# logo; the rest are new, because that is precisely what the override now does.
+# A suite whose result depends on an ambient variable reports its own
+# environment, not the code.
+#
+# Assigned "" rather than popped, for the same reason the two settings above are
+# assigned: load_dotenv() runs lazily, long after this module, and only skips
+# keys already PRESENT in os.environ (presence, not truthiness — an empty string
+# is enough). A pop here is undone by the first config read; measured, and it is
+# the .env route specifically that survives it. Empty is also the right value:
+# every reader of this variable tests it for truthiness.
+#
+# Tests that need the override set it themselves — see
+# src/tests/services/test_email_logo_override.py, which uses monkeypatch: that
+# runs after this and is undone per test.
+os.environ["LEARNHOUSE_EMAIL_LOGO_URL"] = ""
+
 # Set a valid JWT secret key for tests (must be at least 32 characters)
 os.environ["LEARNHOUSE_AUTH_JWT_SECRET_KEY"] = (
     "test-secret-key-for-unit-tests-32chars!"

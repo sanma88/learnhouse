@@ -136,8 +136,7 @@ def send_magic_login_email(
     from src.services.users.emails import (
         STYLES,
         _email_layout,
-        _org_logo_img,
-        _site_name,
+        _logo_or_brand,
     )
 
     safe_token = quote(token, safe="")
@@ -159,9 +158,14 @@ def send_magic_login_email(
             {copy_paste}<br />{login_url}
         </p>
     """
-    # None (not "") is the "use the instance mark" signal in _email_layout; an
-    # empty string would ask for no mark at all.
-    logo_html = _org_logo_img(logo_url, org_name or _site_name()) if logo_url else None
+    # Resolved through the shared `_logo_or_brand` rather than open-coded here,
+    # so the operator's LEARNHOUSE_EMAIL_LOGO_URL applies to the login link on
+    # the same terms as to every other org-scoped mail. The previous inline
+    # expression produced exactly what `_logo_or_brand` produces when that
+    # variable is unset — the org's <img> with the org name as alt, and the
+    # instance mark when there is no org logo — so this is a no-op for any
+    # deployment that has not set it.
+    logo_html = _logo_or_brand(logo_url, org_name)
 
     return send_email(
         to=email,

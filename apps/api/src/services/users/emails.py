@@ -74,6 +74,54 @@ def _site_name() -> str:
 ACADEMY_URL = os.environ.get("LEARNHOUSE_ACADEMY_URL") or _public_base_url() or ""
 
 
+# HI-HA: the operator's explicit choice of mark FOR EMAIL, independent of the
+# logo shown in the interface. The two have different backgrounds and cannot
+# always be the same file: campus.hi-ha.be's org logo is a white PNG, correct on
+# the dark interface chrome and invisible on the white card every email is laid
+# out on. Read through one helper so "is it set?" has exactly one answer
+# everywhere — `_brand_logo_html` used the raw value, and a second, differently
+# spelled test elsewhere would eventually disagree with it.
+#
+# Whitespace is stripped: a value of "  " is not a URL, and treating it as one
+# only produces <img src="  "> — a broken image where the mark belongs. Unset
+# (the case every deployment that never heard of this variable is in) is
+# unaffected: os.environ.get returns None and this returns "" exactly as the
+# raw read did.
+def _email_logo_url() -> str:
+    return (os.environ.get("LEARNHOUSE_EMAIL_LOGO_URL") or "").strip()
+
+
+def _email_logo_overrides_org_logo() -> bool:
+    """True when the operator's email logo must win over an ORG's own logo.
+
+    ``LEARNHOUSE_EMAIL_LOGO_URL`` is an INSTANCE variable, and LearnHouse is
+    multi-org by design: on a multi-tenant deployment an org's logo is that
+    tenant's property, and one instance-wide image silently replacing it in
+    every tenant's mail is a white-label regression, not a feature. Worse, it
+    would be a *retroactive* one — the variable already exists and already means
+    "the instance's own mark on email", so an operator who set it to stop
+    hotlinking a third party's wordmark would find it stomping their customers'
+    branding after an upgrade they did not ask for.
+
+    In ``tenancy == "single"`` there is no third party: the sole organization
+    and the instance are the same entity addressing the same recipients, so an
+    operator saying "this image is my email logo" can only mean it. That is the
+    only mode in which this override applies.
+
+    Unreadable configuration degrades to False — i.e. to the behaviour that
+    shipped before this override existed. A configuration failure must not be
+    the thing that changes who an email is branded as.
+    """
+    if not _email_logo_url():
+        return False
+    try:
+        from config.config import get_learnhouse_config
+
+        return get_learnhouse_config().hosting_config.tenancy == "single"
+    except Exception:  # config unavailable — keep the pre-existing behaviour
+        return False
+
+
 # HI-HA: upstream inlined the LearnHouse wordmark as an SVG here. Two problems:
 # it is a third party's mark on our mail, and this module's own _org_logo_img()
 # docstring notes that inline SVG is stripped by some clients (e.g. Gmail).
@@ -81,7 +129,7 @@ ACADEMY_URL = os.environ.get("LEARNHOUSE_ACADEMY_URL") or _public_base_url() or 
 # and degrade to the configured site name as styled text when no public URL is
 # resolvable, so a recipient never sees a broken image.
 def _brand_logo_html() -> str:
-    base = os.environ.get("LEARNHOUSE_EMAIL_LOGO_URL")
+    base = _email_logo_url()
     if base:
         src = base
     else:
@@ -132,21 +180,36 @@ def _org_logo_img(logo_url: str, alt: str) -> str:
 
 
 def _logo_or_brand(logo_url: Optional[str], alt: Optional[str] = None) -> str:
-    """Header mark for an ORG-SCOPED email: the org's own logo, else ours.
+    """Header mark for an ORG-SCOPED email. THE resolver — see the order below.
 
     Every mail that already carries the org's name in its ``From`` header and
     the org's language in its copy should also carry the org's mark — a message
     that is white-labeled in three places out of four reads as a forwarded one.
     The four transactional mails that resolved the language but not the logo
     (password reset, invitation, role change, address verification) now route
-    through here.
+    through here, and so does the magic-login link.
 
-    ``logo_url`` absent (org has no logo, or no absolute media host is
-    resolvable) falls back to this instance's mark, which is the behaviour those
-    four mails had unconditionally. ``alt`` falls back to the instance name so
-    the ``<img>`` never carries an empty alternative text — a client that
-    strips images would otherwise show a blank header.
+    Resolution order, first hit wins:
+
+    1. ``LEARNHOUSE_EMAIL_LOGO_URL`` — the operator's explicit choice of mark
+       for email, and *only* in ``tenancy == "single"``. See
+       ``_email_logo_overrides_org_logo`` for why the tenancy condition is not
+       optional. This exists because an org logo is drawn for the interface,
+       which does not have to share the email's white background: a mark that
+       is correct in the product can be invisible in the inbox, and the fix
+       must not be "change the logo everyone sees in the app".
+    2. The organization's own logo (``logo_url``) — the white-label default.
+    3. This instance's mark (``_brand_logo_html``), when the org has none or no
+       absolute media host is resolvable. Note that step 3 has *always* honored
+       ``LEARNHOUSE_EMAIL_LOGO_URL``; step 1 is what makes the variable mean the
+       same thing whether or not the org happens to have uploaded a logo.
+
+    ``alt`` falls back to the instance name so the ``<img>`` never carries an
+    empty alternative text — a client that strips images would otherwise show a
+    blank header.
     """
+    if _email_logo_overrides_org_logo():
+        return _brand_logo_html()
     if not logo_url:
         return _brand_logo_html()
     return _org_logo_img(logo_url, alt or _site_name())
