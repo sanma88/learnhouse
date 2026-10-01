@@ -1,7 +1,6 @@
 'use client'
 
 import React from 'react'
-import { resolveInlineCaptions } from '@/lib/media/inlineCaptions'
 import dynamic from 'next/dynamic'
 import { Download, File as FileIcon, FileArchive, FileSpreadsheet, FileText, Lock, Presentation } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
@@ -89,16 +88,13 @@ export type MediaViewerProps = {
   mediaUuid?: string
   /** Caps the viewer height; the lightbox and the block want different ones. */
   maxHeightClass?: string
-  inlineCaptions?: unknown
 }
 
 export default function MediaViewer({
   resource,
   mediaUuid,
   maxHeightClass = 'max-h-[70vh]',
-  inlineCaptions,
 }: MediaViewerProps) {
-  const captions = React.useMemo(() => resolveInlineCaptions(inlineCaptions), [inlineCaptions])
   const [denied, setDenied] = React.useState(false)
   const kind: MediaKind = mediaKind(resource)
   const name = resource?.name || ''
@@ -151,8 +147,8 @@ export default function MediaViewer({
 
   if (kind === 'video') {
     return (
-      <div className={`w-full aspect-video ${maxHeightClass} bg-black rounded-xl overflow-hidden`}>
-        <LearnHousePlayer src={fileUrl} captions={captions} />
+      <div className={`w-full ${maxHeightClass} bg-black rounded-xl overflow-hidden`}>
+        <LearnHousePlayer src={fileUrl} />
       </div>
     )
   }

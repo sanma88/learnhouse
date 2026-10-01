@@ -34,10 +34,6 @@ export default Node.create({
       snapshot: {
         default: null,
       },
-      // Inline WebVTT travels with the course; the video keeps native RBAC.
-      captions: {
-        default: null,
-      },
       display: {
         default: 'inline',
       },
