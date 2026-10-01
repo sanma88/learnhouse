@@ -21,11 +21,12 @@ type Props = {
   resource: MediaLike & { name?: string; file_size?: number | null; media_uuid?: string }
   /** Falls back to the folder item's resource_uuid when the row lacks media_uuid. */
   mediaUuid?: string
+  inlineCaptions?: unknown
   isOpen: boolean
   onOpenChange: (_open: boolean) => void
 }
 
-export default function MediaLightbox({ resource, mediaUuid, isOpen, onOpenChange }: Props) {
+export default function MediaLightbox({ resource, mediaUuid, inlineCaptions, isOpen, onOpenChange }: Props) {
   const { t } = useTranslation()
   const session = useLHSession() as any
   const access_token = session?.data?.tokens?.access_token
@@ -70,7 +71,7 @@ export default function MediaLightbox({ resource, mediaUuid, isOpen, onOpenChang
       }
       dialogContent={
         <div className="space-y-4">
-          <MediaViewer resource={resource} mediaUuid={uuid} />
+          <MediaViewer resource={resource} mediaUuid={uuid} inlineCaptions={inlineCaptions} />
 
           <div className="flex flex-wrap items-center gap-2">
             {downloadUrl && (

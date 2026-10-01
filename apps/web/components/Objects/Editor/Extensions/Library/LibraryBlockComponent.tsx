@@ -65,6 +65,7 @@ function LibraryBlockComponent(props: NodeViewProps) {
   const resourceUuid: string | null = props.node.attrs.resourceUuid
   const resourceType: ResourceKind | null = props.node.attrs.resourceType
   const snapshot = props.node.attrs.snapshot
+  const captions = props.node.attrs.captions
   const display: string = props.node.attrs.display || 'inline'
 
   const [pickerOpen, setPickerOpen] = React.useState(false)
@@ -96,6 +97,7 @@ function LibraryBlockComponent(props: NodeViewProps) {
 
   const applySelection = (selected: SelectedResource) => {
     props.updateAttributes({
+      captions: selected.resource_uuid === resourceUuid ? captions : null,
       resourceUuid: selected.resource_uuid,
       resourceType: selected.resource_type,
       snapshot: selected.resource_type === 'media' ? snapshotOf(selected.resource) : {
@@ -121,6 +123,7 @@ function LibraryBlockComponent(props: NodeViewProps) {
       // instead of being buried under this one activity.
       const created = await createMedia(formData, access_token)
       props.updateAttributes({
+        captions: null,
         resourceUuid: created.media_uuid,
         resourceType: 'media',
         snapshot: snapshotOf(created),
@@ -136,7 +139,7 @@ function LibraryBlockComponent(props: NodeViewProps) {
   }
 
   const clearSelection = () => {
-    props.updateAttributes({ resourceUuid: null, resourceType: null, snapshot: null })
+    props.updateAttributes({ resourceUuid: null, resourceType: null, snapshot: null, captions: null })
   }
 
   const picker = (
@@ -274,12 +277,14 @@ function LibraryBlockComponent(props: NodeViewProps) {
           <MediaViewer
             resource={{ ...snapshot, name }}
             mediaUuid={resourceUuid}
+            inlineCaptions={captions}
             maxHeightClass="max-h-[60vh]"
           />
         </div>
         <MediaLightbox
           resource={{ ...snapshot, name }}
           mediaUuid={resourceUuid}
+          inlineCaptions={captions}
           isOpen={lightboxOpen}
           onOpenChange={setLightboxOpen}
         />
